@@ -1,15 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
-using TAS.Data;
+﻿// Program.cs
+using Microsoft.EntityFrameworkCore;
+using TAS.Data; // DbContext của bạn
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Connection string từ appsettings.json -> ConnectionStrings:Default
+// lấy chuỗi kết nối: appsettings.ConnectionStrings.Default
 var cs = builder.Configuration.GetConnectionString("Default")
-		 ?? throw new InvalidOperationException("Missing ConnectionStrings:Default");
+		  ?? throw new InvalidOperationException("Missing ConnectionStrings:Default");
 
 builder.Services.AddControllersWithViews();
-builder.Services.AddDbContext<ApplicationDbContext>(opt =>
-	opt.UseSqlServer(cs));
+
+// Đăng ký DI cho SQL Server + Dapper executor
+builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
+builder.Services.AddScoped<IDbExecutor, DbExecutor>();
+
+builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(cs));
 
 var app = builder.Build();
 
