@@ -21,8 +21,13 @@ namespace TAS.Controllers
 			return View(products);
 		}
 
-		// GET: Products/Details/5
-		public async Task<IActionResult> Details(int? id)
+        // GET: Dashboard
+        public async Task<IActionResult> Dashboard()
+        {
+			return View();
+        }
+        // GET: Products/Details/5
+        public async Task<IActionResult> Details(int? id)
 		{
 			if (id == null)
 			{

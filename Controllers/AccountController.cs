@@ -54,7 +54,7 @@ namespace TAS.Controllers
 
 		#region Call Models
 		[HttpPost]
-		public IActionResult Login([FromBody] LoginReq req)
+		public IActionResult Login([FromBody] LoginRequest res)
 		{
 			if (!ModelState.IsValid) return BadRequest(ModelState);
 			var token = "jwt-token";

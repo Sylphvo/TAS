@@ -32,8 +32,6 @@
     <Folder Include="TagHelpers\" />
     <Folder Include="ViewComponents\" />
     <Folder Include="Resources\" />
-    <Folder Include="wwwroot\assets\" />
-    <Folder Include="wwwroot\Views\" />
   </ItemGroup>
 
 </Project>

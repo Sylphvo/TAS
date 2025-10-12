@@ -1,0 +1,54 @@
+﻿
+
+<div class="pc-container">
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="https://ableproadmin.com/dashboard/index.html">Home</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Cập nhật số liệu</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h2 class="mb-0">Cập nhật số liệu</h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end --><!-- [ Main Content ] start -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card table-card">
+                    <div class="card-header">
+                        <div class="d-sm-flex align-items-center justify-content-between">
+                            <h5 class="mb-3 mb-sm-0">Teacher list</h5>
+                            <div><a href="course-teacher-apply.html" class="btn btn-outline-secondary">Apply Teacher List</a> <a href="course-teacher-add.html" class="btn btn-primary">Add Teacher</a></div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <!-- [ Main Content ] end -->
+                            <div id="myGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+       
+    </div>
+</div>
+
+<script src="../Views/RubberGarden/RubberGarden.js"></script>
+
+<script>
+    var listdataEventsActual;
+    var EventsActual = '#myGrid';
+    // SetVariablesMsgEventsActual();
+    RefreshAllGridWhenChangeDataEventsActual();
+    CreateGridEventsActual(true);
+</script>
