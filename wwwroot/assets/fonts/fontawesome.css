@@ -5766,13 +5766,13 @@
   font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 400;
-  src: url('fontawesome/fa-regular-400.eot');
+  src: url('fontawesome/fa-regular-400.html');
   src:
-    url('fontawesome/fa-regular-400d41d.eot?#iefix') format('embedded-opentype'),
+    url('fontawesome/fa-regular-400d41d.html?#iefix') format('embedded-opentype'),
     url('fontawesome/fa-regular-400.woff2') format('woff2'),
-    url('fontawesome/fa-regular-400.woff') format('woff'),
-    url('fontawesome/fa-regular-400.ttf') format('truetype'),
-    url('fontawesome/fa-regular-400.svg#fontawesome') format('svg');
+    url('fontawesome/fa-regular-401.html') format('woff'),
+    url('fontawesome/fa-regular-402.html') format('truetype'),
+    url('fontawesome/fa-regular-403.html#fontawesome') format('svg');
 }
 .far {
   font-family: 'Font Awesome 5 Free';
@@ -5782,13 +5782,13 @@
   font-family: 'Font Awesome 5 Free';
   font-style: normal;
   font-weight: 900;
-  src: url('fontawesome/fa-solid-900.eot');
+  src: url('fontawesome/fa-solid-900.html');
   src:
-    url('fontawesome/fa-solid-900d41d.eot?#iefix') format('embedded-opentype'),
+    url('fontawesome/fa-solid-900d41d.html?#iefix') format('embedded-opentype'),
     url('fontawesome/fa-solid-900.woff2') format('woff2'),
-    url('fontawesome/fa-solid-900.woff') format('woff'),
-    url('fontawesome/fa-solid-900.ttf') format('truetype'),
-    url('fontawesome/fa-solid-900.svg#fontawesome') format('svg');
+    url('fontawesome/fa-solid-901.html') format('woff'),
+    url('fontawesome/fa-solid-902.html') format('truetype'),
+    url('fontawesome/fa-solid-903.html#fontawesome') format('svg');
 }
 .fa,
 .fas {
@@ -5799,13 +5799,13 @@
   font-family: 'Font Awesome 5 Brands';
   font-style: normal;
   font-weight: normal;
-  src: url('fontawesome/fa-brands-400.eot');
+  src: url('fontawesome/fa-brands-400.html');
   src:
-    url('fontawesome/fa-brands-400d41d.eot?#iefix') format('embedded-opentype'),
-    url('fontawesome/fa-brands-400.woff2') format('woff2'),
-    url('fontawesome/fa-brands-400.woff') format('woff'),
+    url('fontawesome/fa-brands-400d41d.html?#iefix') format('embedded-opentype'),
+    url('fontawesome/fa-brands-401.html') format('woff2'),
+    url('fontawesome/fa-brands-402.html') format('woff'),
     url('fontawesome/fa-brands-400.ttf') format('truetype'),
-    url('fontawesome/fa-brands-400.html#fontawesome') format('svg');
+    url('fontawesome/fa-brands-403.html#fontawesome') format('svg');
 }
 .fab {
   font-family: 'Font Awesome 5 Brands';

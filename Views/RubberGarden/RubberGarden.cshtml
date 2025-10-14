@@ -26,8 +26,19 @@
                 <div class="card table-card">
                     <div class="card-header">
                         <div class="d-sm-flex align-items-center justify-content-between">
-                            <h5 class="mb-3 mb-sm-0">Teacher list</h5>
-                            <div><a href="course-teacher-apply.html" class="btn btn-outline-secondary">Apply Teacher List</a> <a href="course-teacher-add.html" class="btn btn-primary">Add Teacher</a></div>
+                            <div>
+                                <a href="course-teacher-add.html" class="btn btn-primary">Đại lý A</a>
+                                <a href="course-teacher-add.html" class="btn btn-primary">Đại lý B</a>
+                                <a href="course-teacher-add.html" class="btn btn-primary">Đại lý C</a>
+                            </div>
+                            <div>
+                                <!-- Nút chọn file -->
+                                <label for="importExcel" class="btn btn-primary">Chọn file</label>
+                                <input type="file" id="importExcel" hidden>
+                                <span id="file-name" class="ms-2"></span>
+                                <button onclick="onExportExcel()" class="btn btn-primary">Xuất Excel</button>
+                                <button onclick="onExportExcel()" class="btn btn-primary">Mẫu Excel</button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -48,7 +59,6 @@
 <script>
     var listdataEventsActual;
     var EventsActual = '#myGrid';
-    // SetVariablesMsgEventsActual();
-    RefreshAllGridWhenChangeDataEventsActual();
+    RefreshAllGridWhenChangeData();
     CreateGridEventsActual(true);
 </script>

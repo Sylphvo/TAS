@@ -1,3 +1,31 @@
 ﻿.card-body{
     padding: 0 !important;
 }
+.ag-root,
+.ag-body,
+.ag-center-cols-container,
+.ag-cell {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+}
+.ag-cell .ag-cell-value {
+    order: 3;
+}
+
+.ag-cell .ag-row-drag {
+    order: 2;
+}
+
+.ag-cell .ag-selection-checkbox {
+    order: 1;
+}
+.ag-header-cell .ag-checkbox-input-wrapper {
+    margin-left: 10px;
+}
+.ag-row-drag, .ag-selection-checkbox{
+    margin: 0 4px;
+}
+.ag-header-cell[col-id="maNhaVuon"] {
+    margin: 0 -3px;
+}
