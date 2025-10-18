@@ -32,6 +32,9 @@
     <Folder Include="TagHelpers\" />
     <Folder Include="ViewComponents\" />
     <Folder Include="Resources\" />
+    <Folder Include="wwwroot\css\Traceability\" />
+    <Folder Include="wwwroot\css\RubberGarden\" />
+    <Folder Include="wwwroot\css\InformationGarden\" />
   </ItemGroup>
 
 </Project>
