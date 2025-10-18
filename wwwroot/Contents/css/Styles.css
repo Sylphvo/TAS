@@ -1,0 +1,47 @@
+﻿.card-body{
+    padding: 0 !important;
+}
+.ag-root,
+.ag-body,
+.ag-center-cols-container,
+.ag-cell {
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -moz-user-select: none !important;
+}
+.ag-cell .ag-cell-value {
+    order: 3;
+}
+
+.ag-cell .ag-row-drag {
+    order: 2;
+}
+
+.ag-cell .ag-selection-checkbox {
+    order: 1;
+}
+.ag-header-cell .ag-checkbox-input-wrapper {
+    margin-left: 10px;
+}
+.ag-row-drag, .ag-selection-checkbox{
+    margin: 0 4px;
+}
+/*.ag-header-cell[col-id="maNhaVuon"] {
+    margin: 0 -3px;
+}*/
+.ag-header-cell .ag-floating-filter-button {
+    display: none !important;
+}
+
+.ag-header-cell .ag-input-wrapper {
+    justify-content:center;
+    
+}
+.ag-header-cell .ag-input-field-input{
+    max-width: calc(100% - 20px);
+}
+
+.ag-pinned-left-cols-container .ag-cell:not(div[col-id="IS_ACTIVE"]), .ag-center-cols-container .ag-cell:not(div[col-id="IS_CHECK"]):not(div[col-id="IS_ACTIVE"]):not(div[col-id="Edit"]) {
+    margin: 1px !important;
+    padding: 0 !important;
+}

@@ -36,7 +36,7 @@
                                 <label for="importExcel" class="btn btn-primary">Chọn file</label>
                                 <input type="file" id="importExcel" hidden>
                                 <span id="file-name" class="ms-2"></span>
-                                <button onclick="onExportExcel()" class="btn btn-primary">Xuất Excel</button>
+                                <button onclick="onExportExcelData()" class="btn btn-primary">Xuất Excel</button>
                                 <button onclick="onExportExcel()" class="btn btn-primary">Mẫu Excel</button>
                             </div>
                         </div>
@@ -53,12 +53,12 @@
        
     </div>
 </div>
-
-<script src="../Views/RubberGarden/RubberGarden.js"></script>
-
-<script>
-    var listdataEventsActual;
-    var EventsActual = '#myGrid';
-    RefreshAllGridWhenChangeData();
-    CreateGridEventsActual(true);
-</script>
+@section Scripts {
+    <script type="text/javascript" src="~/Contents/js/RubberGarden/RubberGarden.js"></script>
+    <script>
+        var listdataEventsActual;
+        var EventsActual = '#myGrid';
+        RefreshAllGridWhenChangeData();
+        CreateGridEventsActual(true);
+    </script>
+}

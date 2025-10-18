@@ -15,41 +15,35 @@ namespace TAS.Controllers
 		}
 		#region Views
 		// Login
-		public async Task<IActionResult> Login()
+		public IActionResult Login()
 		{
-			var products = await _context.Products.ToListAsync();
-			return View(products);
+			return View();
 		}
 		// Register
-		public async Task<IActionResult> Register()
+		public IActionResult Register()
 		{
-			var products = await _context.Products.ToListAsync();
-			return View(products);
-		}
+            return View();
+        }
 		// ConfirmEmail
-		public async Task<IActionResult> ConfirmEmail()
+		public IActionResult ConfirmEmail()
 		{
-			var products = await _context.Products.ToListAsync();
-			return View(products);
-		}
+            return View();
+        }
 		// ForgotPassword
-		public async Task<IActionResult> ForgotPassword()
+		public IActionResult ForgotPassword()
 		{
-			var products = await _context.Products.ToListAsync();
-			return View(products);
-		}
+            return View();
+        }
 		// ResetPassword
-		public async Task<IActionResult> ResetPassword()
+		public IActionResult ResetPassword()
 		{
-			var products = await _context.Products.ToListAsync();
-			return View(products);
-		}
+            return View();
+        }
 		// Logout
-		public async Task<IActionResult> Logout()
+		public IActionResult Logout()
 		{
-			var products = await _context.Products.ToListAsync();
-			return View(products);
-		}
+            return View();
+        }
 		#endregion
 
 		#region Call Models
