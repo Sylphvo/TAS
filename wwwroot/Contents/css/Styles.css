@@ -45,3 +45,31 @@
     margin: 1px !important;
     padding: 0 !important;
 }
+select {
+    
+   
+}
+.search-box {
+    display:inline-block;
+}
+.datatable-selector, .form-select, .searchInput {
+    width: 300px !important;
+    padding: 5px !important;
+    margin-left:10px !important;
+}
+.card-header {
+    padding: 15px !important;
+}
+#topPager {
+    padding: 5px 15px !important;
+}
+.form-label {
+    margin: 0 !important;
+}
+.btn, .introjs-tooltip .introjs-button {
+    border-radius: 4px !important;
+    padding: 5px 12px !important;
+}
+.buttonSearch{
+    margin-left:5px; 
+}

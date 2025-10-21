@@ -10,18 +10,43 @@ namespace TAS.Data
 		{
 		}
 
-		public DbSet<Product> Products { get; set; }
-
-		protected override void OnModelCreating(ModelBuilder modelBuilder)
+        public DbSet<Dealer> Dealers => Set<Dealer>();
+        public DbSet<Garden> Gardens => Set<Garden>();
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-			base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Dealer>(e =>
+            {
+                e.HasKey(x => x.DealerId);
+                e.HasIndex(x => x.Name);
+                e.HasIndex(x => new { x.Province, x.District });
+                e.HasIndex(x => x.Code).IsUnique();
+                e.Property(x => x.Code).HasMaxLength(20).IsUnicode(false);
+                e.Property(x => x.TaxCode).HasMaxLength(20).IsUnicode(false);
+                e.Property(x => x.Phone).HasMaxLength(20).IsUnicode(false);
+                e.Property(x => x.Email).HasMaxLength(120);
+            });
 
-			// Seed data mẫu
-			modelBuilder.Entity<Product>().HasData(
-				new Product { Id = 1, Name = "Laptop Dell", Description = "Laptop cao cấp", Price = 15000000, Stock = 10 },
-				new Product { Id = 2, Name = "iPhone 15", Description = "Điện thoại thông minh", Price = 25000000, Stock = 20 },
-				new Product { Id = 3, Name = "Samsung TV", Description = "Tivi 55 inch", Price = 12000000, Stock = 5 }
-			);
-		}
+            modelBuilder.Entity<Garden>(e =>
+            {
+                e.HasKey(x => x.GardenId);
+                e.Property(x => x.Code).HasMaxLength(20).IsUnicode(false);
+                e.Property(x => x.OwnerPhone).HasMaxLength(20).IsUnicode(false);
+                e.Property(x => x.OwnerIdNo).HasMaxLength(20).IsUnicode(false);
+                e.Property(x => x.AreaHa).HasPrecision(10, 2);
+                e.Property(x => x.AvgLatexKgDay).HasPrecision(10, 2);
+                e.Property(x => x.Latitude).HasPrecision(9, 6);
+                e.Property(x => x.Longitude).HasPrecision(9, 6);
+
+                e.HasIndex(x => x.DealerId);
+                e.HasIndex(x => x.OwnerPhone);
+                e.HasIndex(x => new { x.Province, x.District });
+                e.HasIndex(x => new { x.DealerId, x.Code }).IsUnique();
+
+                e.HasOne(x => x.Dealer)
+                 .WithMany(d => d.Gardens)
+                 .HasForeignKey(x => x.DealerId)
+                 .OnDelete(DeleteBehavior.Restrict);
+            });
+        }
 	}
 }

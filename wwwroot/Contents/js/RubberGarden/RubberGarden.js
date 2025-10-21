@@ -3,6 +3,7 @@ var gridOptionsEventsActual;
 function CreateGridEventsActual() {
     gridOptionsEventsActual = {
         //pagination: true,
+        paginationPageSize: 100,
         columnDefs: CreateColModelEventsActual(),
         defaultColDef: {
             width: 170,
@@ -22,101 +23,19 @@ function CreateGridEventsActual() {
         },
         cellSelection: true,
         onGridReady: function (params) {
+            updatePager();
             params.api.sizeColumnsToFit();
         },
+        rowDragManaged: true,
+        onRowDragEnd() {
+            const rows = [];
+            gridApi.forEachNodeAfterFilterAndSort(n => rows.push(n.data)); // toàn bộ, bất kể trang
+            console.log('order', rows);            // rows đã đúng thứ tự bạn vừa kéo
+        },
+        onPaginationChanged: updatePager,
+        onFilterChanged: updatePager,
+        onSortChanged: updatePager
     };
-    //gridOptionsEventsActual = {
-    //    //pagination: true,
-    //    ////overlayPagingTemplate: CustomPaging(),
-    //    //paginationPageSize: 100000,
-    //    //rowBuffer: 1, //Biến để điều chỉnh số lượng row render trước
-    //    //paginationPageSizeSelector: false,
-    //    //defaultColDef: {
-    //    //    resizable: true,
-    //    //    filterParams: {
-    //    //        debounceMs: 300
-    //    //    }, suppressMovable: true
-    //    //},
-    //    headerHeight: 35,
-    //    //onFilterChanged: updateRowIndex,
-    //    //onSortChanged: updateRowIndex,
-    //    //components: {
-    //    //    customLoadingOverlay: CustomLoadingOverlay,
-    //    //    //customHeader: CustomHeaderEventsActual,
-    //    //},
-    //    //loadingOverlayComponent: 'customLoadingOverlay',
-    //    //loadingOverlayComponentParams: {
-    //    //    loadingMessage: 'loading',
-    //    //},
-    //    height:45,
-    //    columnDefs: CreateColModelEventsActual(),
-    //    //onRowSelected: onRowSelected,
-    //    //rowData: [],
-    //    rowDragManaged: false,
-    //    rowDragMultiRow: true,
-    //    rowSelection: { mode: "multiRow", headerCheckbox: false },
-    //    onGridReady: function (params) {
-    //        params.api.sizeColumnsToFit();
-    //    },
-    //    //processRowPostCreate: (params) => {
-    //    //    if ((params.node.data.tag_div_id == tagDivIdByUser) && !IsNullOrEmpty(params.node.data.id) && !params.node.data.is_view) {
-    //    //        notificationIndex++;
-    //    //        UpdateViewTaskNotification(params.node.data, params.rowIndex, notificationIndex);
-    //    //    }
-    //    //},
-    //    //getRowStyle: function (params) {
-    //    //    if (params.data.STATUS === 2) {
-    //    //        return { color: 'red' };
-    //    //    }
-    //    //    if (params.data.row_type == arrConstantEventsActual.RowTypeItem && params.data.row_status == arrConstantEventsActual.RowStatusActual) {
-    //    //        return { color: 'blue' };
-    //    //    }
-    //    //},
-    //    //onCellDoubleClicked: function (params) {
-    //    //    if (!isWriteEvent || CheckPermisstionAndStatus(params.data)) { return; }
-    //    //    if ((!isEditLockedEventActualPast && params.data.row_status == arrConstantEventsActual.RowStatusPast) || (params.data.row_type == arrConstantEventsActual.RowTypeStaff || params.data.row_type == arrConstantEventsActual.RowTypeGroup || params.data.row_type == arrConstantEventsActual.RowTypeDate)) {
-    //    //        return;
-    //    //    }
-    //    //    EditEventsActual();
-    //    //},
-    //    //getRowClass: params => {
-    //    //    let rowClass = [];
-    //    //    if ((params.data.tag_div_id == tagDivIdByUser) && !IsNullOrEmpty(params.data.id) && !params.data.is_view) {
-    //    //        rowClass.push('is_not_view_event_actual');
-    //    //    }
-    //    //    var id_list = GetIdListEventActual(params.data.id);
-    //    //    if (id_list == PFN_readCookie('id_list')) {
-    //    //        setTimeout(function () {
-    //    //            PFN_createCookie('row_index', '', -1);
-    //    //        }, 100)
-    //    //        rowClass.push('ag-row-selected');
-    //    //    }
-    //    //    if (params.rowIndex == PFN_readCookie('focus_row')) {
-    //    //        setTimeout(function () {
-    //    //            PFN_createCookie('focus_row', '', -1);
-    //    //        }, 100)
-    //    //        rowClass.push('ag-row-selected');
-    //    //    }
-
-    //    //    return rowClass;
-    //    //},
-    //    //onCellClicked: function (event) { //HungAnh: Gọi click cell dùng để focus row
-    //    //    if (listdataEventsActual.length > 0) {
-    //    //        if ((!isEditLockedEventActualPast && event.data.row_status == arrConstantEventsActual.RowStatusPast) || (event.data.row_type == arrConstantEventsActual.RowTypeStaff || event.data.row_type == arrConstantEventsActual.RowTypeGroup || event.data.row_type == arrConstantEventsActual.RowTypeDate)) {
-    //    //            if (!$('#btnEditEventsActual').hasClass('disabled')) {
-    //    //                $('#btnEditEventsActual').attr('disabled', true);
-    //    //            }
-    //    //            return;
-    //    //        }
-    //    //        $('#btnEditEventsActual').attr('disabled', CheckPermisstionAndStatus(event.data));
-    //    //    }
-    //    //},
-    //    //localeText: {
-    //    //    to: arrMsgEventActual.To,
-    //    //    of: arrMsgEventActual.Of,
-    //    //    noRowsToShow: arrMsgEventActual.NoRowsToShow
-    //    //}
-    //};
 
     var eGridDiv = document.querySelector(EventsActual);
     new agGrid.Grid(eGridDiv, gridOptionsEventsActual);
@@ -430,4 +349,14 @@ function onExportExcel() {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'mau.xlsx');
+}
+function updatePager() {
+    const cur = gridOptionsEventsActual.api.paginationGetCurrentPage() + 1;
+    const total = Math.max(gridOptionsEventsActual.api.paginationGetTotalPages(), 1);
+
+
+
+    document.getElementById('pageInfo').textContent = `${cur} / ${total}`;
+    document.getElementById('rowCount').textContent = `Rows: ${gridOptionsEventsActual.api.getDisplayedRowCount()}`;
+    document.getElementById('pageSize').value = String(gridOptionsEventsActual.api.paginationGetPageSize());
 }
