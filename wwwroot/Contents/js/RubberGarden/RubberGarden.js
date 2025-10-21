@@ -22,15 +22,14 @@ function CreateGridEventsActual() {
             //customheader: CustomHeaderEventsActual,
         },
         cellSelection: true,
-        onGridReady: function (params) {
-            updatePager();
+        onGridReady: function (params) {          
             params.api.sizeColumnsToFit();
+            renderPage();          // nạp trang đầu
+            setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
-            const rows = [];
-            gridApi.forEachNodeAfterFilterAndSort(n => rows.push(n.data)); // toàn bộ, bất kể trang
-            console.log('order', rows);            // rows đã đúng thứ tự bạn vừa kéo
+            persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
         },
         onPaginationChanged: updatePager,
         onFilterChanged: updatePager,
@@ -359,4 +358,38 @@ function updatePager() {
     document.getElementById('pageInfo').textContent = `${cur} / ${total}`;
     document.getElementById('rowCount').textContent = `Rows: ${gridOptionsEventsActual.api.getDisplayedRowCount()}`;
     document.getElementById('pageSize').value = String(gridOptionsEventsActual.api.paginationGetPageSize());
+}
+function persistCurrentPageOrder() {
+    const start = (page - 1) * pageSize;
+    const n = gridApi.getDisplayedRowCount();
+    const ordered = [];
+    for (let i = 0; i < n; i++) {
+        ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
+    }
+    // ghi đè đoạn trang hiện tại vào mảng gốc
+    fullData.splice(start, n, ...ordered);
+}
+
+// --- helpers ---
+function renderPage() {
+    const start = (page - 1) * pageSize;
+    const slice = fullData.slice(start, start + pageSize);
+    gridApi.setRowData(slice);
+}
+function setupPager() {
+    pagerApi = makePaginator({
+        listEl: '#dummy',
+        pagerEl: '#pager',
+        page,
+        pageSize,
+        total: fullData.length,
+        render: () => '', // không render list
+        onChange: ({ page: p, pageSize: sz }) => {
+            // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
+            persistCurrentPageOrder();
+            page = p;
+            pageSize = sz;
+            renderPage();
+        }
+    });
 }

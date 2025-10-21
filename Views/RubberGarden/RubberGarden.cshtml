@@ -46,7 +46,9 @@
                     <div class="card-body">
                         <div class="table-responsive">
                             <!-- [ Main Content ] end -->
-                            <div id="myGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
+                            <div id="RubberGardenGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
+                            <nav id="pager" aria-label="Pagination"></nav>
+                            <div id="dummy" hidden></div>
                             <div id="topPager" class="pager">
                                 <label>Rows/Page</label>
                                 <select id="pageSize">
@@ -78,7 +80,7 @@
     <script type="text/javascript" src="~/Contents/js/RubberGarden/RubberGarden.js"></script>
     <script>
         var listdataEventsActual;
-        var EventsActual = '#myGrid';
+        var EventsActual = '#RubberGardenGrid';
         RefreshAllGridWhenChangeData();
         CreateGridEventsActual(true);
         

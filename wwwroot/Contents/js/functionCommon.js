@@ -3771,3 +3771,186 @@ function isMobileBrowser() {
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
+
+
+/**
+* makePaginator(opts)
+* opts = {
+*  listEl: Element | selector,
+*  pagerEl: Element | selector,
+*  data?: any[],                          // client-side
+*  fetch?: ({page, pageSize}) => Promise<{items:any[], total:number}>, // server-side
+*  render: (item, i) => string,           // return HTML string
+*  page?: number,                         // default 1
+*  pageSize?: number,                     // default 20
+*  window?: number,                       // page window around current, default 2
+*  total?: number,                        // optional when data not given but known
+*  emptyText?: string,                    // default 'No data'
+*  onChange?: (state) => void             // callback after render
+* }
+*/
+function makePaginator(opts) {
+    const q = x => typeof x === 'string' ? document.querySelector(x) : x;
+    const listEl = q(opts.listEl);
+    const pagerEl = q(opts.pagerEl);
+    if (!listEl || !pagerEl) throw new Error('listEl/pagerEl not found');
+
+    const state = {
+        page: Math.max(1, opts.page || 1),
+        pageSize: opts.pageSize || 20,
+        window: opts.window ?? 2,
+        total: opts.total ?? (Array.isArray(opts.data) ? opts.data.length : 0),
+    };
+
+    let data = Array.isArray(opts.data) ? opts.data.slice() : null;
+    let fetchFn = typeof opts.fetch === 'function' ? opts.fetch : null;
+    let reqId = 0; // prevent race conditions
+
+    const computeTotalPages = () => Math.max(1, Math.ceil((state.total || 0) / state.pageSize));
+
+    const clampPage = () => {
+        const tp = computeTotalPages();
+        if (state.page > tp) state.page = tp;
+        if (state.page < 1) state.page = 1;
+    };
+
+    const buildPageList = (totalPages, current) => {
+        const w = state.window;
+        const pages = new Set([1, totalPages]);
+        for (let p = current - w; p <= current + w; p++) {
+            if (p >= 1 && p <= totalPages) pages.add(p);
+        }
+        const arr = Array.from(pages).sort((a, b) => a - b);
+        const out = [];
+        for (let i = 0; i < arr.length; i++) {
+            out.push(arr[i]);
+            if (i < arr.length - 1 && arr[i + 1] - arr[i] > 1) out.push('…');
+        }
+        return out;
+    };
+
+    const renderList = (items) => {
+        if (!items.length) {
+            listEl.innerHTML = `<div class="pgn-empty">${opts.emptyText || 'No data'}</div>`;
+            return;
+        }
+        // render() must return HTML string
+        listEl.innerHTML = items.map((it, i) => opts.render(it, i)).join('');
+    };
+
+    const renderPager = () => {
+        const totalPages = computeTotalPages();
+        pagerEl.innerHTML = '';
+        pagerEl.style.display = totalPages <= 1 ? 'none' : '';
+        if (totalPages <= 1) return;
+
+        const btn = (label, attrs = {}) => {
+            const el = document.createElement('button');
+            el.type = 'button';
+            el.className = 'pgn-btn';
+            el.textContent = label;
+            Object.entries(attrs).forEach(([k, v]) => {
+                if (k === 'disabled' && v) el.disabled = true;
+                else if (k === 'ariaCurrent') el.setAttribute('aria-current', v);
+                else el.dataset[k] = v;
+            });
+            return el;
+        };
+
+        // Prev
+        pagerEl.appendChild(btn('Prev', { act: 'prev', disabled: state.page === 1 }));
+
+        // Numbered
+        const pages = buildPageList(totalPages, state.page);
+        pages.forEach(p => {
+            if (p === '…') {
+                const span = document.createElement('span');
+                span.className = 'pgn-ellipsis';
+                span.textContent = '…';
+                span.setAttribute('aria-hidden', 'true');
+                pagerEl.appendChild(span);
+            } else {
+                const active = p === state.page;
+                const b = btn(String(p), { page: String(p) });
+                if (active) {
+                    b.classList.add('is-active');
+                    b.setAttribute('aria-current', 'page');
+                    b.disabled = true;
+                }
+                pagerEl.appendChild(b);
+            }
+        });
+
+        // Next
+        pagerEl.appendChild(btn('Next', { act: 'next', disabled: state.page === totalPages }));
+    };
+
+    const getSlice = () => {
+        const start = (state.page - 1) * state.pageSize;
+        const end = start + state.pageSize;
+        const items = data ? data.slice(start, end) : [];
+        return { items, start, end };
+    };
+
+    const emitChange = () => {
+        if (typeof opts.onChange === 'function') {
+            opts.onChange({
+                page: state.page,
+                pageSize: state.pageSize,
+                total: state.total,
+                totalPages: computeTotalPages()
+            });
+        }
+    };
+
+    async function load() {
+        clampPage();
+        const cur = ++reqId;
+
+        if (fetchFn) {
+            // server-side
+            const { items, total } = await fetchFn({ page: state.page, pageSize: state.pageSize });
+            if (cur !== reqId) return; // stale
+            state.total = total ?? 0;
+            renderList(items || []);
+            renderPager();
+            emitChange();
+        } else {
+            // client-side
+            state.total = data ? data.length : (state.total || 0);
+            const { items } = getSlice();
+            renderList(items);
+            renderPager();
+            emitChange();
+        }
+    }
+
+    // Events
+    pagerEl.addEventListener('click', e => {
+        const t = e.target.closest('button');
+        if (!t) return;
+        const act = t.dataset.act;
+        if (act === 'prev') { state.page--; load(); return; }
+        if (act === 'next') { state.page++; load(); return; }
+        const p = Number(t.dataset.page);
+        if (p) { state.page = p; load(); }
+    });
+
+    // Public API
+    const api = {
+        goTo(p) { state.page = Number(p) || 1; load(); return api; },
+        setPageSize(sz) { state.pageSize = Math.max(1, Number(sz) || 20); state.page = 1; load(); return api; },
+        setData(arr) { data = Array.isArray(arr) ? arr.slice() : []; fetchFn = null; state.page = 1; load(); return api; },
+        setFetcher(fn) { fetchFn = typeof fn === 'function' ? fn : null; data = null; state.page = 1; load(); return api; },
+        setTotal(n) { state.total = Math.max(0, Number(n) || 0); renderPager(); return api; },
+        refresh() { load(); return api; },
+        destroy() {
+            pagerEl.replaceWith(pagerEl.cloneNode(false));
+            return null;
+        }
+    };
+
+    // init
+    load();
+    return api;
+}
