@@ -28,9 +28,9 @@
     <Folder Include="Common\" />
     <Folder Include="Filters\" />
     <Folder Include="Middleware\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Publish\" />
     <Folder Include="Services\" />
-    <Folder Include="TagHelpers\" />
     <Folder Include="ViewComponents\" />
     <Folder Include="Resources\" />
     <Folder Include="wwwroot\css\Traceability\" />

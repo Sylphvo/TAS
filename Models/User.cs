@@ -51,6 +51,7 @@ namespace TAS.Models
     public sealed class LoginRequest
     {
         [Required, MaxLength(100)] public string Username { get; set; } = "";
+        [Required, MaxLength(100)] public string Email { get; set; } = "";
         [Required, MaxLength(200)] public string Password { get; set; } = "";
         public bool RememberMe { get; set; }
     }
@@ -61,7 +62,8 @@ namespace TAS.Models
         [Required, EmailAddress, MaxLength(200)] public string Email { get; set; } = "";
         [Required, MaxLength(200)] public string Password { get; set; } = "";
         [Required, Compare(nameof(Password))] public string ConfirmPassword { get; set; } = "";
-    }
+		public bool AcceptTerms { get; set; }
+	}
 
     public sealed class ChangePasswordRequest
     {

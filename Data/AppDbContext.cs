@@ -12,6 +12,7 @@ namespace TAS.Data
 
         public DbSet<Dealer> Dealers => Set<Dealer>();
         public DbSet<Garden> Gardens => Set<Garden>();
+        public DbSet<UserAccount> UserAccount => Set<UserAccount>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
             modelBuilder.Entity<Dealer>(e =>
@@ -47,6 +48,22 @@ namespace TAS.Data
                  .HasForeignKey(x => x.DealerId)
                  .OnDelete(DeleteBehavior.Restrict);
             });
-        }
+			modelBuilder.Entity<UserAccount>(e =>
+			{
+				e.ToTable("USER_ACCOUNT");
+				e.HasKey(x => x.UserId);
+				e.Property(x => x.UserId).HasDefaultValueSql("NEWSEQUENTIALID()");
+				e.Property(x => x.Email).HasMaxLength(256).IsRequired();
+
+				e.Property<string>("NormalizedEmail")
+					.HasColumnName("NormalizedEmail")
+					.HasComputedColumnSql("UPPER([Email])", stored: true); // PERSISTED
+
+				// Quan trọng: filter dùng [Email], không dùng [NormalizedEmail]
+				e.HasIndex("NormalizedEmail")
+					.IsUnique()
+					.HasFilter("[Email] IS NOT NULL");
+			});
+		}
 	}
 }
