@@ -10,50 +10,77 @@ namespace TAS.Data
 		{
 		}
 
-        public DbSet<Agent> Agents => Set<Agent>();
-        public DbSet<Garden> Gardens => Set<Garden>();
+        public DbSet<RubberAgent> RubberAgent => Set<RubberAgent>();
+        public DbSet<RubberFarm> Gardens => Set<RubberFarm>();
         public DbSet<UserAccount> Users => Set<UserAccount>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-            modelBuilder.Entity<Agent>(e =>
+            modelBuilder.Entity<RubberAgent>(e =>
             {
-                e.ToTable("Agent");
-                e.HasKey(x => x.AgentId);
-                e.HasIndex(x => x.Name);
-                e.HasIndex(x => new { x.Province, x.District });
-                e.HasIndex(x => x.Code).IsUnique();
-                e.Property(x => x.Code).HasMaxLength(20).IsUnicode(false);
-                e.Property(x => x.TaxCode).HasMaxLength(20).IsUnicode(false);
-                e.Property(x => x.Phone).HasMaxLength(20).IsUnicode(false);
-                e.Property(x => x.Email).HasMaxLength(120);
-            });
+                e.ToTable("RubberAgent");
+				e.HasKey(x => x.AgentId);
+				e.Property(x => x.AgentId).UseIdentityColumn();
 
-            modelBuilder.Entity<Garden>(e =>
+				e.Property(x => x.AgentCode).IsRequired();
+				e.HasIndex(x => x.AgentCode).IsUnique();
+				e.Property(x => x.AgentName).HasMaxLength(200);
+				e.Property(x => x.OwnerName).HasMaxLength(200);
+				e.Property(x => x.TaxCode).HasMaxLength(50);
+				e.Property(x => x.AgentAddress).HasMaxLength(500);
+				e.Property(x => x.IsActive).HasDefaultValue(true);
+
+				// SQL Server
+				e.Property(x => x.CreatedAt).HasColumnType("datetime2").HasDefaultValueSql("GETUTCDATE()");
+				e.Property(x => x.UpdatedAt).HasColumnType("datetime2");
+				e.Property(x => x.CreatedBy).HasMaxLength(100);
+				e.Property(x => x.UpdatedBy).HasMaxLength(100);
+
+				// Unique nếu có TaxCode
+				e.HasIndex(x => x.TaxCode).IsUnique().HasFilter("[TaxCode] IS NOT NULL");
+			});
+
+            modelBuilder.Entity<RubberFarm>(e =>
             {
-                e.ToTable("Graden");
-                e.HasKey(x => x.GardenId);
-                e.Property(x => x.Code).HasMaxLength(20).IsUnicode(false);
-                e.Property(x => x.OwnerPhone).HasMaxLength(20).IsUnicode(false);
-                e.Property(x => x.OwnerIdNo).HasMaxLength(20).IsUnicode(false);
-                e.Property(x => x.AreaHa).HasPrecision(10, 2);
-                e.Property(x => x.AvgLatexKgDay).HasPrecision(10, 2);
-                e.Property(x => x.Latitude).HasPrecision(9, 6);
-                e.Property(x => x.Longitude).HasPrecision(9, 6);
+                e.ToTable("RubberFarm");
+				e.HasKey(x => x.FarmId);
+				e.Property(x => x.FarmId).UseIdentityColumn();
 
-                e.HasIndex(x => x.DealerId);
-                e.HasIndex(x => x.OwnerPhone);
-                e.HasIndex(x => new { x.Province, x.District });
-                e.HasIndex(x => new { x.DealerId, x.Code }).IsUnique();
+				e.Property(x => x.FarmCode).IsRequired();
+				e.HasIndex(x => x.FarmCode).IsUnique();
 
-                e.HasOne(x => x.Dealer)
-                 .WithMany(d => d.Gardens)
-                 .HasForeignKey(x => x.DealerId)
-                 .OnDelete(DeleteBehavior.Restrict);
-            });
+				e.Property(x => x.AgentCode).IsRequired();
+				e.HasIndex(x => x.AgentCode);
+
+				// FK dùng Alternate Key: Agent.AgentCode
+				e.HasOne(x => x.Rubber_Agent)
+				 .WithMany() // hoặc .WithMany(a => a.Farms) nếu bạn thêm ICollection<Farm> vào Agent
+				 .HasPrincipalKey(a => a.AgentCode)
+				 .HasForeignKey(x => x.AgentCode)
+				 .OnDelete(DeleteBehavior.Restrict);
+
+				e.Property(x => x.FarmerName).HasMaxLength(200);
+				e.Property(x => x.FarmerPhone).HasMaxLength(20);
+				e.Property(x => x.FarmerAddress).HasMaxLength(300);
+				e.Property(x => x.FarmerMap).HasMaxLength(300);
+				e.Property(x => x.Certificates).HasMaxLength(500);
+
+				e.Property(x => x.TotalAreaHa).HasPrecision(12, 2);
+				e.Property(x => x.RubberAreaHa).HasPrecision(12, 2);
+				e.Property(x => x.TotalExploit).HasPrecision(14, 2);
+
+				e.Property(x => x.IsActive).HasDefaultValue(true);
+
+				// SQL Server
+				e.Property(x => x.CreatedAt).HasColumnType("datetime2").HasDefaultValueSql("GETUTCDATE()");
+				e.Property(x => x.UpdatedAt).HasColumnType("datetime2");
+
+				e.Property(x => x.CreatedBy).HasMaxLength(100);
+				e.Property(x => x.UpdatedBy).HasMaxLength(100);
+			});
 			modelBuilder.Entity<UserAccount>(e =>
 			{
-                e.ToTable("User");
+                e.ToTable("UserAccount");
                 e.HasKey(x => x.UserId);
                 e.Property(x => x.UserId).HasDefaultValueSql("NEWID()");
 

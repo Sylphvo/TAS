@@ -377,3 +377,11 @@ function setupPager() {
         }
     });
 }
+function addNewRowBody() {
+    const res = gridApi.applyTransaction({ add: [{ maNhaVuon: null, tenNhaVuon: null, KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null }] });
+    const node = res.add[0]; // là dòng cuối nếu không đặt addIndex
+
+    gridApi.ensureNodeVisible(node, "bottom");
+    gridApi.setFocusedCell(node.rowIndex, "symbol");
+    gridApi.startEditingCell({ rowIndex: node.rowIndex, colKey: "symbol" });
+}

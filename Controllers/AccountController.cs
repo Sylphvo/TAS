@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -111,7 +112,15 @@ namespace TAS.Controllers
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Login));
         }
-
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		[Authorize]
+		public async Task<IActionResult> Logout()
+		{
+			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+			HttpContext.Session.Clear();
+			return RedirectToAction("Login", "Account");
+		}
 
 	}
 }
