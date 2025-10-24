@@ -1,4 +1,4 @@
-﻿@model LoginRequest
+﻿@model UserAccount
 @{
     ViewData["Title"] = "Login";
     Layout = "~/Views/Shared/_Layout_Auth.cshtml";
@@ -18,8 +18,8 @@
                     <form asp-action="Login" method="post">
                         <input type="hidden" name="returnUrl" value="@returnUrl" />
                         @Html.AntiForgeryToken()
-                        <div class="mb-3"><input type="email" class="form-control" id="floatingInput" placeholder="Email Address"></div>
-                        <div class="mb-3"><input type="password" class="form-control" id="floatingInput1" placeholder="Password"></div>
+                        <div class="mb-3"><input type="email" class="form-control" name="Email" id="floatingInput" placeholder="Email Address"></div>
+                        <div class="mb-3"><input type="password" class="form-control" name="Password" id="floatingInput1" placeholder="Password"></div>
                         <div class="d-flex mt-1 justify-content-between align-items-center">
                             <div class="form-check"><input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked=""> <label class="form-check-label text-muted" for="customCheckc1">Remember me?</label></div>
                             <h6 class="text-secondary f-w-400 mb-0"><a href="forgot-password-v1.html">Forgot Password?</a></h6>

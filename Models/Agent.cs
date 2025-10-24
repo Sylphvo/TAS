@@ -1,8 +1,8 @@
 ﻿namespace TAS.Models
 {
-    public class Dealer
+    public class Agent
     {
-        public long DealerId { get; set; }
+        public long AgentId { get; set; }
         public string Code { get; set; } = null!;
         public string Name { get; set; } = null!;
         public string? ShortName { get; set; }

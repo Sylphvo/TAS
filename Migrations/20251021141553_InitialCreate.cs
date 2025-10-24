@@ -6,16 +6,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace TAS.Migrations
 {
     /// <inheritdoc />
-    public partial class Init : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Dealers",
+                name: "Agent",
                 columns: table => new
                 {
-                    DealerId = table.Column<long>(type: "bigint", nullable: false)
+                    AgentId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Code = table.Column<string>(type: "varchar(20)", unicode: false, maxLength: 20, nullable: false),
                     Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -43,33 +43,33 @@ namespace TAS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Dealers", x => x.DealerId);
+                    table.PrimaryKey("PK_Agent", x => x.AgentId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "USER_ACCOUNT",
+                name: "User",
                 columns: table => new
                 {
-                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWSEQUENTIALID()"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false, defaultValueSql: "NEWID()"),
+                    FirstName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
                     PasswordHash = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    PasswordSalt = table.Column<byte[]>(type: "varbinary(max)", nullable: false),
-                    HashAlgo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    HashIter = table.Column<int>(type: "int", nullable: false),
-                    FailedAccessCount = table.Column<int>(type: "int", nullable: false),
-                    LockoutEnd = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    TwoFactorSecret = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(450)", nullable: true, computedColumnSql: "UPPER([Email])", stored: true)
+                    AcceptTerms = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false, defaultValue: false),
+                    RememberMe = table.Column<bool>(type: "bit", nullable: false),
+                    LogIn = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LogOut = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_USER_ACCOUNT", x => x.UserId);
+                    table.PrimaryKey("PK_User", x => x.UserId);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Gardens",
+                name: "Graden",
                 columns: table => new
                 {
                     GardenId = table.Column<long>(type: "bigint", nullable: false)
@@ -101,71 +101,78 @@ namespace TAS.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Gardens", x => x.GardenId);
+                    table.PrimaryKey("PK_Graden", x => x.GardenId);
                     table.ForeignKey(
-                        name: "FK_Gardens_Dealers_DealerId",
+                        name: "FK_Graden_Agent_DealerId",
                         column: x => x.DealerId,
-                        principalTable: "Dealers",
-                        principalColumn: "DealerId",
+                        principalTable: "Agent",
+                        principalColumn: "AgentId",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dealers_Code",
-                table: "Dealers",
+                name: "IX_Agent_Code",
+                table: "Agent",
                 column: "Code",
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dealers_Name",
-                table: "Dealers",
+                name: "IX_Agent_Name",
+                table: "Agent",
                 column: "Name");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Dealers_Province_District",
-                table: "Dealers",
+                name: "IX_Agent_Province_District",
+                table: "Agent",
                 columns: new[] { "Province", "District" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Gardens_DealerId",
-                table: "Gardens",
+                name: "IX_Graden_DealerId",
+                table: "Graden",
                 column: "DealerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Gardens_DealerId_Code",
-                table: "Gardens",
+                name: "IX_Graden_DealerId_Code",
+                table: "Graden",
                 columns: new[] { "DealerId", "Code" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Gardens_OwnerPhone",
-                table: "Gardens",
+                name: "IX_Graden_OwnerPhone",
+                table: "Graden",
                 column: "OwnerPhone");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Gardens_Province_District",
-                table: "Gardens",
+                name: "IX_Graden_Province_District",
+                table: "Graden",
                 columns: new[] { "Province", "District" });
 
             migrationBuilder.CreateIndex(
-                name: "IX_USER_ACCOUNT_NormalizedEmail",
-                table: "USER_ACCOUNT",
-                column: "NormalizedEmail",
+                name: "IX_User_Email",
+                table: "User",
+                column: "Email",
                 unique: true,
                 filter: "[Email] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_User_UserName",
+                table: "User",
+                column: "UserName",
+                unique: true,
+                filter: "[UserName] IS NOT NULL");
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Gardens");
+                name: "Graden");
 
             migrationBuilder.DropTable(
-                name: "USER_ACCOUNT");
+                name: "User");
 
             migrationBuilder.DropTable(
-                name: "Dealers");
+                name: "Agent");
         }
     }
 }

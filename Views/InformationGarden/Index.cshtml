@@ -42,6 +42,7 @@
                                 <span id="file-name" class="ms-2 d-none"></span>
                                 <button onclick="onExportExcelData()" class="btn btn-primary buttonSearch">Xuất Excel</button>
                                 <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Mẫu Excel</button>
+                                <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Thêm mới</button>
                             </div>
                         </div>
                     </div>
@@ -81,8 +82,6 @@
     <script>
         var listdataEventsActual;
         var InformationGarden = '#InformationGardenGrid';
-        RefreshAllGridWhenChangeData();
-        CreateGridEventsActual(true);
-
+        CreateGridInformationGarden(true);
     </script>
 }

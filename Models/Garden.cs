@@ -28,6 +28,6 @@
         public string? CreatedBy { get; set; }
         public string? UpdatedBy { get; set; }
 
-        public Dealer Dealer { get; set; } = null!;
+        public Agent Dealer { get; set; } = null!;
     }
 }

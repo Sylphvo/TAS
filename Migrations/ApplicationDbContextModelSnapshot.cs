@@ -22,13 +22,13 @@ namespace TAS.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TAS.Models.Dealer", b =>
+            modelBuilder.Entity("TAS.Models.Agent", b =>
                 {
-                    b.Property<long>("DealerId")
+                    b.Property<long>("AgentId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("DealerId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("AgentId"));
 
                     b.Property<string>("AddressLine")
                         .HasColumnType("nvarchar(max)");
@@ -108,7 +108,7 @@ namespace TAS.Migrations
                     b.Property<string>("Ward")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("DealerId");
+                    b.HasKey("AgentId");
 
                     b.HasIndex("Code")
                         .IsUnique();
@@ -117,7 +117,7 @@ namespace TAS.Migrations
 
                     b.HasIndex("Province", "District");
 
-                    b.ToTable("Dealers");
+                    b.ToTable("Agent", (string)null);
                 });
 
             modelBuilder.Entity("TAS.Models.Garden", b =>
@@ -223,7 +223,7 @@ namespace TAS.Migrations
 
                     b.HasIndex("Province", "District");
 
-                    b.ToTable("Gardens");
+                    b.ToTable("Graden", (string)null);
                 });
 
             modelBuilder.Entity("TAS.Models.UserAccount", b =>
@@ -231,61 +231,72 @@ namespace TAS.Migrations
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<bool>("AcceptTerms")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
-                    b.Property<int>("FailedAccessCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("HashAlgo")
+                    b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("HashIter")
-                        .HasColumnType("int");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true);
 
-                    b.Property<DateTime?>("LockoutEnd")
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<DateTime?>("LogIn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("NormalizedEmail")
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("NormalizedEmail")
-                        .HasComputedColumnSql("UPPER([Email])", true);
+                    b.Property<DateTime?>("LogOut")
+                        .HasColumnType("datetime2");
 
                     b.Property<byte[]>("PasswordHash")
                         .IsRequired()
                         .HasColumnType("varbinary(max)");
 
-                    b.Property<byte[]>("PasswordSalt")
-                        .IsRequired()
-                        .HasColumnType("varbinary(max)");
-
-                    b.Property<bool>("TwoFactorEnabled")
+                    b.Property<bool>("RememberMe")
                         .HasColumnType("bit");
 
-                    b.Property<string>("TwoFactorSecret")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("TwoFactorEnabled")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("UserName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.HasKey("UserId");
 
-                    b.HasIndex("NormalizedEmail")
+                    b.HasIndex("Email")
                         .IsUnique()
                         .HasFilter("[Email] IS NOT NULL");
 
-                    b.ToTable("USER_ACCOUNT", (string)null);
+                    b.HasIndex("UserName")
+                        .IsUnique()
+                        .HasFilter("[UserName] IS NOT NULL");
+
+                    b.ToTable("User", (string)null);
                 });
 
             modelBuilder.Entity("TAS.Models.Garden", b =>
                 {
-                    b.HasOne("TAS.Models.Dealer", "Dealer")
+                    b.HasOne("TAS.Models.Agent", "Dealer")
                         .WithMany("Gardens")
                         .HasForeignKey("DealerId")
                         .OnDelete(DeleteBehavior.Restrict)
@@ -294,7 +305,7 @@ namespace TAS.Migrations
                     b.Navigation("Dealer");
                 });
 
-            modelBuilder.Entity("TAS.Models.Dealer", b =>
+            modelBuilder.Entity("TAS.Models.Agent", b =>
                 {
                     b.Navigation("Gardens");
                 });

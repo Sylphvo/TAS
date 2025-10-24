@@ -29,7 +29,7 @@
 /*.ag-header-cell[col-id="maNhaVuon"] {
     margin: 0 -3px;
 }*/
-.ag-header-cell .ag-floating-filter-button {
+.ag-header-cell .ag-floating-filter-button, .ag-icon-menu {
     display: none !important;
 }
 

@@ -1,10 +1,14 @@
 ﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
-var gridOptionsEventsActual;
-function CreateGridEventsActual() {
-    gridOptionsEventsActual = {
+var gridOptionsRubberGarden, ListDataFull;
+var page = 1;
+var pageSize = 20;
+var gridApi;
+var pagerApi;
+function CreateGridRubberGarden() {
+    gridOptionsRubberGarden = {
         //pagination: true,
         paginationPageSize: 100,
-        columnDefs: CreateColModelEventsActual(),
+        columnDefs: CreateColModelRubberGarden(),
         defaultColDef: {
             width: 170,
             filter: true,
@@ -19,10 +23,11 @@ function CreateGridEventsActual() {
         animateRows: true,
         components: {
             customFloatingFilterInput: getFloatingFilterInputComponent(),
-            //customheader: CustomHeaderEventsActual,
+            //customheader: CustomHeaderRubberGarden,
         },
         cellSelection: true,
         onGridReady: function (params) {          
+            gridApi = params.api;
             params.api.sizeColumnsToFit();
             renderPage();          // nạp trang đầu
             setupPager();          // tạo pager ngoài
@@ -30,25 +35,23 @@ function CreateGridEventsActual() {
         rowDragManaged: true,
         onRowDragEnd() {
             persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
-        },
-        onPaginationChanged: updatePager,
-        onFilterChanged: updatePager,
-        onSortChanged: updatePager
+        }
+     
     };
 
-    var eGridDiv = document.querySelector(EventsActual);
-    new agGrid.Grid(eGridDiv, gridOptionsEventsActual);
-    //SetButtonOnPagingForEventsActual();
-    CreateRowDataEventsActual();
-    resizeGridEventsActual();
+    var eGridDiv = document.querySelector(RubberGarden);
+    new agGrid.Grid(eGridDiv, gridOptionsRubberGarden);
+    //SetButtonOnPagingForRubberGarden();
+    CreateRowDataRubberGarden();
+    resizeGridRubberGarden();
 }
-function resizeGridEventsActual() {
+function resizeGridRubberGarden() {
     setTimeout(function () {
         setWidthHeightGrid(25);
     }, 100);
 }
 function setWidthHeightGrid(heithlayout) {
-    //gridOptionsEventsActual.api.sizeColumnsToFit();
+    //gridOptionsRubberGarden.api.sizeColumnsToFit();
     //var heigh = $(window).height() - $('.top_header').outerHeight() - $('.dm_group.dmg-shortcut').outerHeight() - ($('.col-xl-12').outerHeight() + heithlayout);
     //$(myGrid).css('height', heigh);
     //gridOptions.api.sizeColumnsToFit({
@@ -57,12 +60,12 @@ function setWidthHeightGrid(heithlayout) {
     //});
 }
 function RefreshAllGridWhenChangeData() {
-    //ShowHideLoading(true, EventsActual);
+    //ShowHideLoading(true, RubberGarden);
     setTimeout(function () {
-        CreateRowDataEventsActual();
+        CreateRowDataRubberGarden();
     }, 1);
 }
-function CreateRowDataEventsActual() {
+function CreateRowDataRubberGarden() {
     const rowData = [
         { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
         { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
@@ -74,31 +77,32 @@ function CreateRowDataEventsActual() {
         { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
         { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
     ];
+    ListDataFull = rowData;
 
-    gridOptionsEventsActual.api.setRowData(rowData);
+    //gridOptionsRubberGarden.api.setRowData(rowData);
     //listTotal = [];
-    //var listSearchEventsActual = GetParamSearchEventsActual();
-    //ShowHideLoading(true, divEventsActual);
-    //$('#EventsActualModal .ag-overlay-no-rows-center').hide();
+    //var listSearchRubberGarden = GetParamSearchRubberGarden();
+    //ShowHideLoading(true, divRubberGarden);
+    //$('#RubberGardenModal .ag-overlay-no-rows-center').hide();
     //$.ajax({
     //    async: !false,
     //    type: 'POST',
-    //    url: "/CalendarReportUnit/GetListEventsActual",
-    //    data: listSearchEventsActual,
+    //    url: "/CalendarReportUnit/GetListRubberGarden",
+    //    data: listSearchRubberGarden,
     //    dataType: "json",
     //    success: function (data) {
-    //        listdataEventsActual = data;
-    //        gridOptionsEventsActual.api.setRowData(data);
+    //        listdataRubberGarden = data;
+    //        gridOptionsRubberGarden.api.setRowData(data);
     //        setTimeout(function () {
-    //            ShowHideLoading(false, divEventsActual);
-    //            $('#EventsActualModal .ag-overlay-no-rows-center').show();
-    //            setWidthHeightGridEventsActual(25, true);
-    //            FocusRowEventsActual();
+    //            ShowHideLoading(false, divRubberGarden);
+    //            $('#RubberGardenModal .ag-overlay-no-rows-center').show();
+    //            setWidthHeightGridRubberGarden(25, true);
+    //            FocusRowRubberGarden();
     //        }, 100);
     //    }
     //});
 }
-function CreateColModelEventsActual() {
+function CreateColModelRubberGarden() {
     var columnDefs = [
         {
             field: 'maNhaVuon', headerName: 'Mã Nhà Vườn', width: 110, minWidth: 110
@@ -180,9 +184,9 @@ function onRowSelected(event) {
  //   }
 }
 
-function CustomHeaderEventsActual() { }
+function CustomHeaderRubberGarden() { }
 
-CustomHeaderEventsActual.prototype.init = function (params) {
+CustomHeaderRubberGarden.prototype.init = function (params) {
     this.params = params;
     var strHiddenAsc = params.sortOrderDefault == 'asc' ? '' : 'ag-hidden';
     var strHiddenDesc = params.sortOrderDefault == 'desc' ? '' : 'ag-hidden';
@@ -227,7 +231,7 @@ function cellStyle_Col_Model_EventActual(params) {
     //let rowObject = params.data;
     let cellAttr = {};
 
-    //if (rowObject.row_type == arrConstantEventsActual.RowTypeStaff) {
+    //if (rowObject.row_type == arrConstantRubberGarden.RowTypeStaff) {
     //    cellAttr['background-color'] = '#f1f182';
     //    cellAttr['color'] = 'black';
     //    cellAttr['padding-left'] = '25px !important';
@@ -236,21 +240,21 @@ function cellStyle_Col_Model_EventActual(params) {
     //        cellAttr['font-weight'] = '700';
     //    }
     //}
-    //else if (rowObject.row_type == arrConstantEventsActual.RowTypeDate) {
+    //else if (rowObject.row_type == arrConstantRubberGarden.RowTypeDate) {
     //    if (colName == 'start_date') {
     //        cellAttr['font-weight'] = 'bold';
     //    }
 
     //    cellAttr['background-color'] = colorSortOrder_1;
     //}
-    //else if (rowObject.row_type == arrConstantEventsActual.RowTypeGroup) {
+    //else if (rowObject.row_type == arrConstantRubberGarden.RowTypeGroup) {
     //    if (colName == 'start_date') {
     //        cellAttr['font-weight'] = '600';
     //    }
     //    cellAttr['padding-left'] = '45px !important';
     //    cellAttr['background-color'] = colorSortOrder_4;
     //}
-    //else if (rowObject.row_type == arrConstantEventsActual.RowTypeItem && rowObject.row_status == arrConstantEventsActual.RowStatusPast) {
+    //else if (rowObject.row_type == arrConstantRubberGarden.RowTypeItem && rowObject.row_status == arrConstantRubberGarden.RowStatusPast) {
     //    cellAttr['background-color'] = colorSortOrder_3;
     //    if (colName == 'start_date' || colName == 'end_date') {
     //        cellAttr['text-align'] = 'center';
@@ -266,7 +270,7 @@ function cellStyle_Col_Model_EventActual(params) {
     return cellAttr;
 }
 
-CustomHeaderEventsActual.prototype.onSortChanged = function () {
+CustomHeaderRubberGarden.prototype.onSortChanged = function () {
     //Remove tất cả icon sort ở col khác
     $('.ag-sort-ascending-icon').not($(this.eSortUpButton)).addClass('ag-hidden');
     $('.ag-sort-descending-icon').not($(this.eSortDownButton)).addClass('ag-hidden');
@@ -285,22 +289,22 @@ CustomHeaderEventsActual.prototype.onSortChanged = function () {
     this.onSortRequested();
 };
 
-CustomHeaderEventsActual.prototype.getGui = function () {
+CustomHeaderRubberGarden.prototype.getGui = function () {
     return this.eGui;
 };
 
-CustomHeaderEventsActual.prototype.onSortRequested = function () {
+CustomHeaderRubberGarden.prototype.onSortRequested = function () {
     RefreshAllGridWhenChangeData();
 };
 
-CustomHeaderEventsActual.prototype.destroy = function () {
+CustomHeaderRubberGarden.prototype.destroy = function () {
     this.eGui.removeEventListener(
         'click',
         this.onSortChangedListener
     );
 };
 function updateRowIndex() {
-    gridOptionsEventsActual.api.forEachNodeAfterFilterAndSort((node, index) => {
+    gridApi.forEachNodeAfterFilterAndSort((node, index) => {
         node.setDataValue('STT', index + 1);
     });
 }
@@ -315,7 +319,7 @@ document.getElementById('importExcel').addEventListener('change', async e => {
         const wb = XLSX.read(buf, { type: 'array', cellDates: true });
         const ws = wb.Sheets[wb.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-        gridOptionsEventsActual.api.setRowData(rows);
+        gridApi.setRowData(rows);
         notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
     } catch (err) {
         notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
@@ -323,18 +327,7 @@ document.getElementById('importExcel').addEventListener('change', async e => {
 });
 // Export Excel
 function onExportExcelData() {
-    //const rowData_temp = [
-    //    { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
-    //    { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
-    //    { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
-    //    { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
-    //    { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
-    //    { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
-    //    { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
-    //    { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
-    //    { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
-    //];
-    const ws = XLSX.utils.json_to_sheet(gridOptionsEventsActual.rowData);         // [{col1:..., col2:...}]
+    const ws = XLSX.utils.json_to_sheet(ListDataFull);        
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'datanhaplieu.xlsx');  
@@ -344,21 +337,12 @@ function onExportExcel() {
     const rowData_temp = [
         { STT: 1, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 99, TSC: 99, DRC: 99, thanhPham: 99, thanhPhamLyTam: 99 },
     ];
-    const ws = XLSX.utils.json_to_sheet(rowData_temp);         // [{col1:..., col2:...}]
+    const ws = XLSX.utils.json_to_sheet(rowData_temp);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'mau.xlsx');
 }
-function updatePager() {
-    const cur = gridOptionsEventsActual.api.paginationGetCurrentPage() + 1;
-    const total = Math.max(gridOptionsEventsActual.api.paginationGetTotalPages(), 1);
 
-
-
-    document.getElementById('pageInfo').textContent = `${cur} / ${total}`;
-    document.getElementById('rowCount').textContent = `Rows: ${gridOptionsEventsActual.api.getDisplayedRowCount()}`;
-    document.getElementById('pageSize').value = String(gridOptionsEventsActual.api.paginationGetPageSize());
-}
 function persistCurrentPageOrder() {
     const start = (page - 1) * pageSize;
     const n = gridApi.getDisplayedRowCount();
@@ -367,13 +351,13 @@ function persistCurrentPageOrder() {
         ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
     }
     // ghi đè đoạn trang hiện tại vào mảng gốc
-    fullData.splice(start, n, ...ordered);
+    ListDataFull.splice(start, n, ...ordered);
 }
 
 // --- helpers ---
 function renderPage() {
     const start = (page - 1) * pageSize;
-    const slice = fullData.slice(start, start + pageSize);
+    const slice = ListDataFull.slice(start, start + pageSize);
     gridApi.setRowData(slice);
 }
 function setupPager() {
@@ -382,7 +366,7 @@ function setupPager() {
         pagerEl: '#pager',
         page,
         pageSize,
-        total: fullData.length,
+        total: ListDataFull.length,
         render: () => '', // không render list
         onChange: ({ page: p, pageSize: sz }) => {
             // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
