@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace TAS.Models
+namespace TAS.Helpers
 {
     public class RubberFarm
 	{
@@ -14,7 +14,7 @@ namespace TAS.Models
         public string? FarmerPhone { get; set; }
         public string? FarmerAddress { get; set; }
         public string? FarmerMap { get; set; }
-		public string? Certificates { get; set; }
+		public string? Certificates { get; set; }// 
 		
 		public decimal? TotalAreaHa { get; set; }//Tổng diện tích (ha)
 		public decimal? RubberAreaHa { get; set; }//Tổng diện tích (ha)

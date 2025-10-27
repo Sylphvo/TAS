@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TAS.Models;
+using TAS.Helpers;
 
 namespace TAS.Data
 {

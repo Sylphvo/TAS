@@ -66,41 +66,29 @@ function RefreshAllGridWhenChangeData() {
     }, 1);
 }
 function CreateRowDataRubberGarden() {
-    const rowData = [
-        { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
-        { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
-        { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
-        { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
-        { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
-        { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
-        { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
-    ];
-    ListDataFull = rowData;
-
     //gridOptionsRubberGarden.api.setRowData(rowData);
     //listTotal = [];
     //var listSearchRubberGarden = GetParamSearchRubberGarden();
+    var listSearchRubberGarden = {};
     //ShowHideLoading(true, divRubberGarden);
     //$('#RubberGardenModal .ag-overlay-no-rows-center').hide();
-    //$.ajax({
-    //    async: !false,
-    //    type: 'POST',
-    //    url: "/CalendarReportUnit/GetListRubberGarden",
-    //    data: listSearchRubberGarden,
-    //    dataType: "json",
-    //    success: function (data) {
-    //        listdataRubberGarden = data;
-    //        gridOptionsRubberGarden.api.setRowData(data);
-    //        setTimeout(function () {
-    //            ShowHideLoading(false, divRubberGarden);
-    //            $('#RubberGardenModal .ag-overlay-no-rows-center').show();
-    //            setWidthHeightGridRubberGarden(25, true);
-    //            FocusRowRubberGarden();
-    //        }, 100);
-    //    }
-    //});
+    $.ajax({
+        async: !false,
+        type: 'POST',
+        url: "/RubberGarden/RubberGardens",
+        data: listSearchRubberGarden,
+        dataType: "json",
+        success: function (data) {
+            ListDataFull = data;
+            gridOptionsRubberGarden.api.setRowData(data);
+            //setTimeout(function () {
+            //    ShowHideLoading(false, divRubberGarden);
+            //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
+            //    setWidthHeightGridRubberGarden(25, true);
+            //    FocusRowRubberGarden();
+            //}, 100);
+        }
+    });
 }
 function CreateColModelRubberGarden() {
     var columnDefs = [

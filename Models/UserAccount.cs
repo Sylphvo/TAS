@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace TAS.Models
+namespace TAS.Helpers
 {
 	public class UserAccount
 	{

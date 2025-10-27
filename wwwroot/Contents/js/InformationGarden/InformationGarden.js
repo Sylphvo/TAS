@@ -29,8 +29,8 @@ function CreateGridInformationGarden() {
         onGridReady: function (params) {
             gridApi = params.api;
             params.api.sizeColumnsToFit();
-            renderPage();          // nạp trang đầu
-            setupPager();          // tạo pager ngoài
+            //renderPage();          // nạp trang đầu
+            //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
@@ -38,7 +38,6 @@ function CreateGridInformationGarden() {
         }
 
     };
-
     var eGridDiv = document.querySelector(InformationGarden);
     new agGrid.Grid(eGridDiv, gridOptionsInformationGarden);
     //SetButtonOnPagingForInformationGarden();
@@ -66,108 +65,185 @@ function RefreshAllGridWhenChangeData() {
     }, 1);
 }
 function CreateRowDataInformationGarden() {
-    const rowData = [
-        { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
-        { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
-        { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
-        { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
-        { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
-        { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
-        { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
-    ];
-    ListDataFull = rowData;
+    var listSearchInformationGarden = {
+
+    };
 
     //gridOptionsInformationGarden.api.setRowData(rowData);
     //listTotal = [];
     //var listSearchInformationGarden = GetParamSearchInformationGarden();
     //ShowHideLoading(true, divInformationGarden);
     //$('#InformationGardenModal .ag-overlay-no-rows-center').hide();
-    //$.ajax({
-    //    async: !false,
-    //    type: 'POST',
-    //    url: "/CalendarReportUnit/GetListInformationGarden",
-    //    data: listSearchInformationGarden,
-    //    dataType: "json",
-    //    success: function (data) {
-    //        listdataInformationGarden = data;
-    //        gridOptionsInformationGarden.api.setRowData(data);
-    //        setTimeout(function () {
-    //            ShowHideLoading(false, divInformationGarden);
-    //            $('#InformationGardenModal .ag-overlay-no-rows-center').show();
-    //            setWidthHeightGridInformationGarden(25, true);
-    //            FocusRowInformationGarden();
-    //        }, 100);
-    //    }
-    //});
+    $.ajax({
+        async: !false,
+        type: 'POST',
+        url: "/InformationGarden/InformationGardens",
+        data: listSearchInformationGarden,
+        dataType: "json",
+        success: function (data) {
+            ListDataFull = data;
+            gridOptionsInformationGarden.api.setRowData(data);
+            //setTimeout(function () {
+            //    ShowHideLoading(false, divInformationGarden);
+            //    $('#InformationGardenModal .ag-overlay-no-rows-center').show();
+            //    setWidthHeightGridInformationGarden(25, true);
+            //    FocusRowInformationGarden();
+            //}, 100);
+        }
+    });
 }
 function CreateColModelInformationGarden() {
     var columnDefs = [
         {
-            field: 'maNhaVuon', headerName: 'Mã Nhà Vườn', width: 110, minWidth: 110
+            field: 'farmCode'
+            , headerName: 'Mã Nhà Vườn'
+            , width: 110
+            , minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , checkboxSelection: true
             , headerCheckbox: true
-            , headerCheckboxSelection: true // checkbox ở header để chọn tất cả
             , rowDrag: true
             , filter: true
             , floatingFilterComponent: 'customFloatingFilterInput'
             , floatingFilterComponentParams: { suppressFilterButton: true }
             , headerComponent: "customHeader"
             //, cellRenderer: cellRender_StartDate
-            //, colSpan: 2
             , headerComponent: "customHeader"
         },
         {
-            field: 'tenNhaVuon', headerName: 'Nhà Vườn', width: 110, minWidth: 110
+            field: 'agentCode'
+            , headerName: 'Mã đại lý'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , filter: true
+            , floatingFilterComponent: 'customFloatingFilterInput'
+            , floatingFilterComponentParams: { suppressFilterButton: true }
+            , headerComponent: "customHeader"
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'farmerName'
+            , headerName: 'Tên nhà vườn'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , filter: true
+            , floatingFilterComponent: 'customFloatingFilterInput'
+            , floatingFilterComponentParams: { suppressFilterButton: true }
+            , headerComponent: "customHeader"
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'farmerPhone'
+            , headerName: 'Điện thoại'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , filter: true
+            , floatingFilterComponent: 'customFloatingFilterInput'
+            , floatingFilterComponentParams: { suppressFilterButton: true }
+            , headerComponent: "customHeader"
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'farmerAddress'
+            , headerName: 'Địa chỉ'
+            , width: 110
+            , minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'KG', headerName: 'Khối lượng', width: 210, minWidth: 210
+            field: 'totalAreaHa'
+            , headerName: 'Tổng diện tích (ha)'
+            , width: 110
+            , minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
-            , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">params.value</div>`;
-            //}
-        },
-        {
-            field: 'TSC', headerName: 'TSC', width: 100, minWidth: 100
-            //, cellRenderer: cellRender_WorkStatus
-            , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'DRC', headerName: 'DRC', width: 100, minWidth: 100
-            //, cellRenderer: cellRender_RequirementStatus
+            field: 'rubberAreaHa'
+            , headerName: 'Tổng diện tích (ha)'
+            , width: 110
+            , minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'thanhPham', headerName: 'Thành Phẩm', width: 140, minWidth: 140
+            field: 'totalExploit'
+            , headerName: 'Tổng Khai thác (kg)'
+            , width: 110
+            , minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
         },
         {
-            field: 'thanhPhamLyTam', headerName: 'Thành Phẩm Ly Tâm', width: 140, minWidth: 140
+            field: 'isActive'
+            , headerName: 'Trạng thái hoạt động'
+            , width: 110
+            , minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
-        }
+        },
+        {
+            field: 'farmerMap'
+            , headerName: 'Vị trí'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'certificates'
+            , headerName: 'Giấy phép'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'createdAt'
+            , headerName: 'Thời gian tạo'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'createdBy'
+            , headerName: 'Người tạo'
+            , width: 110
+            , minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        
     ]
     return columnDefs;
 }

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using TAS.Data;
-using TAS.Models;
+using TAS.Helpers;
 using TAS.TagHelpers;
 
 namespace TAS.Controllers

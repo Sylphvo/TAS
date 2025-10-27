@@ -1,14 +1,19 @@
-﻿// Program.cs
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using TAS.AttributeTargets;
-using TAS.Data; // DbContext của bạn
+using TAS.Data;
+using TAS.TagHelpers;
+using TAS.ViewModels; // DbContext của bạn
 
 var builder = WebApplication.CreateBuilder(args);
 
 // lấy chuỗi kết nối: appsettings.ConnectionStrings.Default
-var cs = builder.Configuration.GetConnectionString("Default")
-		  ?? throw new InvalidOperationException("Missing ConnectionStrings:Default");
+var cs = builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Đăng ký CommonDb
+builder.Services.AddScoped<ConnectDbHelper>();
+// Đăng ký RubberGardenModels
+builder.Services.AddScoped<RubberGardenModels>();
 
 builder.Services.AddControllersWithViews(o =>
 {
@@ -29,9 +34,6 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 builder.Services.AddAuthorization();
 
 // Đăng ký DI cho SQL Server + Dapper executor
-builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();
-builder.Services.AddScoped<IDbExecutor, DbExecutor>();
-
 builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(cs));
 
 var app = builder.Build();
