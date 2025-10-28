@@ -17,7 +17,7 @@ namespace TAS.Migrations
                 {
                     AgentId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    AgentCode = table.Column<long>(type: "bigint", nullable: false),
+                    AgentCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     AgentName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     OwnerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     TaxCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
@@ -32,6 +32,27 @@ namespace TAS.Migrations
                 {
                     table.PrimaryKey("PK_RubberAgent", x => x.AgentId);
                     table.UniqueConstraint("AK_RubberAgent_AgentCode", x => x.AgentCode);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RubberIntake",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    RowNo = table.Column<int>(type: "int", nullable: true),
+                    FarmCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    FarmerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    Kg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),
+                    TSCPercent = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    DRCPercent = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
+                    FinishedProductKg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),
+                    CentrifugeProductKg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),
+                    IntakeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    BatchCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RubberIntake", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,8 +83,8 @@ namespace TAS.Migrations
                 {
                     FarmId = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    FarmCode = table.Column<long>(type: "bigint", nullable: false),
-                    AgentCode = table.Column<long>(type: "bigint", nullable: false),
+                    FarmCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    AgentCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FarmerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     FarmerPhone = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
                     FarmerAddress = table.Column<string>(type: "nvarchar(300)", maxLength: 300, nullable: true),
@@ -133,6 +154,9 @@ namespace TAS.Migrations
         {
             migrationBuilder.DropTable(
                 name: "RubberFarm");
+
+            migrationBuilder.DropTable(
+                name: "RubberIntake");
 
             migrationBuilder.DropTable(
                 name: "UserAccount");

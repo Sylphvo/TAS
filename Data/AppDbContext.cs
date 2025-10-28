@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using TAS.Helpers;
+using TAS.Models;
 
 namespace TAS.Data
 {
@@ -11,8 +12,9 @@ namespace TAS.Data
 		}
 
         public DbSet<RubberAgent> RubberAgent => Set<RubberAgent>();
-        public DbSet<RubberFarm> Gardens => Set<RubberFarm>();
+        public DbSet<RubberFarmDb> Gardens => Set<RubberFarmDb>();
         public DbSet<UserAccount> Users => Set<UserAccount>();
+        public DbSet<RubberIntakeDb> RubberIntakeDb => Set<RubberIntakeDb>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
@@ -20,9 +22,11 @@ namespace TAS.Data
             {
                 e.ToTable("RubberAgent");
 				e.HasKey(x => x.AgentId);
-				e.Property(x => x.AgentId).UseIdentityColumn();
+				e.Property(x => x.AgentId)
+					.UseIdentityColumn()
+					.ValueGeneratedOnAdd();
 
-				e.Property(x => x.AgentCode).IsRequired();
+				e.Property(x => x.AgentCode).IsRequired().HasMaxLength(200);
 				e.HasIndex(x => x.AgentCode).IsUnique();
 				e.Property(x => x.AgentName).HasMaxLength(200);
 				e.Property(x => x.OwnerName).HasMaxLength(200);
@@ -40,16 +44,18 @@ namespace TAS.Data
 				e.HasIndex(x => x.TaxCode).IsUnique().HasFilter("[TaxCode] IS NOT NULL");
 			});
 
-            modelBuilder.Entity<RubberFarm>(e =>
+            modelBuilder.Entity<RubberFarmDb>(e =>
             {
                 e.ToTable("RubberFarm");
 				e.HasKey(x => x.FarmId);
-				e.Property(x => x.FarmId).UseIdentityColumn();
+				e.Property(x => x.FarmId)
+					.UseIdentityColumn()
+					.ValueGeneratedOnAdd();
 
-				e.Property(x => x.FarmCode).IsRequired();
+				e.Property(x => x.FarmCode).IsRequired().HasMaxLength(200);
 				e.HasIndex(x => x.FarmCode).IsUnique();
 
-				e.Property(x => x.AgentCode).IsRequired();
+				e.Property(x => x.AgentCode).IsRequired().HasMaxLength(200);
 				e.HasIndex(x => x.AgentCode);
 
 				// FK dùng Alternate Key: Agent.AgentCode
@@ -103,6 +109,19 @@ namespace TAS.Data
                 e.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] IS NOT NULL");
                 e.HasIndex(x => x.UserName).IsUnique().HasFilter("[UserName] IS NOT NULL");
             });
+			modelBuilder.Entity<RubberIntakeDb>(e =>
+			{
+				e.ToTable("RubberIntake");
+				e.HasKey(x => x.Id);
+				e.Property(x => x.FarmCode).IsRequired().HasMaxLength(200);
+				e.Property(x => x.FarmerName).IsRequired().HasMaxLength(200);
+				e.Property(x => x.Kg).HasColumnType("decimal(12,3)");
+				e.Property(x => x.TSCPercent).HasColumnType("decimal(5,2)");
+				e.Property(x => x.DRCPercent).HasColumnType("decimal(5,2)");
+				e.Property(x => x.FinishedProductKg).HasColumnType("decimal(12,3)");
+				e.Property(x => x.CentrifugeProductKg).HasColumnType("decimal(12,3)");
+				e.Property(x => x.BatchCode).HasMaxLength(50);
+			});
 		}
 	}
 }

@@ -6,7 +6,7 @@ namespace TAS.Helpers
 	{
 		[Key]
 		public long AgentId { get; set; } //Khóa định danh đại lý
-        public long AgentCode { get; set; } //Khóa định danh đại lý
+        public string? AgentCode { get; set; } //Khóa định danh đại lý
 		public string? AgentName { get; set; } //Tên đại lý
 		public string? OwnerName { get; set; } //Chủ sở hữu/Người đại diện
 		public string? TaxCode { get; set; } // Mã số thuế

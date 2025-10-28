@@ -3954,3 +3954,20 @@ function makePaginator(opts) {
     load();
     return api;
 }
+function LoadComboAgent(Obj) {
+    $('#' + Obj).select2();
+}
+
+//Phuvm 10/4/2025 đăng ký sự kiện combo
+//id attribute của thẻ select
+//funcChange: hàm xử lý sự kiện change
+//isChange: true đăng ký sự kiện change
+function RegEventCombo(Obj, funcChange, isChange) {
+    if (IsNullOrEmpty(Obj)) { return false; }
+
+    if (isChange) {
+        $('#' + Obj).change(function (e) {
+            funcChange();
+        });
+    }
+}

@@ -65,37 +65,65 @@ function RefreshAllGridWhenChangeData() {
         CreateRowDataRubberGarden();
     }, 1);
 }
+
+// Lấy tham số tìm kiếm
+function GetParamSearch() {
+    return {
+        companys: $('#ListCboAgent').val(),
+        COMPANY_ID: $('#ag-filter-COMPANY_ID').val(),
+        STAFF_NO: $('#ag-filter-STAFF_NO').val(),
+        DEPARTMENT: $('#ag-filter-DEPARTMENT').val(),
+        POSITION: $('#ag-filter-POSITION').val(),
+        STAFF_ID: $('#ag-filter-STAFF_ID').val(),
+        STAFF_NAME: $('#ag-filter-STAFF_NAME').val(),
+        sortColumn: sortData.sortColumn,
+        sortOrder: sortData.sortOrder,
+    }
+}
 function CreateRowDataRubberGarden() {
+    const rowData = [
+        { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
+        { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
+        { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
+        { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
+        { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
+        { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
+        { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
+        { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
+        { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
+    ];
+    ListDataFull = rowData;
+    gridOptionsRubberGarden.api.setRowData(ListDataFull);
     //gridOptionsRubberGarden.api.setRowData(rowData);
     //listTotal = [];
     //var listSearchRubberGarden = GetParamSearchRubberGarden();
-    var listSearchRubberGarden = {};
+    //var listSearchRubberGarden = {};
     //ShowHideLoading(true, divRubberGarden);
     //$('#RubberGardenModal .ag-overlay-no-rows-center').hide();
-    $.ajax({
-        async: !false,
-        type: 'POST',
-        url: "/RubberGarden/RubberGardens",
-        data: listSearchRubberGarden,
-        dataType: "json",
-        success: function (data) {
-            ListDataFull = data;
-            gridOptionsRubberGarden.api.setRowData(data);
-            //setTimeout(function () {
-            //    ShowHideLoading(false, divRubberGarden);
-            //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
-            //    setWidthHeightGridRubberGarden(25, true);
-            //    FocusRowRubberGarden();
-            //}, 100);
-        }
-    });
+    //$.ajax({
+    //    async: !false,
+    //    type: 'POST',
+    //    url: "/RubberGarden/RubberGardens",
+    //    data: listSearchRubberGarden,
+    //    dataType: "json",
+    //    success: function (data) {
+    //        ListDataFull = data;
+    //        gridOptionsRubberGarden.api.setRowData(data);
+    //        //setTimeout(function () {
+    //        //    ShowHideLoading(false, divRubberGarden);
+    //        //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
+    //        //    setWidthHeightGridRubberGarden(25, true);
+    //        //    FocusRowRubberGarden();
+    //        //}, 100);
+    //    }
+    //});
 }
 function CreateColModelRubberGarden() {
     var columnDefs = [
         {
-            field: 'maNhaVuon', headerName: 'Mã Nhà Vườn', width: 110, minWidth: 110
+            field: 'STT', headerName: 'Số thứ tự', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , checkboxSelection: true
             , headerCheckbox: true
             , headerCheckboxSelection: true // checkbox ở header để chọn tất cả
@@ -106,10 +134,19 @@ function CreateColModelRubberGarden() {
             , headerComponent: "customHeader"
             //, cellRenderer: cellRender_StartDate
             //, colSpan: 2
-            , headerComponent: "customHeader"
         },
         {
-            field: 'tenNhaVuon', headerName: 'Nhà Vườn', width: 110, minWidth: 110
+            field: 'farmCode', headerName: 'Mã Nhà Vườn', width: 110, minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , filter: true
+            , floatingFilterComponent: 'customFloatingFilterInput'
+            , floatingFilterComponentParams: { suppressFilterButton: true }
+            , headerComponent: "customHeader"
+            //, cellRenderer: cellRender_StartDate
+        },
+        {
+            field: 'farmerName', headerName: 'Tên Nhà Vườn', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             //, cellRenderer: cellRender_StartDate

@@ -12,7 +12,7 @@ namespace TAS.Controllers
 		}
 		public IActionResult Agent()
         {
-            return View();
+			return View();
         }
 		#region handle Data
 		[HttpPost]

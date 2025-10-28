@@ -73,3 +73,10 @@ select {
 .buttonSearch{
     margin-left:5px; 
 }
+
+/* css select 2 */
+.select2-search--dropdown .select2-search__field {
+    border-radius: 5px;
+    padding: 2px !important;
+    margin: 3px 0;
+}

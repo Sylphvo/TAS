@@ -11,10 +11,10 @@ namespace TAS.ViewModels
 
 		}
 		// Model
-		public async Task<List<RubberFarm>> GetRubberFarmAsync()
+		public async Task<List<RubberFarmRequest>> GetRubberFarmAsync()
 		{
 			var sql = "SELECT * FROM RubberFarm";
-			return await dbHelper.QueryAsync<RubberFarm>(sql);
+			return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
 		}
 	}
 }

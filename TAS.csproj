@@ -31,6 +31,7 @@
     <Folder Include="Filters\" />
     <Folder Include="Middleware\" />
     <Folder Include="Migrations\" />
+    <Folder Include="ScriptSQL\" />
     <Folder Include="Publish\" />
     <Folder Include="Repository\" />
     <Folder Include="Services\" />

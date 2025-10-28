@@ -11,10 +11,10 @@ namespace TAS.ViewModels
 			databaseHelper = _databaseHelper;
 		}
 		// Model
-		public async Task<List<RubberFarm>> GetRubberFarmAsync(CancellationToken ct = default)
+		public async Task<List<RubberFarmRequest>> GetRubberFarmAsync(CancellationToken ct = default)
 		{
 			var sql = "SELECT * FROM RubberFarm";
-			return await databaseHelper.QueryAsync<RubberFarm>(sql);
+			return await databaseHelper.QueryAsync<RubberFarmRequest>(sql);
 		}
 	}
 }

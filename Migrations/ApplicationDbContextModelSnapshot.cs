@@ -22,7 +22,7 @@ namespace TAS.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("TAS.Models.RubberAgent", b =>
+            modelBuilder.Entity("TAS.Helpers.RubberAgent", b =>
                 {
                     b.Property<long>("AgentId")
                         .ValueGeneratedOnAdd()
@@ -34,8 +34,10 @@ namespace TAS.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("nvarchar(500)");
 
-                    b.Property<long>("AgentCode")
-                        .HasColumnType("bigint");
+                    b.Property<string>("AgentCode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("AgentName")
                         .HasMaxLength(200)
@@ -82,7 +84,7 @@ namespace TAS.Migrations
                     b.ToTable("RubberAgent", (string)null);
                 });
 
-            modelBuilder.Entity("TAS.Models.RubberFarm", b =>
+            modelBuilder.Entity("TAS.Helpers.RubberFarmDb", b =>
                 {
                     b.Property<long>("FarmId")
                         .ValueGeneratedOnAdd()
@@ -90,8 +92,10 @@ namespace TAS.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("FarmId"));
 
-                    b.Property<long>("AgentCode")
-                        .HasColumnType("bigint");
+                    b.Property<string>("AgentCode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Certificates")
                         .HasMaxLength(500)
@@ -106,8 +110,10 @@ namespace TAS.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<long>("FarmCode")
-                        .HasColumnType("bigint");
+                    b.Property<string>("FarmCode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("FarmerAddress")
                         .HasMaxLength(300)
@@ -159,7 +165,7 @@ namespace TAS.Migrations
                     b.ToTable("RubberFarm", (string)null);
                 });
 
-            modelBuilder.Entity("TAS.Models.UserAccount", b =>
+            modelBuilder.Entity("TAS.Helpers.UserAccount", b =>
                 {
                     b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
@@ -227,9 +233,55 @@ namespace TAS.Migrations
                     b.ToTable("UserAccount", (string)null);
                 });
 
-            modelBuilder.Entity("TAS.Models.RubberFarm", b =>
+            modelBuilder.Entity("TAS.Models.RubberIntakeDb", b =>
                 {
-                    b.HasOne("TAS.Models.RubberAgent", "Rubber_Agent")
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BatchCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("CentrifugeProductKg")
+                        .HasColumnType("decimal(12,3)");
+
+                    b.Property<decimal?>("DRCPercent")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.Property<string>("FarmCode")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("FarmerName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<decimal?>("FinishedProductKg")
+                        .HasColumnType("decimal(12,3)");
+
+                    b.Property<DateTime?>("IntakeDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<decimal?>("Kg")
+                        .HasColumnType("decimal(12,3)");
+
+                    b.Property<int?>("RowNo")
+                        .HasColumnType("int");
+
+                    b.Property<decimal?>("TSCPercent")
+                        .HasColumnType("decimal(5,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("RubberIntake", (string)null);
+                });
+
+            modelBuilder.Entity("TAS.Helpers.RubberFarmDb", b =>
+                {
+                    b.HasOne("TAS.Helpers.RubberAgent", "Rubber_Agent")
                         .WithMany()
                         .HasForeignKey("AgentCode")
                         .HasPrincipalKey("AgentCode")
