@@ -11,12 +11,13 @@ namespace TAS.Data
 		{
 		}
 
-        public DbSet<RubberAgent> RubberAgent => Set<RubberAgent>();
-        public DbSet<RubberFarmDb> Gardens => Set<RubberFarmDb>();
-        public DbSet<UserAccount> Users => Set<UserAccount>();
-        public DbSet<RubberIntakeDb> RubberIntakeDb => Set<RubberIntakeDb>();
+        public DbSet<RubberAgent> rubberAgent { get; set; }
+		public DbSet<RubberFarmDb> gardens { get; set; }
+		public DbSet<RubberIntakeDb> rubberIntakeDb { get; set; }
+		public DbSet<RubberOrderSummary> rubberOrderSummaries { get; set; }
+		public DbSet<UserAccount> Users { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
             modelBuilder.Entity<RubberAgent>(e =>
             {
@@ -121,6 +122,23 @@ namespace TAS.Data
 				e.Property(x => x.FinishedProductKg).HasColumnType("decimal(12,3)");
 				e.Property(x => x.CentrifugeProductKg).HasColumnType("decimal(12,3)");
 				e.Property(x => x.BatchCode).HasMaxLength(50);
+			});
+			modelBuilder.Entity<RubberOrderSummary>(entity =>
+			{
+				entity.ToTable("RubberOrderSummary");
+				entity.HasKey(e => e.OrderId);
+				entity.Property(e => e.OrderCode).IsRequired().HasMaxLength(50);
+				entity.Property(e => e.OrderName).IsRequired().HasMaxLength(200);
+				entity.Property(e => e.AgentCode).HasMaxLength(50);
+				entity.Property(e => e.AgentName).HasMaxLength(200);
+				entity.Property(e => e.FarmCode).HasMaxLength(50);
+				entity.Property(e => e.FarmerName).HasMaxLength(200);
+				entity.Property(e => e.TotalWeightKg).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.PricePerKg).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
+				entity.Property(e => e.SortOrder).HasDefaultValue(1);
+				entity.Property(e => e.IsActive).HasDefaultValue(true);
+				entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 			});
 		}
 	}

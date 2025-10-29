@@ -609,20 +609,18 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds) {
     var selectorCell = $(selector).parent().parent().parent();
     var selectorRow = $(selectorCell).parent();
     var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
-    var itemParent = listDataFull.find(x => $(x.SAVE_BUTTON).attr('id_list') == id_list);
+    var itemParent = listDataFull.find(x => x.sortIdList == id_list);
     var listChild = listRowChild.filter(function (item) {
-        return $("<div></div>").html(item.SAVE_BUTTON).find('[id_list^="' + id_list + '"]').length != 0
-            && (itemParent.IS_OPEN_CHILD ? $('.ag-group-expanded .ag-icon-tree-closed[id_list="' + GetRowIDParent(item) + '"]').length == 0 : IsRowChildrentNext(id_list, GetIDCurrent(item)))
-            && $("<div></div>").html(item.SAVE_BUTTON).find('[id_list="' + id_list + '"]').length == 0;
+        return id_list == id_list.substring(0, item.sortIdList.lastIndexOf('__'));
     });
 
-    if (itemParent.IS_OPEN_CHILD) {
+    if (itemParent.isOpenChild) {
         //Close Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-closed');
-        itemParent.IS_OPEN_CHILD = false;
+        itemParent.isOpenChild = false;
         gridOptions.api.applyTransaction({ remove: listChild });
         listChild.forEach(function (item) {
-            item.IS_OPEN_CHILD = false;
+            item.isOpenChild = false;
         });
 
         if (typeof funcSetValueArrParentIds === 'function') {
@@ -632,7 +630,7 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds) {
     } else {
         //Open Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-open');
-        itemParent.IS_OPEN_CHILD = true;
+        itemParent.isOpenChild = true;
         gridOptions.api.applyTransaction({
             add: listChild,
             addIndex: row_index,
@@ -649,27 +647,25 @@ function ShowOrHideRowChildrenNew(id_list, selector) {
     var selectorCell = $(selector).parent().parent().parent();
     var selectorRow = $(selectorCell).parent();
     var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
-    var itemParent = listDataFull.find(x => $(x.SAVE_BUTTON).attr('id_list') == id_list);
+    var itemParent = listDataFull.find(x => x.sortIdList == id_list);
     var currentParent = itemParent;
     var listChild = listRowChild.filter(function (item) {
-        currentParent = IsRowChildrentNext(id_list, GetIDCurrent(item)) ? item : currentParent;
-        return $("<div></div>").html(item.SAVE_BUTTON).find('[id_list^="' + id_list + '"]').length != 0
-            && (itemParent.IS_OPEN_CHILD && currentParent.IS_OPEN_CHILD ? $('.ag-group-expanded .ag-icon-tree-closed[id_list="' + GetRowIDParent(item) + '"]').length == 0 : IsRowChildrentNext(id_list, GetIDCurrent(item)))
-            && $("<div></div>").html(item.SAVE_BUTTON).find('[id_list="' + id_list + '"]').length == 0;
+        currentParent = IsRowChildrentNext(id_list, item.sortIdList) ? item : currentParent;
+        return id_list == id_list.substring(0, item.sortIdList.lastIndexOf('__'));
     });
 
-    if (itemParent.IS_OPEN_CHILD) {
+    if (itemParent.isOpenChild) {
         //Close Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-closed');
-        itemParent.IS_OPEN_CHILD = false;
+        itemParent.isOpenChild = false;
         gridApi.applyTransaction({ remove: listChild });
         listChild.forEach(function (item) {
-            item.IS_OPEN_CHILD = false;
+            item.isOpenChild = false;
         });
     } else {
         //Open Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-open');
-        itemParent.IS_OPEN_CHILD = true;
+        itemParent.isOpenChild = true;
         gridApi.applyTransaction({
             add: listChild,
             addIndex: row_index,
@@ -683,30 +679,30 @@ function ShowOrHideChildRow(id_list, selector) {
     var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
     var itemParent = listDataFull.find(x => x.ID_LIST == id_list);
     var currentParent = itemParent;
-    var idListChildOpen = listRowChild.filter(x => (x.ID_LIST_PARENT == id_list && x.IS_OPEN_CHILD)
-            || (x.ID_LIST_PARENT.indexOf(id_list) >= 0 && x.IS_OPEN_CHILD))
+    var idListChildOpen = listRowChild.filter(x => (x.ID_LIST_PARENT == id_list && x.isOpenChild)
+        || (x.ID_LIST_PARENT.indexOf(id_list) >= 0 && x.isOpenChild))
         .map(x => x.ID_LIST);
     var listRowChildFilter = listRowChild.filter(x => x.ID_LIST_PARENT == id_list || idListChildOpen.some(y => y == x.ID_LIST_PARENT));
     var listChild = listRowChildFilter.filter(function (item) {
         currentParent = IsRowChildrentNext(id_list, GetIDCurrent(item)) ? item : currentParent;
         return $("<div></div>").html(item.SAVE_BUTTON).find('[id_list^="' + id_list + '"]').length != 0
-            && (itemParent.IS_OPEN_CHILD && currentParent.IS_OPEN_CHILD ? $('.ag-group-expanded .ag-icon-tree-closed[id_list="' + GetRowIDParent(item) + '"]').length == 0 : IsRowChildrentNext(id_list, GetIDCurrent(item)))
+            && (itemParent.isOpenChild && currentParent.isOpenChild ? $('.ag-group-expanded .ag-icon-tree-closed[id_list="' + GetRowIDParent(item) + '"]').length == 0 : IsRowChildrentNext(id_list, GetIDCurrent(item)))
             && $("<div></div>").html(item.SAVE_BUTTON).find('[id_list="' + id_list + '"]').length == 0;
     });
 
-    if (itemParent.IS_OPEN_CHILD) {
+    if (itemParent.isOpenChild) {
         //Close Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-closed');
-        itemParent.IS_OPEN_CHILD = false;
+        itemParent.isOpenChild = false;
         gridApi.applyTransaction({ remove: listChild });
         listChild.forEach(function (item) {
-            item.IS_OPEN_CHILD = false;
+            item.isOpenChild = false;
         });
         listRowOpen = listRowOpen.filter(x => x.ID_LIST.indexOf(itemParent.ID_LIST) < 0);
     } else {
         //Open Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-open');
-        itemParent.IS_OPEN_CHILD = true;
+        itemParent.isOpenChild = true;
         gridApi.applyTransaction({
             add: listChild,
             addIndex: row_index,

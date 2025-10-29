@@ -55,6 +55,34 @@ namespace TAS.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RubberOrderSummary",
+                columns: table => new
+                {
+                    OrderId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    OrderName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    AgentId = table.Column<long>(type: "bigint", nullable: false),
+                    AgentCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    AgentName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    FarmId = table.Column<long>(type: "bigint", nullable: false),
+                    FarmCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    FarmerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
+                    IntakeId = table.Column<long>(type: "bigint", nullable: false),
+                    TotalWeightKg = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    PricePerKg = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    Level = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RubberOrderSummary", x => x.OrderId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "UserAccount",
                 columns: table => new
                 {
@@ -156,6 +184,9 @@ namespace TAS.Migrations
 
             migrationBuilder.DropTable(
                 name: "RubberIntake");
+
+            migrationBuilder.DropTable(
+                name: "RubberOrderSummary");
 
             migrationBuilder.DropTable(
                 name: "UserAccount");

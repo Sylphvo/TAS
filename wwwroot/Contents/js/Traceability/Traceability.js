@@ -1,11 +1,12 @@
 ﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
-var gridOptionsTraceability, ListDataFull;
+var gridOptions, listDataFull, listRowChild;
 var page = 1;
 var pageSize = 20;
 var gridApi;
 var pagerApi;
+var arrParentIds = [];
 function CreateGridTraceability() {
-    gridOptionsTraceability = {
+    gridOptions = {
         //pagination: true,
         paginationPageSize: 100,
         columnDefs: CreateColModelTraceability(),
@@ -29,8 +30,8 @@ function CreateGridTraceability() {
         onGridReady: function (params) {
             gridApi = params.api;
             params.api.sizeColumnsToFit();
-            renderPage();          // nạp trang đầu
-            setupPager();          // tạo pager ngoài
+            //renderPage();          // nạp trang đầu
+            //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
@@ -40,7 +41,7 @@ function CreateGridTraceability() {
     };
 
     var eGridDiv = document.querySelector(Traceability);
-    new agGrid.Grid(eGridDiv, gridOptionsTraceability);
+    new agGrid.Grid(eGridDiv, gridOptions);
     //SetButtonOnPagingForTraceability();
     CreateRowDataTraceability();
     resizeGridTraceability();
@@ -66,46 +67,48 @@ function RefreshAllGridWhenChangeData() {
     }, 1);
 }
 function CreateRowDataTraceability() {
-    const rowData = [
-        { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
-        { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
-        { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
-        { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
-        { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
-        { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
-        { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
-    ];
-    ListDataFull = rowData;
+    //const rowData = [
+    //    { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
+    //    { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
+    //    { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
+    //    { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
+    //    { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
+    //    { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
+    //    { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
+    //    { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
+    //    { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
+    //];
+    //ListDataFull = rowData;
 
-    //gridOptionsTraceability.api.setRowData(rowData);
+    //gridOptions.api.setRowData(rowData);
     //listTotal = [];
-    //var listSearchTraceability = GetParamSearchTraceability();
+    var listSearchTraceability = {};
+    ResetValueArrParentIds();
     //ShowHideLoading(true, divTraceability);
     //$('#TraceabilityModal .ag-overlay-no-rows-center').hide();
-    //$.ajax({
-    //    async: !false,
-    //    type: 'POST',
-    //    url: "/CalendarReportUnit/GetListTraceability",
-    //    data: listSearchTraceability,
-    //    dataType: "json",
-    //    success: function (data) {
-    //        listdataTraceability = data;
-    //        gridOptionsTraceability.api.setRowData(data);
-    //        setTimeout(function () {
-    //            ShowHideLoading(false, divTraceability);
-    //            $('#TraceabilityModal .ag-overlay-no-rows-center').show();
-    //            setWidthHeightGridTraceability(25, true);
-    //            FocusRowTraceability();
-    //        }, 100);
-    //    }
-    //});
+    $.ajax({
+        async: !false,
+        type: 'POST',
+        url: "/Traceability/Traceabilitys",
+        data: listSearchTraceability,
+        dataType: "json",
+        success: function (data) {
+            listDataFull = data;
+			listRowChild = data.filter(x => x.sortOrder != 1);
+            gridOptions.api.setRowData(data);
+            //setTimeout(function () {
+            //    ShowHideLoading(false, divTraceability);
+            //    $('#TraceabilityModal .ag-overlay-no-rows-center').show();
+            //    setWidthHeightGridTraceability(25, true);
+            //    FocusRowTraceability();
+            //}, 100);
+        }
+    });
 }
 function CreateColModelTraceability() {
     var columnDefs = [
         {
-            field: 'maNhaVuon', headerName: 'Mã Nhà Vườn', width: 110, minWidth: 110
+            field: 'orderCode', headerName: 'Mã đơn hàng', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , checkboxSelection: true
@@ -118,49 +121,40 @@ function CreateColModelTraceability() {
             , headerComponent: "customHeader"
             //, cellRenderer: cellRender_StartDate
             //, colSpan: 2
+        },
+        {
+            field: 'orderName', headerName: 'Tên đơn hàng', width: 90, minWidth: 90
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: false
+            , cellRenderer: cellRender_ParentAndChild
             , headerComponent: "customHeader"
         },
         {
-            field: 'tenNhaVuon', headerName: 'Nhà Vườn', width: 110, minWidth: 110
+            field: 'agentName', headerName: 'Tên đại lý', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
-            //, cellRenderer: cellRender_StartDate
+            , editable: false
             , headerComponent: "customHeader"
-        },
-        {
-            field: 'KG', headerName: 'Khối lượng', width: 210, minWidth: 210
-            , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
-            , headerComponent: "customHeader"
+            , cellRenderer: cellRender_ParentAndChild
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">params.value</div>`;
             //}
         },
         {
-            field: 'TSC', headerName: 'TSC', width: 100, minWidth: 100
+            field: 'farmerName', headerName: 'Tên nhà vườn', width: 90, minWidth: 90
             //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'DRC', headerName: 'DRC', width: 100, minWidth: 100
+            field: 'WeightKg', headerName: 'Số kg', width: 90, minWidth: 90
             //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'thanhPham', headerName: 'Thành Phẩm', width: 140, minWidth: 140
-            , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
-            , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
-        },
-        {
-            field: 'thanhPhamLyTam', headerName: 'Thành Phẩm Ly Tâm', width: 140, minWidth: 140
+            field: 'TotalAmount', headerName: 'Tổng', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -327,7 +321,7 @@ document.getElementById('importExcel').addEventListener('change', async e => {
 });
 // Export Excel
 function onExportExcelData() {
-    const ws = XLSX.utils.json_to_sheet(ListDataFull);
+    const ws = XLSX.utils.json_to_sheet(listDataFull);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'datanhaplieu.xlsx');
@@ -351,13 +345,13 @@ function persistCurrentPageOrder() {
         ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
     }
     // ghi đè đoạn trang hiện tại vào mảng gốc
-    ListDataFull.splice(start, n, ...ordered);
+    listDataFull.splice(start, n, ...ordered);
 }
 
 // --- helpers ---
 function renderPage() {
     const start = (page - 1) * pageSize;
-    const slice = ListDataFull.slice(start, start + pageSize);
+    const slice = listDataFull.slice(start, start + pageSize);
     gridApi.setRowData(slice);
 }
 function setupPager() {
@@ -366,7 +360,7 @@ function setupPager() {
         pagerEl: '#pager',
         page,
         pageSize,
-        total: ListDataFull.length,
+        total: listDataFull.length,
         render: () => '', // không render list
         onChange: ({ page: p, pageSize: sz }) => {
             // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
@@ -376,4 +370,33 @@ function setupPager() {
             renderPage();
         }
     });
+}
+function cellRender_ParentAndChild(params) {
+    let cellValue = params.value;
+    let id_list = params.data.sortIdList;
+    if (params.colDef.field == "orderName" && params.data.sortOrder == 1) {
+        return `<div class="text-cell-eclip">${htmlDecode(params.data.orderName)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" id_list="' + id_list + '" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds)"></span></span>';     
+    }
+    else if (params.colDef.field === 'agentName' && params.data.sortOrder == 2) {
+        return `<div class="text-cell-eclip"> ${htmlDecode(cellValue)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" onclick="ShowOrHideRowChildren(' + id_list + ', this, SetValueArrParentIds)"></span></span>';
+        
+    }
+    
+    return `<div class="text-cell-eclip">${htmlDecode(cellValue)}</div>`;
+}
+function SetValueArrParentIds(arrParentIds, isOpenRow) {
+    isOpenRow = ParseBool(isOpenRow);
+    //let isShowAll = IsShowAll();
+
+    $.each(arrParentIds, function (parentIdIndex, parentIdValue) {
+        if (isOpenRow) {
+            arrParentIds.push(parentIdValue);           
+        } else {
+            arrParentIds = arrParentIds.filter(x => x != parentIdValue);           
+        }
+    });
+}
+
+function ResetValueArrParentIds() {
+    arrParentIds = [];
 }

@@ -21,3 +21,33 @@ VALUES
 ('20008','2004',N'Vườn D2','0904000008',N'Tân Uyên, Bình Dương','11.05,106.75',N'',       3.60,2.40, 700,1,SYSUTCDATETIME(),N'seed',NULL,NULL),
 ('20009','2005',N'Vườn E1','0905000009',N'Long Khánh, Đồng Nai','10.93,107.24',N'FSC',    6.80,5.10,1600,1,SYSUTCDATETIME(),N'seed',NULL,NULL),
 ('20010','2005',N'Vườn E2','0905000010',N'Long Khánh, Đồng Nai','10.94,107.23',N'',       4.10,3.00, 900,1,SYSUTCDATETIME(),N'seed',NULL,NULL);
+
+
+INSERT INTO RubberOrderSummary
+(OrderCode, OrderName, AgentId, AgentCode, AgentName, FarmId, FarmCode, FarmerName,
+ IntakeId, TotalWeightKg, PricePerKg, TotalAmount, Level, IsActive, CreatedAt, CreatedBy)
+VALUES
+-- Đơn hàng 1
+('ORD001', N'Đơn hàng thu mua tháng 10', 2001, 'AGT001', N'Đại lý Minh Phú',
+ 3001, 'FRM001', N'Nhà vườn Nguyễn Văn A',
+ 4001, 1250.50, 28000, 1250.50 * 28000, 1, 1, SYSUTCDATETIME(), N'seed'),
+
+-- Đơn hàng 2
+('ORD002', N'Đơn hàng thu mua tháng 10', 2002, 'AGT002', N'Đại lý Tân Hòa',
+ 3002, 'FRM002', N'Nhà vườn Trần Thị B',
+ 4002, 980.75, 27500, 980.75 * 27500, 1, 1, SYSUTCDATETIME(), N'seed'),
+
+-- Đơn hàng 3
+('ORD003', N'Đơn hàng thu mua tháng 10', 2003, 'AGT003', N'Đại lý Long Giang',
+ 3003, 'FRM003', N'Nhà vườn Lê Văn C',
+ 4003, 1500.00, 29000, 1500.00 * 29000, 1, 1, SYSUTCDATETIME(), N'seed'),
+
+-- Đơn hàng 4
+('ORD004', N'Đơn hàng thu mua tháng 10', 2004, 'AGT004', N'Đại lý An Khánh',
+ 3004, 'FRM004', N'Nhà vườn Võ Văn D',
+ 4004, 760.25, 28500, 760.25 * 28500, 1, 1, SYSUTCDATETIME(), N'seed'),
+
+-- Đơn hàng 5
+('ORD005', N'Đơn hàng thu mua tháng 10', 2005, 'AGT005', N'Đại lý Phú Thành',
+ 3005, 'FRM005', N'Nhà vườn Phạm Thị E',
+ 4005, 1340.80, 27800, 1340.80 * 27800, 1, 1, SYSUTCDATETIME(), N'seed');

@@ -1,18 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TAS.ViewModels;
 
 namespace TAS.Controllers
 {
     public class TraceabilityController : Controller
     {
-        public IActionResult Traceability()
+		TraceabilityModels models;
+		CommonModels commonModels;
+		public TraceabilityController()
+		{
+			models = new TraceabilityModels();
+			commonModels = new CommonModels();
+		}
+		public IActionResult Traceability()
         {
             return View();
         }
 		#region handle Data
-		[HttpGet]
-		public IActionResult Traceabilitys()
+		[HttpPost]
+		public async Task<JsonResult> Traceabilitys()
 		{
-			return View();
+			var lstData = await models.GetTraceabilityAsync();
+
+			return new JsonResult(lstData);
 		}
 		[HttpPost("AddOrUpdate")]
 		public IActionResult AddOrUpdate()
