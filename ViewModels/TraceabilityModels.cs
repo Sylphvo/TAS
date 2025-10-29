@@ -77,7 +77,7 @@ namespace TAS.ViewModels
 				-- Kết quả
 				SELECT Id, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, WeightKg, TotalAmount, SortIdList, IsOpenChild
 				FROM #TempOrder
-				ORDER BY OrderCode DESC, AgentCode;
+				ORDER BY OrderCode DESC, SortIdList;
 				DROP TABLE #TempOrder;
 			";
 			return await dbHelper.QueryAsync<RubberOrderSummaryReuqest>(sql);

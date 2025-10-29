@@ -375,10 +375,10 @@ function cellRender_ParentAndChild(params) {
     let cellValue = params.value;
     let id_list = params.data.sortIdList;
     if (params.colDef.field == "orderName" && params.data.sortOrder == 1) {
-        return `<div class="text-cell-eclip">${htmlDecode(params.data.orderName)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" id_list="' + id_list + '" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds)"></span></span>';     
+        return `<div class="text-cell-eclip">${htmlDecode(params.data.orderName)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" id_list="' + id_list + '" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds, ' + params.data.sortOrder +')"></span></span>';     
     }
     else if (params.colDef.field === 'agentName' && params.data.sortOrder == 2) {
-        return `<div class="text-cell-eclip"> ${htmlDecode(cellValue)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" onclick="ShowOrHideRowChildren(' + id_list + ', this, SetValueArrParentIds)"></span></span>';
+        return `<div class="text-cell-eclip"> ${htmlDecode(cellValue)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds, ' + params.data.sortOrder +')"></span></span>';
         
     }
     

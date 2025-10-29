@@ -605,14 +605,22 @@ MyCellCalendarEditor_1.prototype.isPopup = function () {
     return false;
 };
 //ThongND: 20210120 Add function chung xu ly chuc nang An/Hien cap cha con
-function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds) {
+function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sortOrder) {
     var selectorCell = $(selector).parent().parent().parent();
     var selectorRow = $(selectorCell).parent();
     var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
     var itemParent = listDataFull.find(x => x.sortIdList == id_list);
-    var listChild = listRowChild.filter(function (item) {
-        return id_list == id_list.substring(0, item.sortIdList.lastIndexOf('__'));
-    });
+    var listChild;
+    if (sortOrder == 1) {
+        listChild = listRowChild.filter(function (item) {
+            return id_list == id_list.substring(0, item.sortIdList.lastIndexOf('__'));
+        });
+    }
+    else if (sortOrder == 2) {
+        listChild = listRowChild.filter(function (item) {
+            return item.sortIdList.includes(id_list) && item.sortOrder == 3;
+        });
+    }
 
     if (itemParent.isOpenChild) {
         //Close Row
