@@ -95,6 +95,8 @@
         RefreshAllGridWhenChangeData();
         CreateGridRubberGarden(true);
         LoadComboAgent('ListCboAgent');
-        RegEventCombo('ListCboAgent', RefreshAllGridWhenChangeData(), true);
+        $('#ListCboAgent').change(function (e) {
+            RefreshAllGridWhenChangeData();
+        });
     </script>
 }

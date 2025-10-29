@@ -8,9 +8,6 @@ namespace TAS.Models
 		[Key]
 		public Guid Id { get; set; } = Guid.NewGuid();
 
-		// STT
-		public int? RowNo { get; set; }
-
 		// Mã nhà vườn
 		[Required, StringLength(200)]
 		public string FarmCode { get; set; } = string.Empty;

@@ -7,6 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Common\**" />
+    <Compile Remove="wwwroot\css\InformationGarden\**" />
+    <Compile Remove="wwwroot\css\RubberGarden\**" />
+    <Compile Remove="wwwroot\css\Traceability\**" />
+    <Content Remove="Common\**" />
+    <Content Remove="wwwroot\css\InformationGarden\**" />
+    <Content Remove="wwwroot\css\RubberGarden\**" />
+    <Content Remove="wwwroot\css\Traceability\**" />
+    <EmbeddedResource Remove="Common\**" />
+    <EmbeddedResource Remove="wwwroot\css\InformationGarden\**" />
+    <EmbeddedResource Remove="wwwroot\css\RubberGarden\**" />
+    <EmbeddedResource Remove="wwwroot\css\Traceability\**" />
+    <None Remove="Common\**" />
+    <None Remove="wwwroot\css\InformationGarden\**" />
+    <None Remove="wwwroot\css\RubberGarden\**" />
+    <None Remove="wwwroot\css\Traceability\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.66" />
     <PackageReference Include="EntityFramework" Version="6.5.1" />
     <PackageReference Include="Microsoft.Data.SqlClient" Version="6.1.2" />
@@ -27,7 +46,6 @@
     <Folder Include="Areas\Admin\" />
     <Folder Include="Helper\" />
     <Folder Include="Log\" />
-    <Folder Include="Common\" />
     <Folder Include="Filters\" />
     <Folder Include="Middleware\" />
     <Folder Include="Migrations\" />
@@ -37,9 +55,6 @@
     <Folder Include="Services\" />
     <Folder Include="ViewComponents\" />
     <Folder Include="Resources\" />
-    <Folder Include="wwwroot\css\Traceability\" />
-    <Folder Include="wwwroot\css\RubberGarden\" />
-    <Folder Include="wwwroot\css\InformationGarden\" />
   </ItemGroup>
 
 </Project>

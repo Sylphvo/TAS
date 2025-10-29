@@ -80,3 +80,6 @@ select {
     padding: 2px !important;
     margin: 3px 0;
 }
+.select2-container{
+    margin-left:10px;
+}

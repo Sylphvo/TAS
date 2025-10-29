@@ -39,7 +39,6 @@ namespace TAS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    RowNo = table.Column<int>(type: "int", nullable: true),
                     FarmCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FarmerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     Kg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),

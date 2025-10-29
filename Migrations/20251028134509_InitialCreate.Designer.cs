@@ -12,7 +12,7 @@ using TAS.Data;
 namespace TAS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251028084423_InitialCreate")]
+    [Migration("20251028134509_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -270,9 +270,6 @@ namespace TAS.Migrations
 
                     b.Property<decimal?>("Kg")
                         .HasColumnType("decimal(12,3)");
-
-                    b.Property<int?>("RowNo")
-                        .HasColumnType("int");
 
                     b.Property<decimal?>("TSCPercent")
                         .HasColumnType("decimal(5,2)");

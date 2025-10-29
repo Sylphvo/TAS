@@ -268,9 +268,6 @@ namespace TAS.Migrations
                     b.Property<decimal?>("Kg")
                         .HasColumnType("decimal(12,3)");
 
-                    b.Property<int?>("RowNo")
-                        .HasColumnType("int");
-
                     b.Property<decimal?>("TSCPercent")
                         .HasColumnType("decimal(5,2)");
 

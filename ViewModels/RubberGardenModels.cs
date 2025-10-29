@@ -16,5 +16,12 @@ namespace TAS.ViewModels
 			var sql = "SELECT * FROM RubberFarm";
 			return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
 		}
-	}
+
+
+        //public int AddOrUpdate()
+        //{
+        //    var sql = "SELECT * FROM RubberFarm";
+        //    return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
+        //}
+    }
 }
