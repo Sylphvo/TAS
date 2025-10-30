@@ -54,7 +54,6 @@
     <Folder Include="Repository\" />
     <Folder Include="Services\" />
     <Folder Include="ViewComponents\" />
-    <Folder Include="Resources\" />
   </ItemGroup>
 
 </Project>

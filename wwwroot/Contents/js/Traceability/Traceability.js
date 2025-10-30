@@ -113,10 +113,10 @@ function CreateColModelTraceability() {
             field: 'orderCode', headerName: 'Mã đơn hàng', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
-            , checkboxSelection: true
-            , headerCheckbox: true
-            , headerCheckboxSelection: true // checkbox ở header để chọn tất cả
-            , rowDrag: true
+            //, checkboxSelection: true
+            //, headerCheckbox: true
+            //, headerCheckboxSelection: true // checkbox ở header để chọn tất cả
+            //, rowDrag: true
             , filter: true
             , floatingFilterComponent: 'customFloatingFilterInput'
             , floatingFilterComponentParams: { suppressFilterButton: true }
@@ -306,28 +306,28 @@ function updateRowIndex() {
 }
 
 
-// Import từ URL demo
-document.getElementById('importExcel').addEventListener('change', async e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-        const buf = await file.arrayBuffer();
-        const wb = XLSX.read(buf, { type: 'array', cellDates: true });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-        gridApi.setRowData(rows);
-        notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
-    } catch (err) {
-        notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
-    }
-});
-// Export Excel
-function onExportExcelData() {
-    const ws = XLSX.utils.json_to_sheet(listDataFull);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    XLSX.writeFile(wb, 'datanhaplieu.xlsx');
-}
+//// Import từ URL demo
+//document.getElementById('importExcel').addEventListener('change', async e => {
+//    const file = e.target.files[0];
+//    if (!file) return;
+//    try {
+//        const buf = await file.arrayBuffer();
+//        const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+//        const ws = wb.Sheets[wb.SheetNames[0]];
+//        const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
+//        gridApi.setRowData(rows);
+//        notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
+//    } catch (err) {
+//        notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
+//    }
+//});
+//// Export Excel
+//function onExportExcelData() {
+//    const ws = XLSX.utils.json_to_sheet(listDataFull);
+//    const wb = XLSX.utils.book_new();
+//    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+//    XLSX.writeFile(wb, 'datanhaplieu.xlsx');
+//}
 // Export Example Excel
 function onExportExcel() {
     const rowData_temp = [

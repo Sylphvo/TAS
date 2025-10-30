@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.Extensions.Localization
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TAS.Resources.SharedResource> localizerShared
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@{
     ViewData["Title"] = "Truy Xuất Thông tin";
 }
 @section Style {
@@ -38,16 +41,16 @@
                                 </select> *@
                                 <div class="form-check form-switch switch-lg">
                                     <input class="form-check-input input-primary f-16" type="checkbox" id="ChkAll" checked="checked">
-                                    <label class="form-check-label" for="ChkAll">Show all</label>
+                                    <label class="form-check-label" for="ChkAll">@localizer["key_showall"]</label>
                                 </div>
                             </div>
                             <div class="d-flex">
                                 <!-- Nút chọn file -->
-                                <label for="importExcel" class="btn btn-primary">Chọn file</label>
+                                @* <label for="importExcel" class="btn btn-primary">Chọn file</label>
                                 <input type="file" id="importExcel" hidden>
                                 <span id="file-name" class="ms-2 d-none"></span>
                                 <button onclick="onExportExcelData()" class="btn btn-primary buttonSearch">Xuất Excel</button>
-                                <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Mẫu Excel</button>
+                                <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Mẫu Excel</button> *@
                             </div>
                         </div>
                     </div>
@@ -90,5 +93,6 @@
         var Traceability = '#TraceabilityGrid';
         CreateGridTraceability(true);
         RegEventTraceability();
+        console.log(@Html.Raw(ViewBag.langTraceability));
     </script>
 }

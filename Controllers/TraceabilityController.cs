@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
+using System.Globalization;
+using TAS.Resources;
 using TAS.ViewModels;
 
 namespace TAS.Controllers
@@ -7,14 +10,18 @@ namespace TAS.Controllers
     {
 		TraceabilityModels models;
 		CommonModels commonModels;
-		public TraceabilityController()
+		private readonly IStringLocalizer<SharedResource> _localizer;
+		public TraceabilityController(IStringLocalizer<SharedResource> localizer)
 		{
 			models = new TraceabilityModels();
 			commonModels = new CommonModels();
+			_localizer = localizer;
 		}
+
 		public IActionResult Traceability()
         {
-            return View();
+			ViewBag.langTraceability = CultureInfo.CurrentUICulture.Name;
+			return View();
         }
 		#region handle Data
 		[HttpPost]
