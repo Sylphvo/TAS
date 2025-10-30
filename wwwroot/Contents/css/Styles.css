@@ -83,3 +83,7 @@ select {
 .select2-container{
     margin-left:10px;
 }
+
+.form-check-label {
+	margin-right: 10px;
+}

@@ -36,6 +36,10 @@
                                     <option selected="selected">select</option>
                                     <option>Large select</option>
                                 </select> *@
+                                <div class="form-check form-switch switch-lg">
+                                    <input class="form-check-input input-primary f-16" type="checkbox" id="ChkAll" checked="checked">
+                                    <label class="form-check-label" for="ChkAll">Show all</label>
+                                </div>
                             </div>
                             <div class="d-flex">
                                 <!-- Nút chọn file -->
@@ -78,10 +82,13 @@
 
     </div>
 </div>
+
+<partial name="~/Views/Shared/Modal/_Pallet.cshtml" />
 @section Scripts {
     <script type="text/javascript" src="~/Contents/js/Traceability/Traceability.js"></script>
     <script>        
         var Traceability = '#TraceabilityGrid';
         CreateGridTraceability(true);
+        RegEventTraceability();
     </script>
 }

@@ -5,6 +5,23 @@ var pageSize = 20;
 var gridApi;
 var pagerApi;
 var arrParentIds = [];
+
+// Các hằng số cho Traceability
+var arrConstantTraceability = {
+	SortOrder_Lot: 1, // Order
+	SortOrder_Agent: 2,// Agent
+	SortOrder_Farm: 3,// Farmer
+}
+
+// Đăng ký sự kiện cho Traceability
+function RegEventTraceability() {
+    $('#ChkAll').on('change', function (e) {
+        ShowOrHideAllRowChildren(e.target.checked);
+    });
+}
+
+
+// Tạo grid Traceability
 function CreateGridTraceability() {
     gridOptions = {
         //pagination: true,
@@ -67,21 +84,6 @@ function RefreshAllGridWhenChangeData() {
     }, 1);
 }
 function CreateRowDataTraceability() {
-    //const rowData = [
-    //    { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
-    //    { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
-    //    { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
-    //    { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
-    //    { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
-    //    { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
-    //    { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
-    //    { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
-    //    { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
-    //];
-    //ListDataFull = rowData;
-
-    //gridOptions.api.setRowData(rowData);
-    //listTotal = [];
     var listSearchTraceability = {};
     ResetValueArrParentIds();
     //ShowHideLoading(true, divTraceability);
@@ -371,23 +373,30 @@ function setupPager() {
         }
     });
 }
+
+// Cell Render Parent And Child
 function cellRender_ParentAndChild(params) {
     let cellValue = params.value;
     let id_list = params.data.sortIdList;
     if (params.colDef.field == "orderName" && params.data.sortOrder == 1) {
-        return `<div class="text-cell-eclip">${htmlDecode(params.data.orderName)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" id_list="' + id_list + '" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds, ' + params.data.sortOrder +')"></span></span>';     
+        return `<div class="text-cell-eclip">
+        <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#myLargeModalLabel">
+            ${htmlDecode(params.data.orderName)}
+        </button>
+        </div>` +
+        '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? ' ag-icon-tree-open' : ' ag-icon-tree-closed') + '" unselectable="on" role="presentation" id_list="' + id_list + '" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds, ' + params.data.sortOrder + ')"></span></span>';     
     }
     else if (params.colDef.field === 'agentName' && params.data.sortOrder == 2) {
-        return `<div class="text-cell-eclip"> ${htmlDecode(cellValue)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? 'ag-icon ag-icon-tree-open' : 'ag-icon ag-icon-tree-closed') + '" unselectable="on" role="presentation" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds, ' + params.data.sortOrder +')"></span></span>';
+        return `<div class="text-cell-eclip"> ${htmlDecode(cellValue)}</div>` + '<span class="ag-group-expanded" ref="eExpanded"><span class="ag-icon ' + (params.data.isOpenChild ? ' ag-icon-tree-open' : 'ag-icon-tree-closed') + '" unselectable="on" role="presentation" onclick="ShowOrHideRowChildren(\'' + id_list + '\', this, SetValueArrParentIds, ' + params.data.sortOrder +')"></span></span>';
         
     }
-    
     return `<div class="text-cell-eclip">${htmlDecode(cellValue)}</div>`;
 }
+// End Cell Render Parent And Child
+
+// Set giá trị mảng arrParentIds
 function SetValueArrParentIds(arrParentIds, isOpenRow) {
     isOpenRow = ParseBool(isOpenRow);
-    //let isShowAll = IsShowAll();
-
     $.each(arrParentIds, function (parentIdIndex, parentIdValue) {
         if (isOpenRow) {
             arrParentIds.push(parentIdValue);           
@@ -397,6 +406,23 @@ function SetValueArrParentIds(arrParentIds, isOpenRow) {
     });
 }
 
+// Reset giá trị mảng arrParentIds
 function ResetValueArrParentIds() {
     arrParentIds = [];
+}
+
+// Hiển thị hoặc ẩn các hàng con dựa trên việc chọn hoặc bỏ chọn checkbox "Chọn tất cả"
+function ShowOrHideAllRowChildren(isCheckAll) {
+    
+    let listDataChildToAdd = listDataFull.filter(x => x.sortOrder != arrConstantTraceability.SortOrder_Lot);
+    if (isCheckAll)
+    {
+        $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-closed').addClass('ag-icon-tree-open');
+        gridApi.applyTransaction({ add: listDataChildToAdd });
+    }
+    else {
+        $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-open').addClass('ag-icon-tree-closed');
+        gridApi.applyTransaction({ remove: listDataChildToAdd });
+    }
+    listDataFull.filter(x => x.isOpenChild = isCheckAll);
 }

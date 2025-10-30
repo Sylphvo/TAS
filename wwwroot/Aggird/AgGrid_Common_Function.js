@@ -608,8 +608,8 @@ MyCellCalendarEditor_1.prototype.isPopup = function () {
 function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sortOrder) {
     var selectorCell = $(selector).parent().parent().parent();
     var selectorRow = $(selectorCell).parent();
-    var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
     var itemParent = listDataFull.find(x => x.sortIdList == id_list);
+    var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
     var listChild;
     if (sortOrder == 1) {
         listChild = listRowChild.filter(function (item) {
@@ -618,7 +618,7 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sort
     }
     else if (sortOrder == 2) {
         listChild = listRowChild.filter(function (item) {
-            return item.sortIdList.includes(id_list) && item.sortOrder == 3;
+            return item.sortIdList.includes(id_list) && item.sortOrder == sortOrder + 1;
         });
     }
 
@@ -632,10 +632,15 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sort
         });
 
         if (typeof funcSetValueArrParentIds === 'function') {
-            let arrParentIds = [...listChild.map(x => $(x.SAVE_BUTTON).attr('id_list'))];
+            let arrParentIds = [...listChild.map(x => x.sortIdList)];
             funcSetValueArrParentIds(arrParentIds, false);
         }
     } else {
+        if (sortOrder == 1) {
+            listChild = listChild.filter(function (item) {
+                return item.sortOrder == sortOrder + 1;
+            });
+        }
         //Open Row
         $(selector).attr('class', 'ag-icon ag-icon-tree-open');
         itemParent.isOpenChild = true;
@@ -645,7 +650,7 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sort
         });
 
         if (typeof funcSetValueArrParentIds === 'function') {
-            let arrParentIds = [...listChild.map(x => $(x.SAVE_BUTTON).attr('id_list'))];
+            let arrParentIds = [...listChild.map(x => x.sortIdList)];
             funcSetValueArrParentIds(arrParentIds, true);
         }
     }
