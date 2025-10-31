@@ -10,17 +10,14 @@ namespace TAS.Controllers
     {
 		TraceabilityModels models;
 		CommonModels commonModels;
-		private readonly IStringLocalizer<SharedResource> _localizer;
-		public TraceabilityController(IStringLocalizer<SharedResource> localizer)
+		public TraceabilityController()
 		{
 			models = new TraceabilityModels();
 			commonModels = new CommonModels();
-			_localizer = localizer;
 		}
 
 		public IActionResult Traceability()
         {
-			ViewBag.langTraceability = CultureInfo.CurrentUICulture.Name;
 			return View();
         }
 		#region handle Data

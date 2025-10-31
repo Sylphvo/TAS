@@ -52,8 +52,6 @@
     <Folder Include="ScriptSQL\" />
     <Folder Include="Publish\" />
     <Folder Include="Repository\" />
-    <Folder Include="Services\" />
-    <Folder Include="ViewComponents\" />
   </ItemGroup>
 
 </Project>

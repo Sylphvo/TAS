@@ -83,7 +83,20 @@ select {
 .select2-container{
     margin-left:10px;
 }
-
+/* Style adjustments for form check labels */
 .form-check-label {
 	margin-right: 10px;
+}
+
+/* Center align sidebar header content */
+.pc-sidebar .m-header {
+	justify-content: center;
+}
+/* Dropdown item hover and active state */
+.dropdown .dropdown-item.active, .dropdown .dropdown-item:active, .dropdown .dropdown-item:focus, .dropdown .dropdown-item:hover {
+    background: var(--pc-sidebar-active-color) !important;
+    color: #ffffff !important;
+}
+.dropdown-menu .dropdown-item {
+    margin: 5px 0;
 }

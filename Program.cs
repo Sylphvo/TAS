@@ -44,32 +44,37 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 // Thêm Localization
 builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
-// Cấu hình supported cultures
-var supportedCultures = new[]
-{
-	new CultureInfo("vi-VN"),
-	new CultureInfo("en-US")
-};
+
 // Cấu hình RequestLocalizationOptions
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
-	options.DefaultRequestCulture = new RequestCulture("vi-VN");
-	options.SupportedCultures = supportedCultures;
-	options.SupportedUICultures = supportedCultures;
+	var supported = new[] { "vi", "en" };
+	options.SetDefaultCulture("vi")
+		.AddSupportedCultures(supported)
+		.AddSupportedUICultures(supported);
+
 	// Cấu hình các provider để detect ngôn ngữ
 
 	options.RequestCultureProviders = new List<IRequestCultureProvider>
 	{
-		new QueryStringRequestCultureProvider(), // ?culture=vi-VN
         new CookieRequestCultureProvider(),      // Cookie
+		new QueryStringRequestCultureProvider(), // ?culture=vi-VN
         new AcceptLanguageHeaderRequestCultureProvider() // Header
     };
 });
+// Đăng ký LanguageService
+builder.Services.AddHttpContextAccessor();
+// Đăng ký dịch vụ ngôn ngữ
+builder.Services.AddScoped<ILanguageService, LanguageService>();
+
+
 // Đăng ký Authorization
 builder.Services.AddAuthorization();
 
 // Đăng ký DI cho SQL Server + Dapper executor
 builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(cs));
+
+
 
 // Đăng ký TagHelper
 var app = builder.Build();
@@ -81,13 +86,11 @@ if (!app.Environment.IsDevelopment())
 
 // Sử dụng Localization
 // QUAN TRỌNG: UseRequestLocalization phải đặt trước UseRouting
-var cultures = new[] { new CultureInfo("vi-VN"), new CultureInfo("en-US") };
-app.UseRequestLocalization(new RequestLocalizationOptions
-{
-	DefaultRequestCulture = new RequestCulture("vi-VN"),// ngôn ngữ mặc định
-	SupportedCultures = cultures,// định dạng ngày tháng, số, tiền tệ
-	SupportedUICultures = cultures// ngôn ngữ hiển thị
-});
+var opts = new RequestLocalizationOptions()
+	.SetDefaultCulture("vi")
+	.AddSupportedCultures("vi", "en")
+	.AddSupportedUICultures("vi", "en");
+app.UseRequestLocalization(opts);
 
 // Middleware
 app.UseHttpsRedirection();

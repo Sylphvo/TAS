@@ -1,4 +1,5 @@
-﻿using TAS.Helpers;
+﻿using Microsoft.AspNetCore.Localization;
+using TAS.Helpers;
 using TAS.TagHelpers;
 
 namespace TAS.ViewModels
@@ -19,5 +20,6 @@ namespace TAS.ViewModels
 
 			return listData;
 		}
+
 	}
 }

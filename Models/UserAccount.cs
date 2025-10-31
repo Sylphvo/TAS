@@ -20,13 +20,13 @@ namespace TAS.Helpers
         [Required, MaxLength(256), EmailAddress]
         public string Email { get; set; } = default!;
 
-        [NotMapped]                 // không lưu plaintext
+        [NotMapped] // không lưu plaintext
         public string Password { get; set; } = default!;
 
-        [Required]                  // lưu hash
+        [Required] // lưu hash
         public byte[] PasswordHash { get; set; } = default!;
 
-        [NotMapped]                 // không lưu confirm
+        [NotMapped] // không lưu confirm
         public string ConfirmPassword { get; set; } = "";
 
         public bool AcceptTerms { get; set; } = true;

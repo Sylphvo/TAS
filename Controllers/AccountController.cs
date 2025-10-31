@@ -87,8 +87,7 @@ namespace TAS.Controllers
 		{
             //if (!ModelState.IsValid) return View(userRegister);
 
-            bool exists = await _db.Users
-                .AnyAsync(x => x.Email == userRegister.Email || x.UserName == userRegister.UserName);
+            bool exists = await _db.Users.AnyAsync(x => x.Email == userRegister.Email || x.UserName == userRegister.UserName);
             if (exists)
             {
                 ModelState.AddModelError("", "Email hoặc UserName đã tồn tại");
