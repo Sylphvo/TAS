@@ -63,13 +63,15 @@ select {
 #topPager {
     padding: 5px 15px !important;
 }
-.form-label {
+.form-label {   
     margin: 0 !important;
 }
-.btn, .introjs-tooltip .introjs-button {
+
+.btn:not(.Col-orderName), .introjs-tooltip .introjs-button {
     border-radius: 4px !important;
     padding: 5px 12px !important;
 }
+
 .buttonSearch{
     margin-left:5px; 
 }
@@ -85,7 +87,8 @@ select {
 }
 /* Style adjustments for form check labels */
 .form-check-label {
-	margin-right: 10px;
+    margin-right: 10px;
+    margin-top: 2px;
 }
 
 /* Center align sidebar header content */

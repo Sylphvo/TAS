@@ -1,35 +1,22 @@
 ﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
-var gridOptions, listDataFull, listRowChild;
+var gridOptionsPallet, listDataFullPallet, listRowChildPallet;
 var page = 1;
 var pageSize = 20;
 var gridApi;
 var pagerApi;
-var arrParentIds = [];
 
-// Các hằng số cho Traceability
-var arrConstantTraceability = {
+// Các hằng số cho Pallet
+var arrConstantPallet = {
 	SortOrder_Lot: 1, // Order
 	SortOrder_Agent: 2,// Agent
 	SortOrder_Farm: 3,// Farmer
 }
-
-// Đăng ký sự kiện cho Traceability
-function RegEventTraceability() {
-    $('#ChkAll').on('change', function (e) {
-        ShowOrHideAllRowChildren(e.target.checked);
-    });
-    $('.Col-orderName').on('click', function (e) {
-        resizeGridPallet();
-    });
-}
-
-
-// Tạo grid Traceability
-function CreateGridTraceability() {
-    gridOptions = {
+// Tạo grid Pallet
+function CreateGridPallet() {
+    gridOptionsPallet = {
         //pagination: true,
         paginationPageSize: 100,
-        columnDefs: CreateColModelTraceability(),
+        columnDefs: CreateColModelPallet(),
         defaultColDef: {
             width: 170,
             filter: true,
@@ -44,7 +31,7 @@ function CreateGridTraceability() {
         animateRows: true,
         components: {
             customFloatingFilterInput: getFloatingFilterInputComponent(),
-            //customheader: CustomHeaderTraceability,
+            //customheader: CustomHeaderPallet,
         },
         cellSelection: true,
         onGridReady: function (params) {
@@ -60,19 +47,19 @@ function CreateGridTraceability() {
 
     };
 
-    var eGridDiv = document.querySelector(Traceability);
-    new agGrid.Grid(eGridDiv, gridOptions);
-    //SetButtonOnPagingForTraceability();
-    CreateRowDataTraceability();
-    resizeGridTraceability();
+    var eGridDiv = document.querySelector(Pallet);
+    new agGrid.Grid(eGridDiv, gridOptionsPallet);
+    //SetButtonOnPagingForPallet();
+    CreateRowDataPallet();
+    resizeGridPallet();
 }
-function resizeGridTraceability() {
+function resizeGridPallet() {
     setTimeout(function () {
         setWidthHeightGrid(25);
     }, 100);
 }
 function setWidthHeightGrid(heithlayout) {
-    //gridOptionsTraceability.api.sizeColumnsToFit();
+    gridOptionsPallet.api.sizeColumnsToFit();
     //var heigh = $(window).height() - $('.top_header').outerHeight() - $('.dm_group.dmg-shortcut').outerHeight() - ($('.col-xl-12').outerHeight() + heithlayout);
     //$(myGrid).css('height', heigh);
     //gridOptions.api.sizeColumnsToFit({
@@ -81,36 +68,36 @@ function setWidthHeightGrid(heithlayout) {
     //});
 }
 function RefreshAllGridWhenChangeData() {
-    //ShowHideLoading(true, Traceability);
+    //ShowHideLoading(true, Pallet);
     setTimeout(function () {
-        CreateRowDataTraceability();
+        CreateRowDataPallet();
     }, 1);
 }
-function CreateRowDataTraceability() {
-    var listSearchTraceability = {};
+function CreateRowDataPallet() {
+    var listSearchPallet = {};
     ResetValueArrParentIds();
-    //ShowHideLoading(true, divTraceability);
-    //$('#TraceabilityModal .ag-overlay-no-rows-center').hide();
+    //ShowHideLoading(true, divPallet);
+    //$('#PalletModal .ag-overlay-no-rows-center').hide();
     $.ajax({
         async: !false,
         type: 'POST',
-        url: "/Traceability/Traceabilitys",
-        data: listSearchTraceability,
+        url: "/Traceability/Pallets",
+        data: listSearchPallet,
         dataType: "json",
         success: function (data) {
-            listDataFull = data;
-			listRowChild = data.filter(x => x.sortOrder != 1);
-            gridOptions.api.setRowData(data);
+            listDataFullPallet = data;
+            listRowChildPallet = data.filter(x => x.sortOrder != 1);
+            gridOptionsPallet.api.setRowData(data);
             //setTimeout(function () {
-            //    ShowHideLoading(false, divTraceability);
-            //    $('#TraceabilityModal .ag-overlay-no-rows-center').show();
-            //    setWidthHeightGridTraceability(25, true);
-            //    FocusRowTraceability();
+            //    ShowHideLoading(false, divPallet);
+            //    $('#PalletModal .ag-overlay-no-rows-center').show();
+            //    setWidthHeightGridPallet(25, true);
+            //    FocusRowPallet();
             //}, 100);
         }
     });
 }
-function CreateColModelTraceability() {
+function CreateColModelPallet() {
     var columnDefs = [
         {
             field: 'orderCode', headerName: 'Mã đơn hàng', width: 90, minWidth: 90
@@ -183,9 +170,9 @@ function onRowSelected(event) {
     //   }
 }
 
-function CustomHeaderTraceability() { }
+function CustomHeaderPallet() { }
 
-CustomHeaderTraceability.prototype.init = function (params) {
+CustomHeaderPallet.prototype.init = function (params) {
     this.params = params;
     var strHiddenAsc = params.sortOrderDefault == 'asc' ? '' : 'ag-hidden';
     var strHiddenDesc = params.sortOrderDefault == 'desc' ? '' : 'ag-hidden';
@@ -230,7 +217,7 @@ function cellStyle_Col_Model_EventActual(params) {
     //let rowObject = params.data;
     let cellAttr = {};
 
-    //if (rowObject.row_type == arrConstantTraceability.RowTypeStaff) {
+    //if (rowObject.row_type == arrConstantPallet.RowTypeStaff) {
     //    cellAttr['background-color'] = '#f1f182';
     //    cellAttr['color'] = 'black';
     //    cellAttr['padding-left'] = '25px !important';
@@ -239,21 +226,21 @@ function cellStyle_Col_Model_EventActual(params) {
     //        cellAttr['font-weight'] = '700';
     //    }
     //}
-    //else if (rowObject.row_type == arrConstantTraceability.RowTypeDate) {
+    //else if (rowObject.row_type == arrConstantPallet.RowTypeDate) {
     //    if (colName == 'start_date') {
     //        cellAttr['font-weight'] = 'bold';
     //    }
 
     //    cellAttr['background-color'] = colorSortOrder_1;
     //}
-    //else if (rowObject.row_type == arrConstantTraceability.RowTypeGroup) {
+    //else if (rowObject.row_type == arrConstantPallet.RowTypeGroup) {
     //    if (colName == 'start_date') {
     //        cellAttr['font-weight'] = '600';
     //    }
     //    cellAttr['padding-left'] = '45px !important';
     //    cellAttr['background-color'] = colorSortOrder_4;
     //}
-    //else if (rowObject.row_type == arrConstantTraceability.RowTypeItem && rowObject.row_status == arrConstantTraceability.RowStatusPast) {
+    //else if (rowObject.row_type == arrConstantPallet.RowTypeItem && rowObject.row_status == arrConstantPallet.RowStatusPast) {
     //    cellAttr['background-color'] = colorSortOrder_3;
     //    if (colName == 'start_date' || colName == 'end_date') {
     //        cellAttr['text-align'] = 'center';
@@ -269,7 +256,7 @@ function cellStyle_Col_Model_EventActual(params) {
     return cellAttr;
 }
 
-CustomHeaderTraceability.prototype.onSortChanged = function () {
+CustomHeaderPallet.prototype.onSortChanged = function () {
     //Remove tất cả icon sort ở col khác
     $('.ag-sort-ascending-icon').not($(this.eSortUpButton)).addClass('ag-hidden');
     $('.ag-sort-descending-icon').not($(this.eSortDownButton)).addClass('ag-hidden');
@@ -288,15 +275,15 @@ CustomHeaderTraceability.prototype.onSortChanged = function () {
     this.onSortRequested();
 };
 
-CustomHeaderTraceability.prototype.getGui = function () {
+CustomHeaderPallet.prototype.getGui = function () {
     return this.eGui;
 };
 
-CustomHeaderTraceability.prototype.onSortRequested = function () {
+CustomHeaderPallet.prototype.onSortRequested = function () {
     RefreshAllGridWhenChangeData();
 };
 
-CustomHeaderTraceability.prototype.destroy = function () {
+CustomHeaderPallet.prototype.destroy = function () {
     this.eGui.removeEventListener(
         'click',
         this.onSortChangedListener
@@ -350,13 +337,13 @@ function persistCurrentPageOrder() {
         ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
     }
     // ghi đè đoạn trang hiện tại vào mảng gốc
-    listDataFull.splice(start, n, ...ordered);
+    listDataFullPallet.splice(start, n, ...ordered);
 }
 
 // --- helpers ---
 function renderPage() {
     const start = (page - 1) * pageSize;
-    const slice = listDataFull.slice(start, start + pageSize);
+    const slice = listDataFullPallet.slice(start, start + pageSize);
     gridApi.setRowData(slice);
 }
 function setupPager() {
@@ -365,7 +352,7 @@ function setupPager() {
         pagerEl: '#pager',
         page,
         pageSize,
-        total: listDataFull.length,
+        total: listDataFullPallet.length,
         render: () => '', // không render list
         onChange: ({ page: p, pageSize: sz }) => {
             // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
@@ -417,7 +404,7 @@ function ResetValueArrParentIds() {
 // Hiển thị hoặc ẩn các hàng con dựa trên việc chọn hoặc bỏ chọn checkbox "Chọn tất cả"
 function ShowOrHideAllRowChildren(isCheckAll) {
     
-    let listDataChildToAdd = listDataFull.filter(x => x.sortOrder != arrConstantTraceability.SortOrder_Lot);
+    let listDataChildToAdd = listDataFullPallet.filter(x => x.sortOrder != arrConstantPallet.SortOrder_Lot);
     if (isCheckAll)
     {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-closed').addClass('ag-icon-tree-open');
@@ -427,5 +414,5 @@ function ShowOrHideAllRowChildren(isCheckAll) {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-open').addClass('ag-icon-tree-closed');
         gridApi.applyTransaction({ remove: listDataChildToAdd });
     }
-    listDataFull.filter(x => x.isOpenChild = isCheckAll);
+    listDataFullPallet.filter(x => x.isOpenChild = isCheckAll);
 }

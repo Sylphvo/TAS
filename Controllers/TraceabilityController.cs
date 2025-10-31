@@ -15,12 +15,12 @@ namespace TAS.Controllers
 			models = new TraceabilityModels();
 			commonModels = new CommonModels();
 		}
-
+		#region Traceability
 		public IActionResult Traceability()
         {
 			return View();
         }
-		#region handle Data
+		#region handle Data Traceabilitys
 		[HttpPost]
 		public async Task<JsonResult> Traceabilitys()
 		{
@@ -28,13 +28,34 @@ namespace TAS.Controllers
 
 			return new JsonResult(lstData);
 		}
-		[HttpPost("AddOrUpdate")]
-		public IActionResult AddOrUpdate()
+		[HttpPost("AddOrUpdateTraceability")]
+		public IActionResult AddOrUpdateTraceability()
 		{
 			return View();
 		}
-		[HttpPost("Delete/{id}")]
+		[HttpPost("DeleteTraceability/{id}")]
 		public IActionResult Delete(int id)
+		{
+			return View();
+		}
+		#endregion
+		#endregion
+
+		#region handle Data Pallets
+		[HttpPost]
+		public async Task<JsonResult> Pallets()
+		{
+			var lstData = await models.GetTraceabilityAsync();
+
+			return new JsonResult(lstData);
+		}
+		[HttpPost("AddOrUpdatePallet")]
+		public IActionResult AddOrUpdatePallets()
+		{
+			return View();
+		}
+		[HttpPost("DeletePallet/{id}")]
+		public IActionResult DeletePallets(int id)
 		{
 			return View();
 		}

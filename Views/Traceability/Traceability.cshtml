@@ -89,9 +89,12 @@
 <partial name="~/Views/Shared/Modal/_Pallet.cshtml" />
 @section Scripts {
     <script type="text/javascript" src="~/Contents/js/Traceability/Traceability.js"></script>
+    <script type="text/javascript" src="~/Contents/js/Traceability/Pallet.js"></script>
     <script>        
         var Traceability = '#TraceabilityGrid';
         CreateGridTraceability(true);
         RegEventTraceability();
+        var Pallet = '#PalletGrid';
+        CreateGridPallet(true);
     </script>
 }
