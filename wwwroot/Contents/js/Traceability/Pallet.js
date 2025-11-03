@@ -370,7 +370,7 @@ function cellRender_ParentAndChild(params) {
     let id_list = params.data.sortIdList;
     if (params.colDef.field == "orderName" && params.data.sortOrder == 1) {
         return `<div class="text-cell-eclip">
-        <button type="button" class="Col-orderName btn btn-link" data-bs-toggle="modal" data-bs-target="#myLargeModalLabel">
+        <button type="button" class="Col-ord btn btn-link" data-bs-toggle="modal" data-bs-target="#myLargeModalLabel">
             ${htmlDecode(params.data.orderName)}
         </button>
         </div>` +

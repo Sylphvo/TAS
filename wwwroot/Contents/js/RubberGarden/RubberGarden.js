@@ -192,6 +192,15 @@ function CreateColModelRubberGarden() {
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
             //}
+        },
+        {
+            field: 'Status', headerName: 'Trạng thái', width: 140, minWidth: 140
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: false
+            , headerComponent: "customHeader"
+            //, cellRenderer: function (params) {
+            //    return `<div class="text-cell-eclip">${params.value}</div>`;
+            //}
         }
     ]
     return columnDefs;

@@ -13,7 +13,7 @@ namespace TAS.ViewModels
 		// Model
 		public async Task<List<RubberFarmRequest>> GetRubberFarmAsync()
 		{
-			var sql = "SELECT * FROM RubberFarm";
+			var sql = "SELECT * FROM RubberIntake";
 			return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
 		}
 

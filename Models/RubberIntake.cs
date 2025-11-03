@@ -36,10 +36,22 @@ namespace TAS.Models
 		[Column(TypeName = "decimal(12,3)")]
 		public decimal? CentrifugeProductKg { get; set; }
 
-		// meta
-		public DateTime? IntakeDate { get; set; }
-		[StringLength(50)] public string? BatchCode { get; set; }
-	}
+        // Trạng thái  nhập
+        [Column(TypeName = "bit")]
+		public bool? Status { get; set; }
+
+        public DateTime? RegisterDate { get; set; }// thời gian tạo
+
+        [StringLength(50)]
+        public string? RegisterPerson { get; set; } // Người tạo
+
+        public DateTime? UpdateDate { get; set; }// thời gian cập nhật
+
+        [StringLength(50)]
+        public string? UpdatePerson { get; set; } // Người cập nhật
+
+        public DateTime? IntakeDate { get; set; }
+    }
 	public class RubberIntakeRequest
 	{
 	
