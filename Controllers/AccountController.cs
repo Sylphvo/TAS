@@ -120,6 +120,41 @@ namespace TAS.Controllers
 			HttpContext.Session.Clear();
 			return RedirectToAction("Login", "Account");
 		}
+		//// Upload avatar
+		//[HttpPost("users/{id:guid}/avatar")]
+		//public async Task<IActionResult> UploadAvatar(Guid id, IFormFile file, [FromServices] IWebHostEnvironment env)
+		//{
+		//	if (file == null || file.Length == 0) return BadRequest("Empty file");
+		//	var allowed = new[] { "image/jpeg", "image/png", "image/webp", "image/gif" };
+		//	if (!allowed.Contains(file.ContentType)) return BadRequest("Invalid type");
+		//	const long MAX = 2 * 1024 * 1024; // 2MB
+		//	if (file.Length > MAX) return BadRequest("Too large");
 
+		//	var user = await _db.Set<UserAccount>().FindAsync(id);
+		//	if (user == null) return NotFound();
+
+		//	var ext = Path.GetExtension(file.FileName);
+		//	var fileName = $"{Guid.NewGuid()}{ext}";
+		//	var folder = Path.Combine(env.WebRootPath, "uploads", "avatars");
+		//	Directory.CreateDirectory(folder);
+		//	var path = Path.Combine(folder, fileName);
+
+		//	// xóa file cũ nếu có
+		//	if (!string.IsNullOrWhiteSpace(user.AvatarUrl))
+		//	{
+		//		var oldPath = Path.Combine(env.WebRootPath, user.AvatarUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+		//		if (System.IO.File.Exists(oldPath)) System.IO.File.Delete(oldPath);
+		//	}
+
+		//	using (var fs = System.IO.File.Create(path))
+		//		await file.CopyToAsync(fs);
+
+		//	user.AvatarUrl = $"/uploads/avatars/{fileName}";
+		//	user.AvatarUpdatedAt = DateTime.UtcNow;
+		//	await _db.SaveChangesAsync();
+
+		//	// trả về URL kèm phiên bản để tránh cache
+		//	return Ok(new { url = $"{user.AvatarUrl}?v={user.AvatarUpdatedAt!.Value.Ticks}" });
+		//}
 	}
 }

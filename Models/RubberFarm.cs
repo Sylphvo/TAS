@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TAS.Helpers
 {
-    public class RubberFarmDb
+	[Table("RubberFarm")]
+	public class RubberFarmDb
 	{
 		[Key]
 		public long FarmId { get; set; }
@@ -25,6 +27,8 @@ namespace TAS.Helpers
 		public string? CreatedBy { get; set; }//người tạo 
 		public DateTime? UpdatedAt { get; set; }//thời gian cập nhật
 		public string? UpdatedBy { get; set; }//người cập nhật
+		public string? PolygonMap { get; set; }//vị tri trí bản đồ dạng polygon
+
 		public RubberAgent? Rubber_Agent { get; set; }            // navigation
 	}
 	// Request Model

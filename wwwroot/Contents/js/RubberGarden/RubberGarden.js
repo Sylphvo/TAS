@@ -1,4 +1,6 @@
-﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
+﻿const { param } = require("jquery");
+
+var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
 var gridOptionsRubberGarden, ListDataFull;
 var page = 1;
 var pageSize = 20;
@@ -29,8 +31,8 @@ function CreateGridRubberGarden() {
         onGridReady: function (params) {          
             gridApi = params.api;
             params.api.sizeColumnsToFit();
-            renderPage();          // nạp trang đầu
-            setupPager();          // tạo pager ngoài
+            //renderPage();          // nạp trang đầu
+            //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
@@ -81,42 +83,26 @@ function GetParamSearch() {
     }
 }
 function CreateRowDataRubberGarden() {
-    const rowData = [
-        { STT: 1, maNhaVuon: "NV_1", tenNhaVuon: "Phan Thị Dự", KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 2, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 532, TSC: 34.9, DRC: 31.9, thanhPham: 170, thanhPhamLyTam: 255 },
-        { STT: 3, maNhaVuon: "NV_3", tenNhaVuon: "Hoàng Thị Long (C4)", KG: 721, TSC: 32.2, DRC: 29.2, thanhPham: 211, thanhPhamLyTam: 316 },
-        { STT: 4, maNhaVuon: "NV_4", tenNhaVuon: "Nguyễn Văn Hải 01 (Thành)", KG: 220, TSC: 33.2, DRC: 30.2, thanhPham: 66, thanhPhamLyTam: 100 },
-        { STT: 5, maNhaVuon: "NV_5", tenNhaVuon: "Nguyễn Văn Hải 02 (Thành)", KG: 324, TSC: 27.6, DRC: 24.6, thanhPham: 80, thanhPhamLyTam: 120 },
-        { STT: 6, maNhaVuon: "NV_6", tenNhaVuon: "Nguyễn Văn Hà (Fong)", KG: 275, TSC: 41.2, DRC: 38.2, thanhPham: 105, thanhPhamLyTam: 158 },
-        { STT: 7, maNhaVuon: "NV_7", tenNhaVuon: "Hồ Thị Hội (nhí)", KG: 47, TSC: 33.1, DRC: 30.1, thanhPham: 14, thanhPhamLyTam: 21 },
-        { STT: 8, maNhaVuon: "NV_8", tenNhaVuon: "Hồ Thị Hội 2 (nhí)", KG: null, TSC: null, DRC: -3, thanhPham: null, thanhPhamLyTam: null },
-        { STT: 9, maNhaVuon: "NV_9", tenNhaVuon: "Trần Văn Hương (Quốc)", KG: 477, TSC: 32.6, DRC: 29.6, thanhPham: 141, thanhPhamLyTam: 212 },
-    ];
-    ListDataFull = rowData;
-    gridOptionsRubberGarden.api.setRowData(ListDataFull);
-    //gridOptionsRubberGarden.api.setRowData(rowData);
-    //listTotal = [];
-    //var listSearchRubberGarden = GetParamSearchRubberGarden();
-    //var listSearchRubberGarden = {};
+    var listSearchRubberGarden = {};
     //ShowHideLoading(true, divRubberGarden);
-    //$('#RubberGardenModal .ag-overlay-no-rows-center').hide();
-    //$.ajax({
-    //    async: !false,
-    //    type: 'POST',
-    //    url: "/RubberGarden/RubberGardens",
-    //    data: listSearchRubberGarden,
-    //    dataType: "json",
-    //    success: function (data) {
-    //        ListDataFull = data;
-    //        gridOptionsRubberGarden.api.setRowData(data);
-    //        //setTimeout(function () {
-    //        //    ShowHideLoading(false, divRubberGarden);
-    //        //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
-    //        //    setWidthHeightGridRubberGarden(25, true);
-    //        //    FocusRowRubberGarden();
-    //        //}, 100);
-    //    }
-    //});
+    $('#RubberGardenModal .ag-overlay-no-rows-center').hide();
+    $.ajax({
+        async: !false,
+        type: 'POST',
+        url: "/RubberGarden/RubberGardens",
+        data: listSearchRubberGarden,
+        dataType: "json",
+        success: function (data) {
+            ListDataFull = data;
+            gridOptionsRubberGarden.api.setRowData(data);
+            //setTimeout(function () {
+            //    ShowHideLoading(false, divRubberGarden);
+            //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
+            //    setWidthHeightGridRubberGarden(25, true);
+            //    FocusRowRubberGarden();
+            //}, 100);
+        }
+    });
 }
 function CreateColModelRubberGarden() {
     var columnDefs = [
@@ -153,7 +139,7 @@ function CreateColModelRubberGarden() {
             , headerComponent: "customHeader"
         },
         {
-            field: 'KG', headerName: 'Khối lượng', width: 210, minWidth: 210
+            field: 'rubberKg', headerName: 'Khối lượng', width: 210, minWidth: 210
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -162,21 +148,21 @@ function CreateColModelRubberGarden() {
             //}
         },
         {
-            field: 'TSC', headerName: 'TSC', width: 100, minWidth: 100
+            field: 'tscPercent', headerName: 'TSC', width: 100, minWidth: 100
             //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'DRC', headerName: 'DRC', width: 100, minWidth: 100
+            field: 'drcPercent', headerName: 'DRC', width: 100, minWidth: 100
             //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'thanhPham', headerName: 'Thành Phẩm', width: 140, minWidth: 140
+            field: 'finishedProductKg', headerName: 'Thành Phẩm', width: 140, minWidth: 140
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -185,7 +171,7 @@ function CreateColModelRubberGarden() {
             //}
         },
         {
-            field: 'thanhPhamLyTam', headerName: 'Thành Phẩm Ly Tâm', width: 140, minWidth: 140
+            field: 'centrifugeProductKg', headerName: 'Thành Phẩm Ly Tâm', width: 140, minWidth: 140
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -194,13 +180,20 @@ function CreateColModelRubberGarden() {
             //}
         },
         {
-            field: 'Status', headerName: 'Trạng thái', width: 140, minWidth: 140
+            field: 'status', headerName: 'Trạng thái', width: 140, minWidth: 140
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
+            , cellRenderer: function (params) {
+                let elementResult = '';
+                console.log(params.value);
+                if (params.value == 0) {
+                    return elementResult = '<span class="badge text-bg-primary">Chưa chuyển</span>';
+                }
+                if (params.value == 1) {                  
+                    return elementResult = '<span class="badge text-bg-success">Đã chuyển</span>';
+                }
+            }
         }
     ]
     return columnDefs;
@@ -344,21 +337,6 @@ function updateRowIndex() {
 }
 
 
-// Import từ URL demo
-document.getElementById('importExcel').addEventListener('change', async e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-        const buf = await file.arrayBuffer();
-        const wb = XLSX.read(buf, { type: 'array', cellDates: true });
-        const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-        gridApi.setRowData(rows);
-        notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
-    } catch (err) {
-        notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
-    }
-});
 // Export Excel
 function onExportExcelData() {
     const ws = XLSX.utils.json_to_sheet(ListDataFull);        
@@ -418,4 +396,26 @@ function addNewRowBody() {
     gridApi.ensureNodeVisible(node, "bottom");
     gridApi.setFocusedCell(node.rowIndex, "symbol");
     gridApi.startEditingCell({ rowIndex: node.rowIndex, colKey: "symbol" });
+}
+
+
+
+function ImportExcelData(rows) {
+    $.ajax({
+        async: !false,
+        method: 'POST',
+        url: "/RubberGarden/ImportDataLstData",
+        contentType: 'application/json',
+        data: JSON.stringify(rows),
+        success: function (res) {
+            if (res == 1) {
+                notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
+                RefreshAllGridWhenChangeData();
+            }
+        },
+        error: function () {
+            notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
+        }
+	});
+    //gridApi.setRowData(rows);
 }

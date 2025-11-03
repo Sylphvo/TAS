@@ -35,10 +35,10 @@ namespace TAS.TagHelpers
 		}
 
 		// Execute (INSERT, UPDATE, DELETE)
-		public async Task<int> ExecuteAsync(string sql, object? param = null)
+		public int Execute(string sql, object? param = null)
 		{
-			await using var conn = new SqlConnection(_connectionString);
-			return await conn.ExecuteAsync(sql, param);
+			using var conn = new SqlConnection(_connectionString);
+			return conn.Execute(sql, param);
 		}
 
 		// Query trả về scalar value (COUNT, SUM, etc.)

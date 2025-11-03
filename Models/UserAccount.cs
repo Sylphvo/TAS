@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace TAS.Helpers
 {
+    [Table("UserAccounts")]
 	public class UserAccount
 	{
         [Key]
@@ -36,5 +37,23 @@ namespace TAS.Helpers
 
         public DateTime? LogIn { get; set; }
         public DateTime? LogOut { get; set; }
-    }
+	}
+	public class UserAccountRequest
+	{
+		public Guid UserId { get; set; } // identity
+		public string FirstName { get; set; } = "";//Tên
+		public string LastName { get; set; } = "";//Họ
+		public string UserName { get; set; } = "";//Tên đăng nhập
+		public string Email { get; set; } = default!;//Email
+		public string Password { get; set; } = default!;//Mật khẩu
+		public byte[] PasswordHash { get; set; } = default!;//Mật khẩu đã băm
+		public string ConfirmPassword { get; set; } = "";//Xác nhận mật khẩu
+		public bool AcceptTerms { get; set; } = true;//Chấp nhận điều khoản
+		public bool IsActive { get; set; } = true;//Trạng thái kích hoạt
+		public bool TwoFactorEnabled { get; set; }//Xác thực hai yếu tố
+		public bool RememberMe { get; set; }//Ghi nhớ đăng nhập
+		public DateTime? LogIn { get; set; }//Thời gian đăng nhập
+		public DateTime? LogOut { get; set; }//Thời gian đăng xuất
+											 // Avatar
+	}
 }

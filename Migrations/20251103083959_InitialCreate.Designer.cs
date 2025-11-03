@@ -12,7 +12,7 @@ using TAS.Data;
 namespace TAS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251029042957_InitialCreate")]
+    [Migration("20251103083959_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -84,7 +84,7 @@ namespace TAS.Migrations
                         .IsUnique()
                         .HasFilter("[TaxCode] IS NOT NULL");
 
-                    b.ToTable("RubberAgent", (string)null);
+                    b.ToTable("RubberAgent");
                 });
 
             modelBuilder.Entity("TAS.Helpers.RubberFarmDb", b =>
@@ -139,6 +139,10 @@ namespace TAS.Migrations
                         .HasColumnType("bit")
                         .HasDefaultValue(true);
 
+                    b.Property<string>("PolygonMap")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
                     b.Property<decimal?>("RubberAreaHa")
                         .HasPrecision(12, 2)
                         .HasColumnType("decimal(12,2)");
@@ -165,7 +169,7 @@ namespace TAS.Migrations
                     b.HasIndex("FarmCode")
                         .IsUnique();
 
-                    b.ToTable("RubberFarm", (string)null);
+                    b.ToTable("RubberFarm");
                 });
 
             modelBuilder.Entity("TAS.Helpers.UserAccount", b =>
@@ -238,18 +242,18 @@ namespace TAS.Migrations
 
             modelBuilder.Entity("TAS.Models.RubberIntakeDb", b =>
                 {
-                    b.Property<Guid>("Id")
+                    b.Property<long>("IntakeId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("bigint");
 
-                    b.Property<string>("BatchCode")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("IntakeId"));
 
                     b.Property<decimal?>("CentrifugeProductKg")
+                        .HasPrecision(12, 3)
                         .HasColumnType("decimal(12,3)");
 
                     b.Property<decimal?>("DRCPercent")
+                        .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
 
                     b.Property<string>("FarmCode")
@@ -263,20 +267,41 @@ namespace TAS.Migrations
                         .HasColumnType("nvarchar(200)");
 
                     b.Property<decimal?>("FinishedProductKg")
+                        .HasPrecision(12, 3)
                         .HasColumnType("decimal(12,3)");
 
-                    b.Property<DateTime?>("IntakeDate")
+                    b.Property<DateTime?>("RegisterDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("Kg")
+                    b.Property<string>("RegisterPerson")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal?>("RubberKg")
+                        .HasPrecision(12, 3)
                         .HasColumnType("decimal(12,3)");
 
+                    b.Property<bool?>("Status")
+                        .HasColumnType("bit");
+
                     b.Property<decimal?>("TSCPercent")
+                        .HasPrecision(5, 2)
                         .HasColumnType("decimal(5,2)");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime2");
 
-                    b.ToTable("RubberIntake", (string)null);
+                    b.Property<string>("UpdatePerson")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.HasKey("IntakeId");
+
+                    b.HasIndex("FarmCode");
+
+                    b.HasIndex("FarmCode", "RegisterDate");
+
+                    b.ToTable("RubberIntake");
                 });
 
             modelBuilder.Entity("TAS.Models.RubberOrderSummary", b =>
@@ -326,9 +351,7 @@ namespace TAS.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<int>("Level")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("int");
 
                     b.Property<string>("OrderCode")
                         .IsRequired()
@@ -343,6 +366,11 @@ namespace TAS.Migrations
                     b.Property<decimal?>("PricePerKg")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("SortOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(1);
+
                     b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
@@ -351,7 +379,48 @@ namespace TAS.Migrations
 
                     b.HasKey("OrderId");
 
-                    b.ToTable("RubberOrderSummary", (string)null);
+                    b.ToTable("RubberOrderSummary");
+                });
+
+            modelBuilder.Entity("TAS.Models.RubberPalletDb", b =>
+                {
+                    b.Property<long>("PalletId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("PalletId"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<long>("OrderId")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("PalletCode")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<int>("PalletNo")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("WeightKg")
+                        .HasPrecision(12, 3)
+                        .HasColumnType("decimal(12,3)");
+
+                    b.HasKey("PalletId");
+
+                    b.HasIndex("OrderId", "PalletNo")
+                        .IsUnique();
+
+                    b.ToTable("RubberPallets");
                 });
 
             modelBuilder.Entity("TAS.Helpers.RubberFarmDb", b =>
@@ -364,6 +433,15 @@ namespace TAS.Migrations
                         .IsRequired();
 
                     b.Navigation("Rubber_Agent");
+                });
+
+            modelBuilder.Entity("TAS.Models.RubberPalletDb", b =>
+                {
+                    b.HasOne("TAS.Models.RubberOrderSummary", null)
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

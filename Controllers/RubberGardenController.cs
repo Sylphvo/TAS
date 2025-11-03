@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TAS.Models;
 using TAS.ViewModels;
 
 namespace TAS.Controllers
@@ -31,11 +32,21 @@ namespace TAS.Controllers
 			var lstData = await models.GetRubberFarmAsync();
 			return new JsonResult(lstData);
 		}
+
 		[HttpPost("AddOrUpdate")]
-		public IActionResult AddOrUpdate()
+		public JsonResult AddOrUpdate(RubberIntakeRequest rubberIntakeRequest)
 		{
-			return View();
+			int result = models.AddOrUpdateRubber(rubberIntakeRequest);
+			return Json(result);
 		}
+
+		[HttpPost]
+		public JsonResult ImportDataLstData([FromBody] List<RubberIntakeRequest> rowsData)
+		{
+			int result = models.ImportListData(rowsData);
+			return Json(result);
+		}
+
 		[HttpPost("Delete/{id}")]
 		public IActionResult Delete(int id)
 		{

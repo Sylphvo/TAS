@@ -3,10 +3,11 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TAS.Models
 {
+	[Table("RubberIntake")]
 	public class RubberIntakeDb
 	{
 		[Key]
-		public Guid Id { get; set; } = Guid.NewGuid();
+		public long IntakeId { get; set; }
 
 		// Mã nhà vườn
 		[Required, StringLength(200)]
@@ -18,7 +19,7 @@ namespace TAS.Models
 
 		// KG
 		[Column(TypeName = "decimal(12,3)")]
-		public decimal? Kg { get; set; }
+		public decimal? RubberKg { get; set; }
 
 		// TSC (%)
 		[Column(TypeName = "decimal(5,2)")]
@@ -38,7 +39,7 @@ namespace TAS.Models
 
         // Trạng thái  nhập
         [Column(TypeName = "bit")]
-		public bool? Status { get; set; }
+		public int? Status { get; set; }
 
         public DateTime? RegisterDate { get; set; }// thời gian tạo
 
@@ -50,7 +51,6 @@ namespace TAS.Models
         [StringLength(50)]
         public string? UpdatePerson { get; set; } // Người cập nhật
 
-        public DateTime? IntakeDate { get; set; }
     }
 	public class RubberIntakeRequest
 	{
@@ -58,11 +58,16 @@ namespace TAS.Models
 		public int? RowNo { get; set; } // STT
 		public string FarmCode { get; set; } = string.Empty;  // Mã nhà vườn
 		public string FarmerName { get; set; } = string.Empty;  // Tên nhà vườn
-		public decimal? Kg { get; set; }    // KG
+		public decimal? RubberKg { get; set; }    // KG
 		public decimal? TSCPercent { get; set; }// TSC (%)
 		public decimal? DRCPercent { get; set; }// DRC (%)
 		public decimal? FinishedProductKg { get; set; }// Thành Phẩm (kg)
 		public decimal? CentrifugeProductKg { get; set; }// Thành Phẩm Ly Tâm (kg)
-		public DateTime? IntakeDate { get; set; }// meta
+		public int? Status { get; set; }
+		public DateTime? RegisterDate { get; set; }
+		public string? RegisterPerson { get; set; }
+		public DateTime? UpdateDate { get; set; }
+		public string? UpdatePerson { get; set; }
+
 	}
 }

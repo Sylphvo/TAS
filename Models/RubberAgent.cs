@@ -1,8 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TAS.Helpers
 {
-    public class RubberAgent
+
+	// Model đại lý
+	[Table("RubberAgent")]
+	public class RubberAgent
 	{
 		[Key]
 		public long AgentId { get; set; } //Khóa định danh đại lý

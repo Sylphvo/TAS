@@ -15,13 +15,14 @@ namespace TAS.Data
 		public DbSet<RubberFarmDb> gardens { get; set; }
 		public DbSet<RubberIntakeDb> rubberIntakeDb { get; set; }
 		public DbSet<RubberOrderSummary> rubberOrderSummaries { get; set; }
+		public DbSet<RubberPalletDb> rubberPallets { get; set; }
 		public DbSet<UserAccount> Users { get; set; }
-
+		// Configure entity mappings and relationships
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
-            modelBuilder.Entity<RubberAgent>(e =>
+			// RubberAgent configuration
+			modelBuilder.Entity<RubberAgent>(e =>
             {
-                e.ToTable("RubberAgent");
 				e.HasKey(x => x.AgentId);
 				e.Property(x => x.AgentId)
 					.UseIdentityColumn()
@@ -44,10 +45,9 @@ namespace TAS.Data
 				// Unique nếu có TaxCode
 				e.HasIndex(x => x.TaxCode).IsUnique().HasFilter("[TaxCode] IS NOT NULL");
 			});
-
-            modelBuilder.Entity<RubberFarmDb>(e =>
+			// RubberFarmDb configuration
+			modelBuilder.Entity<RubberFarmDb>(e =>
             {
-                e.ToTable("RubberFarm");
 				e.HasKey(x => x.FarmId);
 				e.Property(x => x.FarmId)
 					.UseIdentityColumn()
@@ -84,7 +84,9 @@ namespace TAS.Data
 
 				e.Property(x => x.CreatedBy).HasMaxLength(100);
 				e.Property(x => x.UpdatedBy).HasMaxLength(100);
+				e.Property(x => x.PolygonMap).HasMaxLength(500);
 			});
+			// UserAccount configuration
 			modelBuilder.Entity<UserAccount>(e =>
 			{
                 e.ToTable("UserAccount");
@@ -109,23 +111,44 @@ namespace TAS.Data
                 // index duy nhất
                 e.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] IS NOT NULL");
                 e.HasIndex(x => x.UserName).IsUnique().HasFilter("[UserName] IS NOT NULL");
-            });
+			});
+			// RubberIntakeDb configuration
 			modelBuilder.Entity<RubberIntakeDb>(e =>
 			{
-				e.ToTable("RubberIntake");
-				e.HasKey(x => x.Id);
-				e.Property(x => x.FarmCode).IsRequired().HasMaxLength(200);
-				e.Property(x => x.FarmerName).IsRequired().HasMaxLength(200);
-				e.Property(x => x.Kg).HasColumnType("decimal(12,3)");
-				e.Property(x => x.TSCPercent).HasColumnType("decimal(5,2)");
-				e.Property(x => x.DRCPercent).HasColumnType("decimal(5,2)");
-				e.Property(x => x.FinishedProductKg).HasColumnType("decimal(12,3)");
-				e.Property(x => x.CentrifugeProductKg).HasColumnType("decimal(12,3)");
-				e.Property(x => x.BatchCode).HasMaxLength(50);
+				e.HasKey(x => x.IntakeId);
+				e.Property(x => x.IntakeId)
+					.UseIdentityColumn()
+					.ValueGeneratedOnAdd();
+
+				e.Property(x => x.FarmCode)
+					.HasMaxLength(200)
+					.IsRequired();
+
+				e.Property(x => x.FarmerName)
+					.HasMaxLength(200)
+					.IsRequired();
+
+				e.Property(x => x.RubberKg).HasPrecision(12, 3);
+				e.Property(x => x.TSCPercent).HasPrecision(5, 2);
+				e.Property(x => x.DRCPercent).HasPrecision(5, 2);
+				e.Property(x => x.FinishedProductKg).HasPrecision(12, 3);
+				e.Property(x => x.CentrifugeProductKg).HasPrecision(12, 3);
+
+				e.Property(x => x.Status).HasColumnType("bit");
+
+				e.Property(x => x.RegisterPerson).HasMaxLength(50);
+				e.Property(x => x.UpdatePerson).HasMaxLength(50);
+
+				e.Property(x => x.RegisterDate).HasColumnType("datetime2");
+				e.Property(x => x.UpdateDate).HasColumnType("datetime2");
+
+				// Index phục vụ truy vấn
+				e.HasIndex(x => x.FarmCode);
+				e.HasIndex(x => new { x.FarmCode, x.RegisterDate });
 			});
+			// RubberOrderSummary configuration
 			modelBuilder.Entity<RubberOrderSummary>(entity =>
 			{
-				entity.ToTable("RubberOrderSummary");
 				entity.HasKey(e => e.OrderId);
 				entity.Property(e => e.OrderCode).IsRequired().HasMaxLength(50);
 				entity.Property(e => e.OrderName).IsRequired().HasMaxLength(200);
@@ -139,6 +162,16 @@ namespace TAS.Data
 				entity.Property(e => e.SortOrder).HasDefaultValue(1);
 				entity.Property(e => e.IsActive).HasDefaultValue(true);
 				entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+			});
+			// RubberPalletDb configuration
+			modelBuilder.Entity<RubberPalletDb>(e =>	
+			{
+				e.Property(x => x.WeightKg).HasPrecision(12, 3);
+				e.HasIndex(x => new { x.OrderId, x.PalletNo }).IsUnique();
+				e.HasOne<RubberOrderSummary>()
+				 .WithMany()
+				 .HasForeignKey(x => x.OrderId)
+				 .OnDelete(DeleteBehavior.Cascade);
 			});
 		}
 	}

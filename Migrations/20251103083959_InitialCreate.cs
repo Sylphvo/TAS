@@ -38,20 +38,24 @@ namespace TAS.Migrations
                 name: "RubberIntake",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    IntakeId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     FarmCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     FarmerName = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    Kg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),
-                    TSCPercent = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    DRCPercent = table.Column<decimal>(type: "decimal(5,2)", nullable: true),
-                    FinishedProductKg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),
-                    CentrifugeProductKg = table.Column<decimal>(type: "decimal(12,3)", nullable: true),
-                    IntakeDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    BatchCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                    RubberKg = table.Column<decimal>(type: "decimal(12,3)", precision: 12, scale: 3, nullable: true),
+                    TSCPercent = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: true),
+                    DRCPercent = table.Column<decimal>(type: "decimal(5,2)", precision: 5, scale: 2, nullable: true),
+                    FinishedProductKg = table.Column<decimal>(type: "decimal(12,3)", precision: 12, scale: 3, nullable: true),
+                    CentrifugeProductKg = table.Column<decimal>(type: "decimal(12,3)", precision: 12, scale: 3, nullable: true),
+                    Status = table.Column<bool>(type: "bit", nullable: true),
+                    RegisterDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    RegisterPerson = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    UpdateDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatePerson = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RubberIntake", x => x.Id);
+                    table.PrimaryKey("PK_RubberIntake", x => x.IntakeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,7 +76,8 @@ namespace TAS.Migrations
                     TotalWeightKg = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     PricePerKg = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
                     TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
-                    Level = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    SortOrder = table.Column<int>(type: "int", nullable: false, defaultValue: 1),
+                    Level = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false, defaultValue: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -124,7 +129,8 @@ namespace TAS.Migrations
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETUTCDATE()"),
                     CreatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true)
+                    UpdatedBy = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    PolygonMap = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -135,6 +141,31 @@ namespace TAS.Migrations
                         principalTable: "RubberAgent",
                         principalColumn: "AgentCode",
                         onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "RubberPallets",
+                columns: table => new
+                {
+                    PalletId = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<long>(type: "bigint", nullable: false),
+                    PalletCode = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    PalletNo = table.Column<int>(type: "int", nullable: false),
+                    WeightKg = table.Column<decimal>(type: "decimal(12,3)", precision: 12, scale: 3, nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RubberPallets", x => x.PalletId);
+                    table.ForeignKey(
+                        name: "FK_RubberPallets_RubberOrderSummary_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "RubberOrderSummary",
+                        principalColumn: "OrderId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -162,6 +193,22 @@ namespace TAS.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_RubberIntake_FarmCode",
+                table: "RubberIntake",
+                column: "FarmCode");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RubberIntake_FarmCode_RegisterDate",
+                table: "RubberIntake",
+                columns: new[] { "FarmCode", "RegisterDate" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_RubberPallets_OrderId_PalletNo",
+                table: "RubberPallets",
+                columns: new[] { "OrderId", "PalletNo" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_UserAccount_Email",
                 table: "UserAccount",
                 column: "Email",
@@ -186,13 +233,16 @@ namespace TAS.Migrations
                 name: "RubberIntake");
 
             migrationBuilder.DropTable(
-                name: "RubberOrderSummary");
+                name: "RubberPallets");
 
             migrationBuilder.DropTable(
                 name: "UserAccount");
 
             migrationBuilder.DropTable(
                 name: "RubberAgent");
+
+            migrationBuilder.DropTable(
+                name: "RubberOrderSummary");
         }
     }
 }
