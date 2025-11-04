@@ -38,7 +38,7 @@ namespace TAS.Models
 		public decimal? CentrifugeProductKg { get; set; }
 
         // Trạng thái  nhập
-        [Column(TypeName = "bit")]
+        
 		public int? Status { get; set; }
 
         public DateTime? RegisterDate { get; set; }// thời gian tạo
