@@ -4,7 +4,6 @@
 @using System.Security.Claims
 
 @{
-    //var langTraceability = Html.Raw(JsonSerializer.Serialize(ViewData["langCommon"]));
     var uid   = User.FindFirstValue(ClaimTypes.NameIdentifier);
     var name  = User.Identity?.Name; // ClaimTypes.Name
     var email = User.FindFirstValue(ClaimTypes.Email);

@@ -1,11 +1,6 @@
-﻿const { param } = require("jquery");
-
-var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
+﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
 var gridOptionsRubberGarden, ListDataFull;
-var page = 1;
-var pageSize = 20;
-var gridApi;
-var pagerApi;
+var page, pageSize, gridApi, pagerApi;
 function CreateGridRubberGarden() {
     gridOptionsRubberGarden = {
         //pagination: true,
@@ -30,8 +25,7 @@ function CreateGridRubberGarden() {
         cellSelection: true,
         onGridReady: function (params) {          
             gridApi = params.api;
-            params.api.sizeColumnsToFit();
-            //renderPage();          // nạp trang đầu
+            params.api.sizeColumnsToFit();           
             //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
@@ -95,6 +89,7 @@ function CreateRowDataRubberGarden() {
         success: function (data) {
             ListDataFull = data;
             gridOptionsRubberGarden.api.setRowData(data);
+            renderPage();
             //setTimeout(function () {
             //    ShowHideLoading(false, divRubberGarden);
             //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
@@ -107,7 +102,7 @@ function CreateRowDataRubberGarden() {
 function CreateColModelRubberGarden() {
     var columnDefs = [
         {
-            field: 'STT', headerName: 'Số thứ tự', width: 110, minWidth: 110
+            field: 'rowNo', headerName: 'Số thứ tự', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , checkboxSelection: true
@@ -185,13 +180,11 @@ function CreateColModelRubberGarden() {
             , editable: false
             , headerComponent: "customHeader"
             , cellRenderer: function (params) {
-                let elementResult = '';
-                console.log(params.value);
                 if (params.value == 0) {
-                    return elementResult = '<span class="badge text-bg-primary">Chưa chuyển</span>';
+                    return '<span class="badge text-bg-primary">Chưa chuyển</span>';
                 }
                 if (params.value == 1) {                  
-                    return elementResult = '<span class="badge text-bg-success">Đã chuyển</span>';
+                    return '<span class="badge text-bg-success">Đã chuyển</span>';
                 }
             }
         }
@@ -368,24 +361,18 @@ function persistCurrentPageOrder() {
 
 // --- helpers ---
 function renderPage() {
-    const start = (page - 1) * pageSize;
-    const slice = ListDataFull.slice(start, start + pageSize);
-    gridApi.setRowData(slice);
-}
-function setupPager() {
     pagerApi = makePaginator({
-        listEl: '#dummy',
-        pagerEl: '#pager',
-        page,
-        pageSize,
-        total: ListDataFull.length,
-        render: () => '', // không render list
-        onChange: ({ page: p, pageSize: sz }) => {
-            // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
-            persistCurrentPageOrder();
-            page = p;
-            pageSize = sz;
-            renderPage();
+        data: ListDataFull,
+        listEl: '#pager',
+        pagerEl: '#list-paging',
+        page: 1,
+        pageSize: $('.selector-paging').val(),
+        renderItem: x => ``,
+        onChange: s => {
+            $('#total-entries').text(s.total);
+            $('#start-entries').text(s.start);
+            $('#last-entries').text(s.end);
+            gridApi.setRowData(ListDataFull.slice(s.start, s.end + s.pageSize));
         }
     });
 }

@@ -21,7 +21,6 @@ namespace TAS.Controllers
 		[Authorize]
 		public IActionResult Index()
 		{
-			ViewBag.langTraceability = "123";
 			return View();
 		}
 		public IActionResult Layout()

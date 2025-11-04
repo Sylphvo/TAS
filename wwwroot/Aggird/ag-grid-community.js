@@ -1310,7 +1310,6 @@ let ColumnFactory = class ColumnFactory extends _context_beanStub_mjs__WEBPACK_I
         const userTypes = this.gridOptionsService.get('columnTypes') || {};
         Object(_utils_object_mjs__WEBPACK_IMPORTED_MODULE_6__["iterateObject"])(userTypes, (key, value) => {
             if (key in allColumnTypes) {
-                console.warn(`AG Grid: the column type '${key}' is a default column type and cannot be overridden.`);
             }
             else {
                 const colType = value;
@@ -1328,7 +1327,6 @@ let ColumnFactory = class ColumnFactory extends _context_beanStub_mjs__WEBPACK_I
                 Object(_utils_object_mjs__WEBPACK_IMPORTED_MODULE_6__["mergeDeep"])(colDefMerged, typeColDef, false, true);
             }
             else {
-                console.warn("AG Grid: colDef.type '" + t + "' does not correspond to defined gridOptions.columnTypes");
             }
         });
     }
@@ -2526,7 +2524,7 @@ class Context {
             else {
                 beanName = "" + BeanClass;
             }
-            console.error(`Context item ${beanName} is not a bean`);
+           
             return;
         }
         const beanEntry = {
@@ -2610,7 +2608,7 @@ class Context {
             return beanEntry.beanInstance;
         }
         if (!optional) {
-            console.error(`AG Grid: unable to find bean reference ${beanName} while initialising ${wiringBean}`);
+            
         }
         return null;
     }
@@ -2717,11 +2715,9 @@ function Optional(name) {
 }
 function autowiredFunc(target, name, optional, classPrototype, methodOrAttributeName, index) {
     if (name === null) {
-        console.error("AG Grid: Autowired name should not be null");
         return;
     }
     if (typeof index === "number") {
-        console.error("AG Grid: Autowired should be on an attribute");
         return;
     }
     // it's an attribute on the class
@@ -3004,7 +3000,6 @@ function removeAllReferences(obj, preserveKeys = [], preDestroyLink) {
         // leave all basic types and preserveKeys this is needed for GridAPI to leave the "destroyed: boolean" attribute and isDestroyed() function.
         if (typeof value === 'function' && !preserveKeys.includes(key)) {
             const func = () => {
-                console.warn(msgFunc(key));
             };
             properties[key] = { value: func, writable: true };
         }
@@ -3050,10 +3045,10 @@ function doOnce(func, key) {
     doOnceFlags[key] = true;
 }
 function warnOnce(msg) {
-    doOnce(() => console.warn("AG Grid: " + msg), msg);
+    //doOnce(() => console.warn("AG Grid: " + msg), msg);
 }
 function errorOnce(msg) {
-    doOnce(() => console.error("AG Grid: " + msg), msg);
+    //doOnce(() => console.error("AG Grid: " + msg), msg);
 }
 function getFunctionName(funcConstructor) {
     // for every other browser in the world
@@ -3138,7 +3133,7 @@ function waitUntil(condition, callback, timeout = 100, timeoutMessage) {
                 interval = null;
             }
             if (reachedTimeout && timeoutMessage) {
-                console.warn(timeoutMessage);
+                //console.warn(timeoutMessage);
             }
         }
     };
@@ -3223,16 +3218,16 @@ class ModuleRegistry {
             ModuleRegistry.currentModuleVersion = module.version;
         }
         if (!module.version) {
-            console.error(`AG Grid: You are using incompatible versions of AG Grid modules. Major and minor versions should always match across modules. '${module.moduleName}' is incompatible. Please update all modules to the same version.`);
+            //console.error(`AG Grid: You are using incompatible versions of AG Grid modules. Major and minor versions should always match across modules. '${module.moduleName}' is incompatible. Please update all modules to the same version.`);
         }
         else if (!ModuleRegistry.isValidModuleVersion(module)) {
-            console.error(`AG Grid: You are using incompatible versions of AG Grid modules. Major and minor versions should always match across modules. '${module.moduleName}' is version ${module.version} but the other modules are version ${this.currentModuleVersion}. Please update all modules to the same version.`);
+            //console.error(`AG Grid: You are using incompatible versions of AG Grid modules. Major and minor versions should always match across modules. '${module.moduleName}' is version ${module.version} but the other modules are version ${this.currentModuleVersion}. Please update all modules to the same version.`);
         }
         if (module.validate) {
             const result = module.validate();
             if (!result.isValid) {
                 const errorResult = result;
-                console.error(`AG Grid: ${errorResult.message}`);
+                //console.error(`AG Grid: ${errorResult.message}`);
             }
         }
     }
@@ -3243,8 +3238,7 @@ class ModuleRegistry {
         else {
             if (ModuleRegistry.moduleBased !== moduleBased) {
                 Object(_utils_function_mjs__WEBPACK_IMPORTED_MODULE_1__["doOnce"])(() => {
-                    console.warn(`AG Grid: You are mixing modules (i.e. @ag-grid-community/core) and packages (ag-grid-community) - you can only use one or the other of these mechanisms.`);
-                    console.warn('Please see https://www.ag-grid.com/javascript-grid/packages-modules/ for more information.');
+                    
                 }, 'ModulePackageCheck');
             }
         }
@@ -3294,7 +3288,7 @@ For more info see: https://www.ag-grid.com/javascript-grid/modules/`;
 For more info see: https://www.ag-grid.com/javascript-grid/packages/`;
         }
         Object(_utils_function_mjs__WEBPACK_IMPORTED_MODULE_1__["doOnce"])(() => {
-            console.warn(warningMessage);
+            //console.warn(warningMessage);
         }, warningKey);
         return false;
     }
@@ -4383,7 +4377,7 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
     }
     isPivotSettingAllowed(pivot) {
         if (pivot && this.gridOptionsService.get('treeData')) {
-            console.warn("AG Grid: Pivot mode not available in conjunction Tree Data i.e. 'gridOptions.treeData: true'");
+            //console.warn("AG Grid: Pivot mode not available in conjunction Tree Data i.e. 'gridOptions.treeData: true'");
             return false;
         }
         return true;
@@ -5079,7 +5073,7 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
                 if (loopCount > 1000) {
                     // this should never happen, but in the future, someone might introduce a bug here,
                     // so we stop the browser from hanging and report bug properly
-                    console.error('AG Grid: infinite loop in resizeColumnSets');
+                    //console.error('AG Grid: infinite loop in resizeColumnSets');
                     break;
                 }
                 finishedColsGrew = false;
@@ -5187,8 +5181,8 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
         }
         this.columnAnimationService.start();
         if (toIndex > this.gridColumns.length - columnsToMoveKeys.length) {
-            console.warn('AG Grid: tried to insert columns in invalid location, toIndex = ' + toIndex);
-            console.warn('AG Grid: remember that you should not count the moving columns when calculating the new index');
+            //console.warn('AG Grid: tried to insert columns in invalid location, toIndex = ' + toIndex);
+            //console.warn('AG Grid: remember that you should not count the moving columns when calculating the new index');
             return;
         }
         // we want to pull all the columns out first and put them into an ordered list
@@ -5432,7 +5426,6 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
             return;
         }
         if (this.gridOptionsService.isDomLayout('print')) {
-            console.warn(`AG Grid: Changing the column pinning status is not allowed with domLayout='print'`);
             return;
         }
         this.columnAnimationService.start();
@@ -5834,7 +5827,7 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
         // is less sexy for the code here, but it keeps consistency.
         newOrder = this.placeLockedColumns(newOrder);
         if (!this.doesMovePassMarryChildren(newOrder)) {
-            console.warn('AG Grid: Applying column order broke a group where columns should be married together. Applying new order has been discarded.');
+            //console.warn('AG Grid: Applying column order broke a group where columns should be married together. Applying new order has been discarded.');
             return;
         }
         this.gridColumns = newOrder;
@@ -6043,9 +6036,7 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
             }
             else {
                 if (Object(_utils_generic_mjs__WEBPACK_IMPORTED_MODULE_9__["exists"])(aggFunc)) {
-                    console.warn('AG Grid: stateItem.aggFunc must be a string. if using your own aggregation ' +
-                        'functions, register the functions first before using them in get/set state. This is because it is ' +
-                        'intended for the column state to be stored and retrieved as simple JSON.');
+                 
                 }
                 // Note: we do not call column.setAggFunc(null), so that next time we aggregate
                 // by this column (eg drag the column to the agg section int he toolpanel) it will
@@ -6115,7 +6106,6 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
         }
         const column = this.getGridColumn(key);
         if (!column) {
-            console.warn('AG Grid: could not find column ' + key);
         }
         return column;
     }
@@ -6217,7 +6207,6 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
                 // valueGetter is an expression, so execute the expression
                 return this.expressionService.evaluate(headerValueGetter, params);
             }
-            console.warn('AG Grid: headerValueGetter must be a function or a string');
             return '';
         }
         else if (colDef.headerName != null) {
@@ -6515,7 +6504,6 @@ let ColumnModel = class ColumnModel extends _context_beanStub_mjs__WEBPACK_IMPOR
     getProvidedColumnGroup(key) {
         // if (key instanceof ProvidedColumnGroup) { return key; }
         if (typeof key !== 'string') {
-            console.error('AG Grid: group key must be a string');
         }
         // otherwise, search for the column group by id
         let res = null;
@@ -8237,7 +8225,6 @@ let AutoGroupColService = class AutoGroupColService extends _context_beanStub_mj
         const doingTreeData = this.gridOptionsService.get('treeData');
         let doingMultiAutoColumn = this.gridOptionsService.isGroupMultiAutoColumn();
         if (doingTreeData && doingMultiAutoColumn) {
-            console.warn('AG Grid: you cannot mix groupDisplayType = "multipleColumns" with treeData, only one column can be used to display groups when doing tree data');
             doingMultiAutoColumn = false;
         }
         // if doing groupDisplayType = "multipleColumns", then we call the method multiple times, once
@@ -9313,7 +9300,6 @@ let UserComponentRegistry = class UserComponentRegistry extends _context_beanStu
     }
     registerDefaultComponent(name, component) {
         if (this.agGridDefaults[name]) {
-            console.error(`Trying to overwrite a default component. You should call registerComponent`);
             return;
         }
         this.agGridDefaults[name] = component;
@@ -9355,11 +9341,8 @@ let UserComponentRegistry = class UserComponentRegistry extends _context_beanStu
             ...Object.keys(this.jsComps)
         ];
         const suggestions = Object(_utils_fuzzyMatch_mjs__WEBPACK_IMPORTED_MODULE_27__["fuzzySuggestions"])(componentName, validComponents, true, 0.8).values;
-        console.warn(`AG Grid: Could not find '${componentName}' component. It was configured as "${propertyName}: '${componentName}'" but it wasn't found in the list of registered components.`);
         if (suggestions.length > 0) {
-            console.warn(`         Did you mean: [${suggestions.slice(0, 3)}]?`);
         }
-        console.warn(`If using a custom component check it has been registered as described in: ${this.getFrameworkOverrides().getDocLink('components/')}`);
     }
 };
 __decorate([
@@ -11070,14 +11053,12 @@ function createIconNoSpan(iconName, gridOptionsService, column, forceCreate) {
         if (Object(_dom_mjs__WEBPACK_IMPORTED_MODULE_0__["isNodeOrElement"])(rendererResult)) {
             return rendererResult;
         }
-        console.warn('AG Grid: iconRenderer should return back a string or a dom object');
     }
     else {
         const span = document.createElement('span');
         let cssClass = iconNameClassMap[iconName];
         if (!cssClass) {
             if (!forceCreate) {
-                console.warn(`AG Grid: Did not find icon ${iconName}`);
                 cssClass = '';
             }
             else {
@@ -11439,7 +11420,6 @@ class AgPromise {
         this.waiters.forEach(waiter => waiter(value));
     }
     onReject(params) {
-        console.warn('TBI');
     }
 }
 
@@ -11460,7 +11440,6 @@ class Timer {
     }
     print(msg) {
         const duration = (new Date().getTime()) - this.timestamp;
-        console.info(`${msg} = ${duration}`);
         this.timestamp = new Date().getTime();
     }
 }
@@ -11978,11 +11957,9 @@ function RefSelector(ref) {
 }
 function querySelectorFunc(selector, refSelector, classPrototype, methodOrAttributeName, index) {
     if (selector === null) {
-        console.error('AG Grid: QuerySelector selector should not be null');
         return;
     }
     if (typeof index === 'number') {
-        console.error('AG Grid: QuerySelector should be on an attribute');
         return;
     }
     addToObjectProps(classPrototype, 'querySelectors', {
@@ -11998,7 +11975,6 @@ function querySelectorFunc(selector, refSelector, classPrototype, methodOrAttrib
 //
 // function methodFunc(alias: string, target: Object, methodName: string) {
 //     if (alias === null) {
-//         console.error("AG Grid: EventListener eventName should not be null");
 //         return;
 //     }
 //
@@ -12134,7 +12110,6 @@ class DateFilter extends _scalarFilter_mjs__WEBPACK_IMPORTED_MODULE_3__["ScalarF
                     return params[param] == null ? fallback : Number(params[param]);
                 }
                 else {
-                    console.warn(`AG Grid: DateFilter ${param} is not a number`);
                 }
             }
             return fallback;
@@ -12142,7 +12117,6 @@ class DateFilter extends _scalarFilter_mjs__WEBPACK_IMPORTED_MODULE_3__["ScalarF
         this.minValidYear = yearParser('minValidYear', DEFAULT_MIN_YEAR);
         this.maxValidYear = yearParser('maxValidYear', DEFAULT_MAX_YEAR);
         if (this.minValidYear > this.maxValidYear) {
-            console.warn(`AG Grid: DateFilter minValidYear should be <= maxValidYear`);
         }
         if (params.minValidDate) {
             this.minValidDate = params.minValidDate instanceof Date ? params.minValidDate : Object(_utils_date_mjs__WEBPACK_IMPORTED_MODULE_4__["parseDateTimeFromString"])(params.minValidDate);
@@ -12157,7 +12131,6 @@ class DateFilter extends _scalarFilter_mjs__WEBPACK_IMPORTED_MODULE_3__["ScalarF
             this.maxValidDate = null;
         }
         if (this.minValidDate && this.maxValidDate && this.minValidDate > this.maxValidDate) {
-            console.warn(`AG Grid: DateFilter minValidDate should be <= maxValidDate`);
         }
         this.filterModelFormatter = new DateFilterModelFormatter(this.dateFilterParams, this.localeService, this.optionsFactory);
     }
@@ -13277,7 +13250,6 @@ class OptionsFactory {
             const requiredProperties = [['displayKey'], ['displayName'], ['predicate', 'test']];
             const propertyCheck = (keys) => {
                 if (!keys.some(key => filterOption[key] != null)) {
-                    console.warn(`AG Grid: ignoring FilterOptionDef as it doesn't contain one of '${keys}'`);
                     return false;
                 }
                 return true;
@@ -13302,11 +13274,9 @@ class OptionsFactory {
                 this.defaultOption = firstFilterOption.displayKey;
             }
             else {
-                console.warn(`AG Grid: invalid FilterOptionDef supplied as it doesn't contain a 'displayKey'`);
             }
         }
         else {
-            console.warn('AG Grid: no filter options for filter');
         }
     }
     getDefaultOption() {
@@ -13480,7 +13450,6 @@ class ProvidedFilter extends _widgets_component_mjs__WEBPACK_IMPORTED_MODULE_6__
                     clickListener = (e) => { this.onBtCancel(e); };
                     break;
                 default:
-                    console.warn('AG Grid: Unknown button type specified');
                     return;
             }
             const buttonType = type === 'apply' ? 'submit' : 'button';
@@ -13669,7 +13638,6 @@ class ProvidedFilter extends _widgets_component_mjs__WEBPACK_IMPORTED_MODULE_6__
     static getDebounceMs(params, debounceDefault) {
         if (ProvidedFilter.isUseApplyButton(params)) {
             if (params.debounceMs != null) {
-                console.warn('AG Grid: debounceMs is ignored when apply button is present');
             }
             return 0;
         }
@@ -15685,7 +15653,6 @@ class ScalarFilter extends _simpleFilter_mjs__WEBPACK_IMPORTED_MODULE_0__["Simpl
             case ScalarFilter.NOT_BLANK:
                 return !this.isBlank(cellValue);
             default:
-                console.warn('AG Grid: Unexpected type of filter "' + filterModel.type + '", it looks like the filter was configured with incorrect Filter Options');
                 return true;
         }
     }
@@ -17844,7 +17811,6 @@ class SelectCellEditor extends _widgets_popupComponent_mjs__WEBPACK_IMPORTED_MOD
         const { eSelect, valueFormatterService, gridOptionsService } = this;
         const { values, value, eventKey } = params;
         if (Object(_utils_generic_mjs__WEBPACK_IMPORTED_MODULE_4__["missing"])(values)) {
-            console.warn('AG Grid: no values found for select cellEditor');
             return;
         }
         this.startedByEnter = eventKey != null ? eventKey === _constants_keyCode_mjs__WEBPACK_IMPORTED_MODULE_5__["KeyCode"].ENTER : false;
@@ -18670,7 +18636,6 @@ class GroupCellRendererCtrl extends _context_beanStub_mjs__WEBPACK_IMPORTED_MODU
                 footerValue = this.expressionService.evaluate(footerValueGetter, paramsClone);
             }
             else {
-                console.warn('AG Grid: footerValueGetter should be either a function or a string (expression)');
             }
         }
         else {
@@ -19162,7 +19127,6 @@ class RowNode {
                 // make sure id provided doesn't start with 'row-group-' as this is reserved. also check that
                 // it has 'startsWith' in case the user provided a number.
                 if (this.id !== null && typeof this.id === 'string' && this.id.startsWith(RowNode.ID_PREFIX_ROW_GROUP)) {
-                    console.error(`AG Grid: Row IDs cannot start with ${RowNode.ID_PREFIX_ROW_GROUP}, this is a reserved prefix for AG Grid's row grouping feature.`);
                 }
                 // force id to be a string
                 if (this.id !== null && typeof this.id !== 'string') {
@@ -19720,7 +19684,6 @@ class RowNode {
      */
     setSelected(newValue, clearSelection = false, source = 'api') {
         if (typeof source === 'boolean') {
-            console.warn('AG Grid: since version v30, rowNode.setSelected() property `suppressFinishActions` has been removed, please use `gridApi.setNodesSelected()` for bulk actions, and the event `source` property for ignoring events instead.');
             return;
         }
         this.setSelectedParams({
@@ -19733,11 +19696,9 @@ class RowNode {
     // this is for internal use only. To make calling code more readable, this is the same method as setSelected except it takes names parameters
     setSelectedParams(params) {
         if (this.rowPinned) {
-            console.warn('AG Grid: cannot select pinned rows');
             return 0;
         }
         if (this.id === undefined) {
-            console.warn('AG Grid: cannot select node until id for node is known');
             return 0;
         }
         return this.beans.selectionService.setNodesSelected(Object.assign(Object.assign({}, params), { nodes: [this.footer ? this.sibling : this] }));
@@ -22959,7 +22920,6 @@ let FilterManager = class FilterManager extends _context_beanStub_mjs__WEBPACK_I
             filterWrapper.filterPromise.then(filter => {
                 let guiFromFilter = filter.getGui();
                 if (!Object(_utils_generic_mjs__WEBPACK_IMPORTED_MODULE_8__["exists"])(guiFromFilter)) {
-                    console.warn(`AG Grid: getGui method from filter returned ${guiFromFilter}, it should be a DOM element or an HTML template string.`);
                 }
                 // for backwards compatibility with Angular 1 - we
                 // used to allow providing back HTML from getGui().
@@ -24348,7 +24308,6 @@ let GridApi = class GridApi {
     startEditingCell(params) {
         const column = this.columnModel.getGridColumn(params.colKey);
         if (!column) {
-            console.warn(`AG Grid: no column found for ${params.colKey}`);
             return;
         }
         const cellPosition = {
@@ -24414,7 +24373,6 @@ let GridApi = class GridApi {
         const startRow = (_a = params.startRow) !== null && _a !== void 0 ? _a : 0;
         const route = (_b = params.route) !== null && _b !== void 0 ? _b : [];
         if (startRow < 0) {
-            console.warn(`AG Grid: invalid value ${params.startRow} for startRow, the value should be >= 0`);
             return;
         }
         if (this.serverSideRowModel) {
@@ -33775,7 +33733,6 @@ class CellComp extends _widgets_component_mjs__WEBPACK_IMPORTED_MODULE_0__["Comp
             return;
         }
         if (!cellEditor.getGui) {
-            console.warn(`AG Grid: cellEditor for column ${this.column.getId()} is missing getGui() method`);
             this.beans.context.destroyBean(cellEditor);
             return;
         }
@@ -37292,7 +37249,6 @@ class SelectAllFeature extends _context_beanStub_mjs__WEBPACK_IMPORTED_MODULE_0_
     checkSelectionType(feature) {
         const isMultiSelect = this.gridOptionsService.get('rowSelection') === 'multiple';
         if (!isMultiSelect) {
-            console.warn(`AG Grid: ${feature} is only available if using 'multiple' rowSelection.`);
             return false;
         }
         return true;
@@ -37301,7 +37257,6 @@ class SelectAllFeature extends _context_beanStub_mjs__WEBPACK_IMPORTED_MODULE_0_
         const rowModelType = this.rowModel.getType();
         const rowModelMatches = rowModelType === 'clientSide' || rowModelType === 'serverSide';
         if (!rowModelMatches) {
-            console.warn(`AG Grid: ${feature} is only available if using 'clientSide' or 'serverSide' rowModelType, you are using ${rowModelType}.`);
             return false;
         }
         return true;
@@ -39188,7 +39143,6 @@ let AnimationFrameService = class AnimationFrameService extends _context_beanStu
     // when it should not.
     verifyAnimationFrameOn(methodName) {
         if (this.useAnimationFrame === false) {
-            console.warn(`AG Grid: AnimationFrameService.${methodName} called but animation frames are off`);
         }
     }
     createTask(task, index, list) {
@@ -44115,7 +44069,6 @@ class AgMenuList extends _tabGuardComp_mjs__WEBPACK_IMPORTED_MODULE_2__["TabGuar
                 this.addSeparator();
             }
             else if (typeof menuItemOrString === 'string') {
-                console.warn(`AG Grid: unrecognised menu item ${menuItemOrString}`);
             }
             else {
                 this.addItem(menuItemOrString);
@@ -47017,7 +46970,6 @@ let SelectionService = class SelectionService extends _context_beanStub_mjs__WEB
         if (nodes.length === 0)
             return 0;
         if (nodes.length > 1 && !this.isMultiselect()) {
-            console.warn(`AG Grid: cannot multi select while rowSelection='single'`);
             return 0;
         }
         // groupSelectsFiltered only makes sense when group selects children
@@ -47824,11 +47776,9 @@ let ValueService = class ValueService extends _context_beanStub_mjs__WEBPACK_IMP
         }
         const { field, valueSetter } = column.getColDef();
         if (Object(_utils_generic_mjs__WEBPACK_IMPORTED_MODULE_4__["missing"])(field) && Object(_utils_generic_mjs__WEBPACK_IMPORTED_MODULE_4__["missing"])(valueSetter)) {
-            console.warn(`AG Grid: you need either field or valueSetter set on colDef for editing to work`);
             return false;
         }
         if (!this.dataTypeService.checkType(column, newValue)) {
-            console.warn(`AG Grid: Data type of the new value does not match the cell data type of the column`);
             return false;
         }
         const params = this.gridOptionsService.addGridCommonParams({
@@ -48171,7 +48121,6 @@ let TemplateService = class TemplateService extends _context_beanStub_mjs__WEBPA
     }
     handleHttpResult(httpResult, url) {
         if (httpResult.status !== 200 || httpResult.response === null) {
-            console.warn(`AG Grid: Unable to get template error ${httpResult.status} - ${url}`);
             return;
         }
         // response success, so process it
@@ -48626,7 +48575,6 @@ let SortController = SortController_1 = class SortController extends _context_be
             sortingOrder = SortController_1.DEFAULT_SORTING_ORDER;
         }
         if (!Array.isArray(sortingOrder) || sortingOrder.length <= 0) {
-            console.warn(`AG Grid: sortingOrder must be an array with at least one element, currently it\'s ${sortingOrder}`);
             return null;
         }
         const currentIndex = sortingOrder.indexOf(column.getSort());
@@ -56827,7 +56775,6 @@ class ClientSideNodeManager {
         node.level = level;
         node.setDataAndId(dataItem, this.nextId.toString());
         if (this.allNodesMap[node.id]) {
-            console.warn(`AG Grid: duplicate node id '${node.id}' detected from getRowId callback, this could cause issues in your grid.`);
         }
         this.allNodesMap[node.id] = node;
         this.nextId++;
@@ -57785,7 +57732,6 @@ let CsvCreator = class CsvCreator extends _baseCreator_mjs__WEBPACK_IMPORTED_MOD
     }
     export(userParams) {
         if (this.isExportSuppressed()) {
-            console.warn(`AG Grid: Export cancelled. Export is not allowed as per your configuration.`);
             return '';
         }
         const mergedParams = this.getMergedParams(userParams);
@@ -59327,7 +59273,6 @@ class InfiniteBlock extends _ag_grid_community_core__WEBPACK_IMPORTED_MODULE_0__
     loadFromDatasource() {
         const params = this.createLoadParams();
         if (_ag_grid_community_core__WEBPACK_IMPORTED_MODULE_0__["_"].missing(this.params.datasource.getRows)) {
-            console.warn(`AG Grid: datasource is missing getRows method`);
             return;
         }
         // put in timeout, to force result to be async

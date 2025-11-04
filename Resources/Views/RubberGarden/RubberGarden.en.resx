@@ -117,7 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="key_showall" xml:space="preserve">
-    <value />
+  <data name="key_of" xml:space="preserve">
+    <value>of</value>
+  </data>
+  <data name="key_rowperpage" xml:space="preserve">
+    <value>Rows per page</value>
   </data>
 </root>
