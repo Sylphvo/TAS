@@ -12,8 +12,8 @@ using TAS.Data;
 namespace TAS.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20251104062655_InitIdentity")]
-    partial class InitIdentity
+    [Migration("20251104144741_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -56,4 +56,8 @@
     <Folder Include="Repository\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="TAS.sln" />
+  </ItemGroup>
+
 </Project>

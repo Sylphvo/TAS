@@ -3824,15 +3824,13 @@ function makePaginator(opts) {
         const li = document.createElement('li');
         li.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
 
-        const a = document.createElement('a');
-        a.className = 'page-link avtar avtar-s btn-link-secondary';
-        a.href = '#';
+        const a = document.createElement('button');
+        a.className = 'page-link btn btn-light-secondary';
         a.onclick = e => { e.preventDefault(); if (!disabled) click(); };
 
         if (label === 'left' || label === 'right') {
-            const i = document.createElement('i');
-            i.className = 'ti ti-chevron-' + (label === 'left' ? 'left' : 'right') + ' f-18';
-            a.appendChild(i);
+            let icon = (label === 'left' ? '<' : '>');
+            a.textContent = icon; 
         } else {
             a.textContent = label;   // ← số trang
         }

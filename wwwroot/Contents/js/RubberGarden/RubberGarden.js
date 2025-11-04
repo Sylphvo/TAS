@@ -100,9 +100,10 @@ function CreateRowDataRubberGarden() {
     });
 }
 function CreateColModelRubberGarden() {
+    var width_Col = 80;
     var columnDefs = [
         {
-            field: 'rowNo', headerName: 'Số thứ tự', width: 110, minWidth: 110
+            field: 'rowNo', headerName: 'Số thứ tự', width: 80, minWidth: 80
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , checkboxSelection: true
@@ -117,7 +118,7 @@ function CreateColModelRubberGarden() {
             //, colSpan: 2
         },
         {
-            field: 'farmCode', headerName: 'Mã Nhà Vườn', width: 110, minWidth: 110
+            field: 'farmCode', headerName: 'Mã Nhà Vườn', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , filter: true
@@ -127,14 +128,14 @@ function CreateColModelRubberGarden() {
             //, cellRenderer: cellRender_StartDate
         },
         {
-            field: 'farmerName', headerName: 'Tên Nhà Vườn', width: 110, minWidth: 110
+            field: 'farmerName', headerName: 'Tên Nhà Vườn', width: 150, minWidth: 150
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'rubberKg', headerName: 'Khối lượng', width: 210, minWidth: 210
+            field: 'rubberKg', headerName: 'Khối lượng', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -143,21 +144,21 @@ function CreateColModelRubberGarden() {
             //}
         },
         {
-            field: 'tscPercent', headerName: 'TSC', width: 100, minWidth: 100
+            field: 'tscPercent', headerName: 'TSC', width: width_Col, minWidth: width_Col
             //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'drcPercent', headerName: 'DRC', width: 100, minWidth: 100
+            field: 'drcPercent', headerName: 'DRC', width: width_Col, minWidth: width_Col
             //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'finishedProductKg', headerName: 'Thành Phẩm', width: 140, minWidth: 140
+            field: 'finishedProductKg', headerName: 'Thành Phẩm', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -166,7 +167,7 @@ function CreateColModelRubberGarden() {
             //}
         },
         {
-            field: 'centrifugeProductKg', headerName: 'Thành Phẩm Ly Tâm', width: 140, minWidth: 140
+            field: 'centrifugeProductKg', headerName: 'Thành Phẩm Ly Tâm', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
@@ -186,6 +187,19 @@ function CreateColModelRubberGarden() {
                 if (params.value == 1) {                  
                     return '<span class="badge text-bg-success">Đã chuyển</span>';
                 }
+            }
+        },
+        {
+            field: 'action', headerName: 'Chức năng', width: 140, minWidth: 140
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: false
+            , headerComponent: "customHeader"
+            , cellRenderer: function (params) {
+
+                return `
+                    <a href="#" class="avtar avtar-xs btn-link-secondary"><i class="ti ti-edit f-20"></i> </a>
+                    <a href="#" class="avtar avtar-xs btn-link-secondary"><i class="ti ti-trash f-20"></i></a>
+                `;
             }
         }
     ]
