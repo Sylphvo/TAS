@@ -1,9 +1,20 @@
 ﻿@model string
 @using System.Text.Json
 @using TAS.ConstantVaribles
+@using System.Security.Claims
 
 @{
     //var langTraceability = Html.Raw(JsonSerializer.Serialize(ViewData["langCommon"]));
+    var uid   = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var name  = User.Identity?.Name; // ClaimTypes.Name
+    var email = User.FindFirstValue(ClaimTypes.Email);
+    var fullName = User.FindFirst("FullName")?.Value;
+    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var link = Url.Action("Profile", "Account", new { id = userId });
+
+    var lang = (string)(ViewBag.langCommon ?? ConstantVaribles.LANG_VI);
+    bool isEn = string.Equals(lang, ConstantVaribles.LANG_EN, StringComparison.OrdinalIgnoreCase);
+    string cls(bool active) => "dropdown-item" + (active ? " active" : "");
 }
 <header class="pc-header">
     <div class="header-wrapper">
@@ -64,27 +75,13 @@
                             <img class="pc-icon" src="../Contents/icon/lang_@(ViewBag.langCommon).svg" />
                         }
                     </a>
-                    <div class="dropdown-menu dropdown-menu-end pc-h-dropdown lng-dropdown" >
-                        @{
-                            if (ViewBag.langCommon == ConstantVaribles.LANG_EN)
-                            {
-                                <a href="#!" class="dropdown-item active" data-lng="en" onclick="SetLanguage('@ConstantVaribles.LANG_EN')">
-                                    <span> English <small>(US)</small></span>
-                                </a>
-                                <a href="#!" class="dropdown-item" data-lng="vi" onclick="SetLanguage('@ConstantVaribles.LANG_VI')">
-                                    <span> Viewnamese <small>(VN)</small></span>
-                                </a>
-                            }
-                            else
-                            {
-                                <a href="#!" class="dropdown-item" data-lng="en" onclick="SetLanguage('@ConstantVaribles.LANG_EN')">
-                                    <span> English <small>(US)</small></span>
-                                </a>
-                                <a href="#!" class="dropdown-item active" data-lng="vi" onclick="SetLanguage('@ConstantVaribles.LANG_VI')">
-                                    <span> Viewnamese <small>(VN)</small></span>
-                                </a>
-                            }
-                        }
+                    <div class="dropdown-menu dropdown-menu-end pc-h-dropdown lng-dropdown" role="menu" aria-label="Language">
+                        <a href="#" class="@cls(isEn)" data-lng="en" onclick="SetLanguage('@ConstantVaribles.LANG_EN'); return false;" role="menuitem" aria-selected="@(isEn.ToString().ToLower())">
+                            <span>English <small>(US)</small></span>
+                        </a>
+                        <a href="#" class="@cls(!isEn)" data-lng="vi" onclick="SetLanguage('@ConstantVaribles.LANG_VI'); return false;" role="menuitem" aria-selected="@((!isEn).ToString().ToLower())">
+                            <span>Vietnamese <small>(VN)</small></span>
+                        </a>
                     </div>
                 </li>
                 
@@ -105,11 +102,9 @@
                                         <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar wid-35">
                                     </div>
                                     <div class="flex-grow-1 ms-3">
-                                        <h6 class="mb-1">
-                                            Carson Darrin 🖖
-                                        </h6>
+                                        <h6 class="mb-1">@name (@fullName)</h6>
                                         <span>
-                                            <a href="https://ableproadmin.com/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2d4e4c5f5e424303494c5f5f44436d4e42405d4c4354034442">[email&#160;protected]</a>
+                                            <a href="mailto:@email">@email</a>
                                         </span>
                                     </div>
                                 </div>

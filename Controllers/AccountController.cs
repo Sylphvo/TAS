@@ -64,11 +64,15 @@ namespace TAS.Controllers
             await _db.SaveChangesAsync();
 
             var claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new Claim(ClaimTypes.Name, user.UserName),
-            new Claim(ClaimTypes.Email, user.Email)
-        };
+			{
+				new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+				new Claim(ClaimTypes.Name, user.UserName),
+				new Claim(ClaimTypes.Email, user.Email),
+				new Claim(ClaimTypes.GivenName, user.FirstName ?? ""), // FirstName
+				new Claim(ClaimTypes.Surname,   user.LastName  ?? ""), // LastName
+				new Claim("FullName", $"{user.FirstName} {user.LastName}".Trim())
+			};
+
             var id = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
             await HttpContext.SignInAsync(
                 CookieAuthenticationDefaults.AuthenticationScheme,
@@ -80,6 +84,7 @@ namespace TAS.Controllers
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register() => View();
+
         [HttpPost]
 		[AllowAnonymous]
 		[ValidateAntiForgeryToken]
@@ -112,12 +117,10 @@ namespace TAS.Controllers
             return RedirectToAction(nameof(Login));
         }
 		[HttpPost]
-		[ValidateAntiForgeryToken]
 		[Authorize]
 		public async Task<IActionResult> Logout()
 		{
 			await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-			HttpContext.Session.Clear();
 			return RedirectToAction("Login", "Account");
 		}
 		//// Upload avatar

@@ -1,17 +1,17 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using TAS.Helpers;
 using TAS.Models;
 
 namespace TAS.Data
 {
-	public class ApplicationDbContext : DbContext
+	public class ApplicationDbContext : IdentityDbContext<UserAccountIdentity, IdentityRole<Guid>, Guid>
 	{
-		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-			: base(options)
-		{
-		}
+		public ApplicationDbContext(DbContextOptions<ApplicationDbContext> opt) : base(opt) { }
 
-        public DbSet<RubberAgent> rubberAgent { get; set; }
+
+		public DbSet<RubberAgent> rubberAgent { get; set; }
 		public DbSet<RubberFarmDb> gardens { get; set; }
 		public DbSet<RubberIntakeDb> rubberIntakeDb { get; set; }
 		public DbSet<RubberOrderSummary> rubberOrderSummaries { get; set; }
@@ -86,16 +86,18 @@ namespace TAS.Data
 				e.Property(x => x.UpdatedBy).HasMaxLength(100);
 				e.Property(x => x.PolygonMap).HasMaxLength(500);
 			});
+
+
+			
 			// UserAccount configuration
 			modelBuilder.Entity<UserAccount>(e =>
 			{
                 e.ToTable("UserAccount");
-                e.HasKey(x => x.UserId);
                 e.Property(x => x.UserId).HasDefaultValueSql("NEWID()");
 
                 e.Property(x => x.FirstName).HasMaxLength(100);
                 e.Property(x => x.LastName).HasMaxLength(100);
-                e.Property(x => x.UserName).IsRequired().HasMaxLength(100);
+                e.Property(x => x.UserName).IsRequired().HasMaxLength(256);
                 e.Property(x => x.Email).IsRequired().HasMaxLength(256);
 
                 // varbinary cho hash
@@ -104,14 +106,25 @@ namespace TAS.Data
                 e.Property(x => x.AcceptTerms).HasDefaultValue(true);
                 e.Property(x => x.IsActive).HasDefaultValue(true);
                 e.Property(x => x.TwoFactorEnabled).HasDefaultValue(false);
-
                 e.Property(x => x.LogIn).HasColumnType("datetime2");
                 e.Property(x => x.LogOut).HasColumnType("datetime2");
 
-                // index duy nhất
-                e.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] IS NOT NULL");
+				// index duy nhất
+				e.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] IS NOT NULL");
                 e.HasIndex(x => x.UserName).IsUnique().HasFilter("[UserName] IS NOT NULL");
 			});
+			// Tùy chọn: đổi tên bảng, KHÔNG đụng tới HasKey/HasNoKey
+			base.OnModelCreating(modelBuilder); // bắt buộc
+			modelBuilder.ApplyConfiguration(new UserAccountIdentityConfig());
+
+			// Đổi tên các bảng Identity khác nếu muốn thống nhất:
+			modelBuilder.Entity<IdentityRole<Guid>>().ToTable("USER_ROLE");
+			modelBuilder.Entity<IdentityUserRole<Guid>>().ToTable("USER_IN_ROLE");
+			modelBuilder.Entity<IdentityUserClaim<Guid>>().ToTable("USER_CLAIM");
+			modelBuilder.Entity<IdentityRoleClaim<Guid>>().ToTable("ROLE_CLAIM");
+			modelBuilder.Entity<IdentityUserLogin<Guid>>().ToTable("USER_LOGIN");
+			modelBuilder.Entity<IdentityUserToken<Guid>>().ToTable("USER_TOKEN");
+
 			// RubberIntakeDb configuration
 			modelBuilder.Entity<RubberIntakeDb>(e =>
 			{
@@ -134,7 +147,7 @@ namespace TAS.Data
 				e.Property(x => x.FinishedProductKg).HasPrecision(12, 3);
 				e.Property(x => x.CentrifugeProductKg).HasPrecision(12, 3);
 
-				e.Property(x => x.Status).HasColumnType("bit");
+				e.Property(x => x.Status);
 
 				e.Property(x => x.RegisterPerson).HasMaxLength(50);
 				e.Property(x => x.UpdatePerson).HasMaxLength(50);

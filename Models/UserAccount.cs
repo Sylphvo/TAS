@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace TAS.Helpers
 {
-    [Table("UserAccounts")]
-	public class UserAccount
+    [Table("UserAccount")]
+	public class UserAccount 
 	{
         [Key]
         public Guid UserId { get; set; }
@@ -37,6 +38,30 @@ namespace TAS.Helpers
 
         public DateTime? LogIn { get; set; }
         public DateTime? LogOut { get; set; }
+	}
+
+	public class UserAccountIdentity : IdentityUser<Guid>
+	{
+		// Extra fields
+		[StringLength(128)]
+		public string? FirstName { get; set; }
+
+		[StringLength(128)]
+		public string? LastName { get; set; }
+
+		public bool IsActive { get; set; } = true;
+
+		public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+		public string? CreatedBy { get; set; }
+		public DateTime? UpdatedAtUtc { get; set; }
+		public string? UpdatedBy { get; set; }
+
+		public DateTime? LogInUtc { get; set; }
+		public DateTime? LogOutUtc { get; set; }
+
+		// Tiện cho UI, không lưu DB
+		[NotMapped]
+		public string FullName => $"{FirstName} {LastName}".Trim();
 	}
 	public class UserAccountRequest
 	{

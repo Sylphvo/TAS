@@ -4,7 +4,9 @@
     Layout = "~/Views/Shared/_Layout_Auth.cshtml";
     var returnUrl = (string?)ViewData["ReturnUrl"];
 }
-
+@section Style {
+    <link rel="stylesheet" href="../Contents/css/Account/Account.css">
+}
 <!-- [ Pre-loader ] End -->
 <div class="auth-main">
     <div class="auth-wrapper v1">
@@ -18,13 +20,25 @@
                     <form asp-action="Login" method="post">
                         <input type="hidden" name="returnUrl" value="@returnUrl" />
                         @Html.AntiForgeryToken()
-                        <div class="mb-3"><input type="text" class="form-control" name="Email" id="floatingInput" placeholder="Email Address"></div>
-                        <div class="mb-3"><input type="password" class="form-control" name="Password" id="floatingInput1" placeholder="Password"></div>
-                        <div class="d-flex mt-1 justify-content-between align-items-center">
-                            <div class="form-check"><input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked=""> <label class="form-check-label text-muted" for="customCheckc1">Remember me?</label></div>
-                            <h6 class="text-secondary f-w-400 mb-0"><a href="forgot-password-v1.html">Forgot Password?</a></h6>
+                        <div class="mb-3">
+                            <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+                            <input type="text" class="form-control" name="Email" id="floatingInput" placeholder="Email Address">
                         </div>
-                        <div class="d-grid mt-4"><button type="submit" class="btn btn-primary">Login</button></div>
+                        <div class="mb-3">
+                            <input type="password" class="form-control" name="Password" id="floatingInput1" placeholder="Password">
+                        </div>
+                        <div class="d-flex mt-1 justify-content-between align-items-center">
+                            <div class="form-check">
+                                <input class="form-check-input input-primary" type="checkbox" id="customCheckc1" checked="">
+                                <label class="form-check-label text-muted" for="customCheckc1">Remember me?</label>
+                            </div>
+                            <h6 class="text-secondary f-w-400 mb-0">
+                                <a href="forgot-password-v1.html">Forgot Password?</a>
+                            </h6>
+                        </div>
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                        </div>
                         <div class="d-flex justify-content-between align-items-end mt-4">
                             <h6 class="f-w-500 mb-0">Don't have an Account?</h6>
                             <a asp-controller="Account" asp-action="Register" class="link-primary">Create Account</a>
@@ -32,7 +46,7 @@
                     </form>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 

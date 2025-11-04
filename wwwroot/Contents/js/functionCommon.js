@@ -3972,6 +3972,7 @@ function LoadComboAgent(Obj) {
 //    }
 //}
 
+//Phuvm 10/4/2025 set ngôn ngữ
 function SetLanguage(langCurrent) {
     const returnUrl = location.pathname + location.search; // local path
     $.ajax({
@@ -3985,4 +3986,15 @@ function SetLanguage(langCurrent) {
             else location.reload();
         }
 	});
+}
+
+//
+function LogoutAuth() {
+
+    $.ajax({
+        type: "POST",
+        datatype: "json",
+        url: '/Account/Logout',
+        async: false,
+    }).done(() => location.href = '/Account/Login');
 }

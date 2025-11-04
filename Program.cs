@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Globalization;
 using TAS.AttributeTargets;
 using TAS.Data;
+using TAS.Helpers;
 using TAS.TagHelpers;
 using TAS.ViewModels; // DbContext của bạn
 
@@ -18,6 +21,14 @@ builder.Services.AddScoped<ConnectDbHelper>();
 
 // Đăng ký RubberGardenModels
 builder.Services.AddScoped<RubberGardenModels>();
+
+builder.Services.AddIdentityCore<UserAccountIdentity>()
+	.AddRoles<IdentityRole<Guid>>()
+	.AddEntityFrameworkStores<ApplicationDbContext>()
+	.AddSignInManager()
+	.AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication().AddIdentityCookies();
 
 // Đăng ký MVC với filter RequireLogin toàn cục
 builder.Services.AddControllersWithViews(o =>
@@ -35,7 +46,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 		o.LogoutPath = "/Account/Logout";
 		o.AccessDeniedPath = "/Account/Denied";
 		o.SlidingExpiration = true;
-		o.ExpireTimeSpan = TimeSpan.FromDays(14);
+		o.ExpireTimeSpan = TimeSpan.FromMinutes(30);
 		o.Cookie.HttpOnly = true;
 		o.Cookie.SameSite = SameSiteMode.Lax;
 		o.Cookie.SecurePolicy = CookieSecurePolicy.Always;
@@ -73,7 +84,6 @@ builder.Services.AddAuthorization();
 
 // Đăng ký DI cho SQL Server + Dapper executor
 builder.Services.AddDbContext<ApplicationDbContext>(opt => opt.UseSqlServer(cs));
-
 
 
 // Đăng ký TagHelper
