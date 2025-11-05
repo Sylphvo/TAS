@@ -19,18 +19,17 @@ namespace TAS.ViewModels
 			var sql = @"
 				SELECT 
 					rowNo = ROW_NUMBER() OVER(ORDER BY IntakeId ASC),
-					FarmCode,
-					FarmerName,
-					RubberKg,
-					TSCPercent,
-					DRCPercent,
-					FinishedProductKg,
-					CentrifugeProductKg,
-					Status,
-					RegisterDate,
-					RegisterPerson,
-					UpdateDate,
-					UpdatePerson
+					intakeId,
+					farmCode,
+					farmerName,
+					rubberKg,
+					tscPercent,
+					drcPercent,
+					finishedProductKg,
+					centrifugeProductKg,
+					status,
+					timeDate_Person = ISNULL(UpdatePerson, RegisterPerson),
+					timeDate = CONVERT(VARCHAR,ISNULL(UpdateDate, RegisterDate),111) + ' ' + CONVERT(VARCHAR(5),ISNULL(UpdateDate, RegisterDate), 108)
 				FROM RubberIntake
 			";
 			return await dbHelper.QueryAsync<RubberIntakeRequest>(sql);
@@ -45,15 +44,15 @@ namespace TAS.ViewModels
 					throw new ArgumentNullException(nameof(rubberIntakeRequest), "Input data cannot be null.");
 				}
 				var sql = @"
-				DECLARE @FarmCode nvarchar(200) = " + rubberIntakeRequest.FarmCode + @",
-						@FarmerName nvarchar(200) = " + rubberIntakeRequest.FarmerName + @",
-						@RubberKg decimal(12,3) = " + rubberIntakeRequest.RubberKg + @",
-						@TSCPercent decimal(5,2) = " + rubberIntakeRequest.TSCPercent + @",
-						@DRCPercent decimal(5,2) = " + rubberIntakeRequest.DRCPercent + @",
-						@FinishedProductKg decimal(12,3) = " + rubberIntakeRequest.FinishedProductKg + @",
-						@CentrifugeProductKg decimal(12,3) = " + rubberIntakeRequest.CentrifugeProductKg + @",
-						@Status bit = " + rubberIntakeRequest.Status + @",
-						@RegisterPerson nvarchar(50) = " + rubberIntakeRequest.FarmCode + @";
+				DECLARE @FarmCode nvarchar(200) = " + rubberIntakeRequest.farmCode + @",
+						@FarmerName nvarchar(200) = " + rubberIntakeRequest.farmerName + @",
+						@RubberKg decimal(12,3) = " + rubberIntakeRequest.rubberKg + @",
+						@TSCPercent decimal(5,2) = " + rubberIntakeRequest.tscPercent + @",
+						@DRCPercent decimal(5,2) = " + rubberIntakeRequest.drcPercent + @",
+						@FinishedProductKg decimal(12,3) = " + rubberIntakeRequest.finishedProductKg + @",
+						@CentrifugeProductKg decimal(12,3) = " + rubberIntakeRequest.centrifugeProductKg + @",
+						@Status bit = " + rubberIntakeRequest.status + @",
+						@RegisterPerson nvarchar(50) = " + rubberIntakeRequest.farmCode + @";
 				IF NOT EXISTS ()
 				BEGIN
 					INSERT INTO RubberIntake
@@ -115,19 +114,33 @@ namespace TAS.ViewModels
 					@FinishedProductKg, @CentrifugeProductKg, @Status, GETDATE(), @RegisterPerson);";
 
 				dbHelper.Execute(sql, lstRubberIntakeRequest.Select(x => new {
-					FarmCode = x.FarmCode,
-					FarmerName = x.FarmerName,
-					RubberKg = x.RubberKg ?? 0m,
-					TSCPercent = x.TSCPercent ?? 0m,
-					DRCPercent = x.DRCPercent ?? 0m,
-					FinishedProductKg = x.FinishedProductKg ?? 0m,
-					CentrifugeProductKg = x.CentrifugeProductKg ?? 0m,
+					FarmCode = x.farmCode,
+					FarmerName = x.farmerName,
+					RubberKg = x.rubberKg ?? 0m,
+					TSCPercent = x.tscPercent ?? 0m,
+					DRCPercent = x.drcPercent ?? 0m,
+					FinishedProductKg = x.finishedProductKg ?? 0m,
+					CentrifugeProductKg = x.centrifugeProductKg ?? 0m,
 					Status = 0,
 					RegisterPerson = "admin"
 				}));
 				return 1;
 			}
 			catch(Exception ex)
+			{
+				return 0;
+			}
+		}
+		public int ApproveDataRubber(int intakeId, int status)
+		{
+			try
+			{
+				string sql = @"
+				UPDATE RubberIntake SET Status = "+ status + @" WHERE IntakeId = "+ intakeId + @"" ;
+				dbHelper.Execute(sql);
+				return 1;
+			}
+			catch (Exception ex)
 			{
 				return 0;
 			}

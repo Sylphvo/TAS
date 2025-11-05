@@ -55,19 +55,24 @@ namespace TAS.Models
 	public class RubberIntakeRequest
 	{
 	
-		public int? RowNo { get; set; } // STT
-		public string FarmCode { get; set; } = string.Empty;  // Mã nhà vườn
-		public string FarmerName { get; set; } = string.Empty;  // Tên nhà vườn
-		public decimal? RubberKg { get; set; }    // KG
-		public decimal? TSCPercent { get; set; }// TSC (%)
-		public decimal? DRCPercent { get; set; }// DRC (%)
-		public decimal? FinishedProductKg { get; set; }// Thành Phẩm (kg)
-		public decimal? CentrifugeProductKg { get; set; }// Thành Phẩm Ly Tâm (kg)
-		public int? Status { get; set; }
-		public DateTime? RegisterDate { get; set; }
-		public string? RegisterPerson { get; set; }
-		public DateTime? UpdateDate { get; set; }
-		public string? UpdatePerson { get; set; }
+		public int?		rowNo { get; set; } // STT
+		public int?		intakeId { get; set; } // STT
+		public string	farmCode { get; set; } = string.Empty;  // Mã nhà vườn
+		public string	farmerName { get; set; } = string.Empty;  // Tên nhà vườn
+		public decimal? rubberKg { get; set; }    // KG
+		public decimal? tscPercent { get; set; }// TSC (%)
+		public decimal? drcPercent { get; set; }// DRC (%)
+		public decimal? finishedProductKg { get; set; }// Thành Phẩm (kg)
+		public decimal? centrifugeProductKg { get; set; }// Thành Phẩm Ly Tâm (kg)
+		public int?		status { get; set; }
+		public string?	timeDate { get; set; }
+		public string?	timeDate_Person { get; set; }
+
+
+		public DateTime? registerDate { get; set; }
+		public string? registerPerson { get; set; }
+		public DateTime? updateDate { get; set; }
+		public string? updatePerson { get; set; }
 
 	}
 }

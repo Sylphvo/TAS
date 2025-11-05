@@ -103,3 +103,28 @@ select {
 .dropdown-menu .dropdown-item {
     margin: 5px 0;
 }
+.btn-check:active + .button_action_custom, .btn-check:checked + .button_action_custom, .button_action_custom.focus, .button_action_custom:focus, .button_action_custom:hover, .button_action_custom:not(:disabled):not(.disabled).active, .button_action_custom:not(:disabled):not(.disabled):active, .show > .button_action_custom.dropdown-toggle {
+    border-color: rgb(255 255 255 / 0%) !important;
+}
+/*.btn-check:active + .btn-link-danger, .btn-check:checked + .btn-link-danger, .btn-link-danger.focus, .btn-link-danger:focus, .btn-link-danger:hover, .btn-link-danger:not(:disabled):not(.disabled).active, .btn-link-danger:not(:disabled):not(.disabled):active, .show > .btn-link-danger.dropdown-toggle {
+    border-color: rgb(255 255 255 / 0%) !important;
+}
+.btn-check:active + .btn-link-success, .btn-check:checked + .btn-link-success, .btn-link-success.focus, .btn-link-success:focus, .btn-link-success:hover, .btn-link-success:not(:disabled):not(.disabled).active, .btn-link-success:not(:disabled):not(.disabled):active, .show > .btn-link-success.dropdown-toggle {
+    border-color: rgb(255 255 255 / 0%) !important;
+}
+*/
+.page-item.active button {
+    background: #5b6b79 !important;
+    color: #fff !important;
+    border-color: #5b6b79 !important;
+}
+
+.btn-light-danger {
+    border-color: rgb(252 233 233 / 0%) !important;
+}
+.btn-light-success {
+    border-color: rgb(252 233 233 / 0%) !important;
+}
+.btn-light-warning {
+    border-color: rgb(252 233 233 / 0%) !important;
+}

@@ -47,6 +47,13 @@ namespace TAS.Controllers
 			return Json(result);
 		}
 
+		[HttpPost]
+		public JsonResult ApproveDataRubber(int intakeId, int status)
+		{
+			int result = models.ApproveDataRubber(intakeId, status);
+			return Json(result);
+		}
+
 		[HttpPost("Delete/{id}")]
 		public IActionResult Delete(int id)
 		{

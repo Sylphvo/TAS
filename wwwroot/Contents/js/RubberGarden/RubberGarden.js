@@ -1,6 +1,17 @@
 ﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
 var gridOptionsRubberGarden, ListDataFull;
 var page, pageSize, gridApi, pagerApi;
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
 function CreateGridRubberGarden() {
     gridOptionsRubberGarden = {
         //pagination: true,
@@ -12,12 +23,11 @@ function CreateGridRubberGarden() {
             floatingFilter: true,
         },
         height: 45,
-        rowData: [],
-        rowDragManaged: true,
-        rowDragMultiRow: true,
-        rowSelection: 'multiple',         // cho phép chọn nhiều hàng
-        suppressRowClickSelection: false, // cho phép click hàng để chọn
+        rowData: [],        
+        rowSelection: 'multiple',
+        suppressRowClickSelection: true,
         animateRows: true,
+        singleClickEdit: true,
         components: {
             customFloatingFilterInput: getFloatingFilterInputComponent(),
             //customheader: CustomHeaderRubberGarden,
@@ -26,7 +36,6 @@ function CreateGridRubberGarden() {
         onGridReady: function (params) {          
             gridApi = params.api;
             params.api.sizeColumnsToFit();           
-            //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
@@ -37,7 +46,6 @@ function CreateGridRubberGarden() {
 
     var eGridDiv = document.querySelector(RubberGarden);
     new agGrid.Grid(eGridDiv, gridOptionsRubberGarden);
-    //SetButtonOnPagingForRubberGarden();
     CreateRowDataRubberGarden();
     resizeGridRubberGarden();
 }
@@ -47,16 +55,10 @@ function resizeGridRubberGarden() {
     }, 100);
 }
 function setWidthHeightGrid(heithlayout) {
-    //gridOptionsRubberGarden.api.sizeColumnsToFit();
-    //var heigh = $(window).height() - $('.top_header').outerHeight() - $('.dm_group.dmg-shortcut').outerHeight() - ($('.col-xl-12').outerHeight() + heithlayout);
-    //$(myGrid).css('height', heigh);
-    //gridOptions.api.sizeColumnsToFit({
-    //	defaultMinWidth: 100,
-    //	columnLimits: [{ key: "DESCRIPTION", minWidth: 200 }],
-    //});
+    gridOptionsRubberGarden.api.sizeColumnsToFit();
 }
 function RefreshAllGridWhenChangeData() {
-    //ShowHideLoading(true, RubberGarden);
+    ShowHideLoading(true, RubberGarden);
     setTimeout(function () {
         CreateRowDataRubberGarden();
     }, 1);
@@ -78,7 +80,7 @@ function GetParamSearch() {
 }
 function CreateRowDataRubberGarden() {
     var listSearchRubberGarden = {};
-    //ShowHideLoading(true, divRubberGarden);
+    ShowHideLoading(true, RubberGarden);
     $('#RubberGardenModal .ag-overlay-no-rows-center').hide();
     $.ajax({
         async: !false,
@@ -90,12 +92,20 @@ function CreateRowDataRubberGarden() {
             ListDataFull = data;
             gridOptionsRubberGarden.api.setRowData(data);
             renderPage();
-            //setTimeout(function () {
-            //    ShowHideLoading(false, divRubberGarden);
-            //    $('#RubberGardenModal .ag-overlay-no-rows-center').show();
-            //    setWidthHeightGridRubberGarden(25, true);
-            //    FocusRowRubberGarden();
-            //}, 100);
+            $('.ag-header-select-all:not(.ag-hidden)').on('click', function (e) {
+                let IsChecked = $(this).find('.ag-input-field-input');
+                if (IsChecked.prop('checked')) {
+                    IsChecked.prop('checked', false);
+                    gridApi.deselectAll();
+                }
+                else {
+                    IsChecked.prop('checked', true);
+                    gridApi.selectAll();           // chọn tất cả
+                }
+            });     
+            setTimeout(function () {
+                ShowHideLoading(false, RubberGarden);
+            }, 100);
         }
     });
 }
@@ -103,14 +113,14 @@ function CreateColModelRubberGarden() {
     var width_Col = 80;
     var columnDefs = [
         {
-            field: 'rowNo', headerName: 'Số thứ tự', width: 80, minWidth: 80
+            field: 'rowNo', headerName: 'Số thứ tự', width: 100, minWidth: 100
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , checkboxSelection: true
             , headerCheckbox: true
             , headerCheckboxSelection: true // checkbox ở header để chọn tất cả
             , rowDrag: true
-            , filter: true
+            , filter: false
             , floatingFilterComponent: 'customFloatingFilterInput'
             , floatingFilterComponentParams: { suppressFilterButton: true }
             , headerComponent: "customHeader"
@@ -176,34 +186,105 @@ function CreateColModelRubberGarden() {
             //}
         },
         {
+            field: 'timeDate_Person', headerName: 'Người cập nhật', width: width_Col, minWidth: width_Col
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , headerComponent: "customHeader"
+            //, cellRenderer: function (params) {
+            //    return `<div class="text-cell-eclip">${params.value}</div>`;
+            //}
+        },
+        {
+            field: 'timeDate', headerName: 'Thời gian cập nhật', width: width_Col, minWidth: width_Col
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , headerComponent: "customHeader"
+            //, cellRenderer: function (params) {
+            //    return `<div class="text-cell-eclip">${params.value}</div>`;
+            //}
+        },
+        {
             field: 'status', headerName: 'Trạng thái', width: 140, minWidth: 140
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , headerComponent: "customHeader"
             , cellRenderer: function (params) {
                 if (params.value == 0) {
-                    return '<span class="badge text-bg-primary">Chưa chuyển</span>';
+                    return '<span class="badge text-bg-primary">Chưa xác nhận</span>';
                 }
                 if (params.value == 1) {                  
-                    return '<span class="badge text-bg-success">Đã chuyển</span>';
+                    return '<span class="badge text-bg-success">Đã xác nhận</span>';
                 }
             }
         },
         {
-            field: 'action', headerName: 'Chức năng', width: 140, minWidth: 140
+            field: 'action', headerName: 'Chức năng', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
+            , filter: false
+            , editType: 'fullRow'
             , headerComponent: "customHeader"
-            , cellRenderer: function (params) {
-
-                return `
-                    <a href="#" class="avtar avtar-xs btn-link-secondary"><i class="ti ti-edit f-20"></i> </a>
-                    <a href="#" class="avtar avtar-xs btn-link-secondary"><i class="ti ti-trash f-20"></i></a>
-                `;
-            }
+			, cellRenderer: ActionRenderer
         }
     ]
     return columnDefs;
+}
+function ActionRenderer(params) {
+    console.log(params.data.status);
+    const wrap = document.createElement('div');
+    wrap.innerHTML =
+    (params.data.status == 0 ?
+    ` <button class="button_action_custom avtar avtar-xs btn-light-success js-Approve" title="Phê duyệt">
+            <i class="ti ti-check f-20"></i>
+        </button>` 
+    :
+    `<button class="button_action_custom avtar avtar-xs btn-light-warning js-Restore" title="Phê duyệt">
+            <i class="ti ti-arrow-back f-20"></i>
+        </button>`)
+    +
+    `<button class="button_action_custom avtar avtar-xs btn-light-danger js-cancel" title="Xóa">
+      <i class="ti ti-trash f-20"></i>
+    </button>
+  `;
+    if (params.data.status == 0) {
+        const btnApprove = wrap.querySelector('.js-Approve');
+        btnApprove.addEventListener('click', (e) => {
+            ApproveData(params.data.intakeId, params.data.status);            
+        });
+    }
+    else {
+        const btnRestore = wrap.querySelector('.js-Restore');
+        btnRestore.addEventListener('click', (e) => {
+            ApproveData(params.data.intakeId, params.data.status);
+        });
+    }
+   
+
+    const btnCancel = wrap.querySelector('.js-cancel');
+    btnCancel.addEventListener('click', (e) => {
+       // e.stopPropagation();
+        Swal.fire({
+            title: 'Xóa dòng này?',
+            icon: "error",
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: `Lưu`,
+            showCloseButton: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // remove theo đúng object data của node
+                params.api.applyTransaction({ remove: [params.node.data] });
+                Toast.fire({
+                    icon: "success",
+                    title: "Xóa thành công"
+                });
+            }
+        });
+    });
+
+  
+
+    return wrap;
 }
 function onRowSelected(event) {
 	//if (event.node.isSelected()) {
@@ -383,10 +464,21 @@ function renderPage() {
         pageSize: $('.selector-paging').val(),
         renderItem: x => ``,
         onChange: s => {
-            $('#total-entries').text(s.total);
-            $('#start-entries').text(s.start);
-            $('#last-entries').text(s.end);
-            gridApi.setRowData(ListDataFull.slice(s.start, s.end + s.pageSize));
+            let total = s.total;
+            let start = (s.start == 0 ? 1 : s.start);
+            let last = s.start + parseInt(s.pageSize);
+            if (last > total) {
+				last = total;
+            }
+            $('#total-entries').text(total);
+            $('#start-entries').text(start);
+            $('#last-entries').text(last);
+            if (IsOptionAll) {
+                gridApi.setRowData(ListDataFull.slice(1, total));
+            }
+            else {
+                gridApi.setRowData(ListDataFull.slice(s.start, last));
+            }
         }
     });
 }
@@ -399,24 +491,60 @@ function addNewRowBody() {
     gridApi.startEditingCell({ rowIndex: node.rowIndex, colKey: "symbol" });
 }
 
-
-
 function ImportExcelData(rows) {
     $.ajax({
-        async: !false,
+        async: true,
         method: 'POST',
         url: "/RubberGarden/ImportDataLstData",
         contentType: 'application/json',
         data: JSON.stringify(rows),
         success: function (res) {
             if (res == 1) {
-                notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
+                Toast.fire({
+                    icon: "success",
+                    title: "Import file Excel thành công"
+                });
                 RefreshAllGridWhenChangeData();
             }
         },
         error: function () {
-            notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
+            Toast.fire({
+                icon: "danger",
+                title: "Lỗi khi import file Excel!"
+            });
         }
 	});
-    //gridApi.setRowData(rows);
+}
+
+function onBtStartEditing() {
+    const selectedNode = gridApi.getFocusedCell();
+    if (selectedNode) {
+        gridApi.startEditingCell({
+            rowIndex: selectedNode.rowIndex,
+            colKey: selectedNode.column.getId()
+        });
+    }
+}
+
+function ApproveData(intakeId, status) {
+    $.ajax({
+        async: true,
+        method: 'POST',
+        url: "/RubberGarden/ApproveDataRubber",
+        dataType: 'json',
+        data: { intakeId: intakeId, status: status },
+        success: function (res) {
+            Toast.fire({
+                icon: "success",
+                title: "Approve thành công"
+            });
+            RefreshAllGridWhenChangeData();
+        },
+        error: function () {
+            Toast.fire({
+                icon: "danger",
+                title: "Approve thất bại"
+            });
+        }
+    });
 }

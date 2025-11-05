@@ -31561,7 +31561,10 @@ body .swal2-container {
 	body .swal2-container.swal2-backdrop-show, body .swal2-container.swal2-noanimation {
 		background: rgba(0,0,0,.6) !important
 	}
-
+body .swal2-top-end.swal2-backdrop-show, body .swal2-top-end.swal2-noanimation {
+	background: rgb(0 0 0 / 0%) !important;
+}
+	
 .swal-icon--error {
 	border-color: #dc2626
 }
@@ -31799,7 +31802,7 @@ body .swal2-container {
 	margin: 0 10px
 }
 
-div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) label:where(.swal2-checkbox), div:where(.swal2-container) textarea:where(.swal2-textarea) {
+/*div:where(.swal2-container) div:where(.swal2-radio), div:where(.swal2-container) input:where(.swal2-input), div:where(.swal2-container) label:where(.swal2-checkbox), div:where(.swal2-container) textarea:where(.swal2-textarea) {
 	margin: .4em 0 0 !important
 }
 
@@ -31813,29 +31816,29 @@ div:where(.swal2-container) select:where(.swal2-select) {
 
 div:where(.swal2-container) .swal2-checkbox, div:where(.swal2-container) .swal2-radio, div:where(.swal2-container) .swal2-range {
 	background: var(--bs-body-bg) !important
-}
+}*/
 
 .swal2-styled.swal2-confirm i {
 	margin: 0 5px
 }
 
-div:where(.swal2-container) .swal2-input, div:where(.swal2-container) .swal2-textarea {
+/*div:where(.swal2-container) .swal2-input, div:where(.swal2-container) .swal2-textarea {
 	margin: 1.7em 1.7em 0 !important
-}
+}*/
 
 .swal2-rtl .swal2-close {
 	margin-right: initial;
 	margin-left: 0
 }
 
-div:where(.swal2-icon) {
+/*div:where(.swal2-icon) {
 	margin: 1.5em auto .6em !important
-}
+}*/
 
-div:where(.swal2-container) button:where(.swal2-close):focus {
+/*div:where(.swal2-container) button:where(.swal2-close):focus {
 	box-shadow: none !important
 }
-
+*/
 .modal-lightbox .modal-body {
 	padding: 0
 }

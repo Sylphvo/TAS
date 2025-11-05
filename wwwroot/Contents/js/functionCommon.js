@@ -3811,7 +3811,7 @@ function makePaginator(opts) {
         const total = data.length;
         const pages = Math.max(1, Math.ceil(total / pageSize));
         page = Math.min(Math.max(1, page), pages);
-        const start = ((page - 1) * pageSize) != 0 ? (page - 1) * pageSize : 1;
+        const start = ((page - 1) * pageSize) != 0 ? (page - 1) * pageSize : 0;
         const end = Math.min(start + pageSize, total);
         return { page, pages, pageSize, total, start, end };
     }

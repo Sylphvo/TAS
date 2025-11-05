@@ -19,14 +19,22 @@
 	.grid-paging li.page-item {
 		list-style-type: none;
 		margin: auto 5px;
+		color: #000;
 	}
 		.grid-paging li.page-item:not(.active) .page-link i {
 			color: #000 !important;
 		}
-		.grid-paging li.page-item.disabled .page-link i{
+		.grid-paging li.page-item.disabled .page-link{
 			color: #cdcdcd !important;
 		}
-		.grid-paging li.page-item:not(.active) .page-link {
-			color: #000 !important;
+		.grid-paging li.page-item:hover:not(.disabled) .page-link {
+			color: #fff !important;
 		}
-		
+		.grid-paging li.page-item.active .page-link.btn {
+			cursor: default;
+		}
+
+div.ag-cell-value[col-id="status"] > span {
+	margin-top: -3px !important;
+	display: block;
+}

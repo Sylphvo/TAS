@@ -410,10 +410,7 @@ function onExportExcelData() {
 }
 // Export Example Excel
 function onExportExcel() {
-    const rowData_temp = [
-        { STT: 1, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 99, TSC: 99, DRC: 99, thanhPham: 99, thanhPhamLyTam: 99 },
-    ];
-    const ws = XLSX.utils.json_to_sheet(rowData_temp);
+    const ws = XLSX.utils.json_to_sheet(ListDataFull);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'mau.xlsx');

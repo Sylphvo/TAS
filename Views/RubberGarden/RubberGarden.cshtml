@@ -69,9 +69,10 @@
                                         @localizer["key_rowperpage"]:
                                         <select class="datatable-selector selector-paging" name="per-page">
                                             <option value="5">5</option>
-                                            <option value="10" selected="">10</option>
-                                            <option value="15">15</option><option value="20">20</option>
-                                            <option value="25">25</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="20">20</option>
+                                            <option value="50">50</option>
+                                            <option value="All">All</option>
                                         </select>
                                     </label>
                                 </div>
@@ -98,7 +99,22 @@
                 </div>
             </div>
         </div>
-
+    </div>
+</div>
+<div class="modal fade" id="AddNewRubber" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm mới Rubber</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
     </div>
 </div>
 @section Scripts {
@@ -107,9 +123,14 @@
         RegisterEventExcelInput('importExcel');
         var listdataEventsActual;
         var RubberGarden = '#RubberGardenGrid';
+        var IsOptionAll = false;
         CreateGridRubberGarden();
         $('#ListCboAgent').change(function (e) {
             RefreshAllGridWhenChangeData();
         });
+        $('.selector-paging').change(function (e) {
+            IsOptionAll = $(this).val() == 'All';
+            RefreshAllGridWhenChangeData();
+        });        
     </script>
 }
