@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 namespace TAS.TagHelpers
 {
@@ -39,6 +40,15 @@ namespace TAS.TagHelpers
 		{
 			using var conn = new SqlConnection(_connectionString);
 			return conn.Execute(sql, param);
+		}
+
+		// Query trả về chuỗi
+		public string QueryString(string sql, object? param = null, int? timeout = null)
+		{
+			using var conn = new SqlConnection(_connectionString);
+			var s = conn.ExecuteScalar<string?>(new CommandDefinition(
+				sql, param, commandType: CommandType.Text, commandTimeout: timeout));
+			return s ?? string.Empty;
 		}
 
 		// Query trả về scalar value (COUNT, SUM, etc.)

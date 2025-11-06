@@ -38,3 +38,20 @@ div.ag-cell-value[col-id="status"] > span {
 	margin-top: -3px !important;
 	display: block;
 }
+.datatable-top div{
+	width:50% !important;
+}
+.button_filter {
+	justify-content: flex-end;
+	display: flex;
+}
+.ag-picker-field-wrapper {
+	height: 39px;
+	width: 105px;
+}
+.ag-select-list-item {
+	padding: 20px 9px !important;
+}
+.button_action_custom{
+	margin-left: 5px;
+}

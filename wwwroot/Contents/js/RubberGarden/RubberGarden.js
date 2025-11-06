@@ -2,10 +2,16 @@
 var gridOptionsRubberGarden, ListDataFull;
 var page, pageSize, gridApi, pagerApi;
 var arrValueFilter = {
-    statusApprove: 1,// 1: Đã phê duyệt
-    statusRestore: 0,// 0: Chưa phê duyệt
+    statusApprove: 1,// Đã phê duyệt
+    statusRestore: 0,// Chưa phê duyệt
+	typeExcel: 1,// Xuất Excel Data
+	typeSampleExcel: 2,// Xuất Excel Mẫu
 };
-
+var farms = {
+    farmCode: 'NV_1',
+	farmerName: 'Nguyễn Văn'
+};
+var farmByCode = {};
 
 const Toast = Swal.mixin({
     toast: true,
@@ -46,14 +52,55 @@ function CreateGridRubberGarden() {
         rowDragManaged: true,
         onRowDragEnd() {
             persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
+        },
+        onCellValueChanged: e => {
+            if (e.colDef.field == 'tscPercent') {
+                calcTSCPercent(e.data);
+                e.api.refreshCells({ rowNodes: [e.node], columns: ['drcPercent'], force: true });
+            }
+
+            if (['rubberKg', 'drcPercent'].includes(e.colDef.field)) {
+                calcFinish(e.data);
+                calcCentrifuge(e.data);
+                e.api.refreshCells({ rowNodes: [e.node], columns: ['finishedProductKg'], force: true });
+                e.api.refreshCells({ rowNodes: [e.node], columns: ['centrifugeProductKg'], force: true });
+            }
+            console.log('Data after change is', e.data);
+            UpdateDataAfterEdit(e.data);
         }
-     
     };
 
     var eGridDiv = document.querySelector(RubberGarden);
     new agGrid.Grid(eGridDiv, gridOptionsRubberGarden);
     CreateRowDataRubberGarden();
     resizeGridRubberGarden();
+}
+function UpdateDataAfterEdit(rowData) {
+    $.ajax({
+        async: true,
+        url: "/RubberGarden/AddOrUpdate",
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(rowData),
+        success: function (res) {
+            RefreshAllGridWhenChangeData();
+        },
+        error: function () {}
+    });
+}
+
+const num = v => {
+    const x = parseFloat(String(v ?? '').replace(',', '.'));
+    return Number.isFinite(x) ? x : 0;
+};
+function calcTSCPercent(row) {
+    row.drcPercent = row.tscPercent - 3;
+}
+function calcFinish(row) {
+    row.finishedProductKg = +(num(row.rubberKg) * num(row.drcPercent) / 100).toFixed(3);
+}
+function calcCentrifuge(row) {
+    row.centrifugeProductKg = +((num(row.rubberKg) * num(row.drcPercent) / 100) * 1.5).toFixed(3);
 }
 function resizeGridRubberGarden() {
     setTimeout(function () {
@@ -134,14 +181,24 @@ function CreateColModelRubberGarden() {
             //, colSpan: 2
         },
         {
-            field: 'farmCode', headerName: 'Mã Nhà Vườn', width: width_Col, minWidth: width_Col
-            , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
-            , filter: true
-            , floatingFilterComponent: 'customFloatingFilterInput'
-            , floatingFilterComponentParams: { suppressFilterButton: true }
-            , headerComponent: "customHeader"
-            //, cellRenderer: cellRender_StartDate
+            field: 'farmCode',
+            headerName: 'Mã Nhà Vườn',
+            width: width_Col, minWidth: width_Col,
+            editable: true, filter: true,
+            cellEditor: 'agSelectCellEditor',
+            cellEditorPopup: true,
+            popupPosition: 'under',
+            cellEditorParams: () => ({
+                values: listComboFarmCode.map(f => f.farmCode),
+                allowTyping: true,
+                searchType: 'matchAny',
+                cellRenderer: (p) => {
+                    const f = farmByCode[p.value];
+                    return f ? `${f.farmCode} - ${f.farmerName}` : (p.value ?? '');
+                }
+            }),
+            headerComponent: "customHeader",
+            cellStyle: { 'text-align': 'center' }
         },
         {
             field: 'farmerName', headerName: 'Tên Nhà Vườn', width: 150, minWidth: 150
@@ -170,7 +227,7 @@ function CreateColModelRubberGarden() {
             field: 'drcPercent', headerName: 'DRC', width: width_Col, minWidth: width_Col
             //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: false
+            , editable: true
             , headerComponent: "customHeader"
         },
         {
@@ -213,13 +270,14 @@ function CreateColModelRubberGarden() {
             field: 'status', headerName: 'Trạng thái', width: 140, minWidth: 140
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
+            , filter: false
             , headerComponent: "customHeader"
             , cellRenderer: function (params) {
                 if (params.value == 0) {
-                    return '<span class="badge text-bg-primary">Chưa xác nhận</span>';
+                    return '<span class="badge text-bg-primary">Chưa phê duyệt</span>';
                 }
                 if (params.value == 1) {                  
-                    return '<span class="badge text-bg-success">Đã xác nhận</span>';
+                    return '<span class="badge text-bg-success">Đã phê duyệt</span>';
                 }
             }
         },
@@ -291,18 +349,7 @@ function ActionRenderer(params) {
 
     return wrap;
 }
-function onRowSelected(event) {
-	//if (event.node.isSelected()) {
-	//	var id_list = GetIdListEventActual(event.data.id);
-	//	if (id_list !== PFN_readCookie('id_list')) {
-	//		$('.ag-body-viewport div.ag-row').removeClass('ag-row-selected');
- //           $('.ag-body-viewport div[row-index="' + $('.' + PFN_readCookie('id_list')).parent().attr('row-index') + '"]').removeClass('ag-row-selected');
-	//	}
-	//	if (IsNullOrEmpty(PFN_readCookie('focus_row')) && event.type == 'rowSelected' && event.source == 'rowClicked') {
-	//		$('.ag-body-viewport div[row-index="' + event.rowIndex + '"]').addClass('ag-row-selected');
-	//	}
- //   }
-}
+
 
 function CustomHeaderRubberGarden() { }
 
@@ -429,25 +476,203 @@ function updateRowIndex() {
     });
 }
 
-
-// Export Excel
+function InputNameFile(typeExcel) {
+    Swal.fire({
+        title: "Nhập tên File Excel",
+        input: "text",
+        inputAttributes: {
+            autocapitalize: "off"
+        },
+        showCancelButton: true,
+        confirmButtonText: "Xuất Excel",
+        showLoaderOnConfirm: true,
+        allowOutsideClick: () => !Swal.isLoading()
+    }).then((result) => {
+        if (result.isConfirmed) {
+            if (typeExcel == arrValueFilter.typeExcel) {
+                onExportExcelData(result.value);
+            }
+            else {
+                onExportExcel(arrValueFilter.typeSampleExcel, result.value);
+            }
+        }
+    });
+}
+// Export Excel Data
 function onExportExcelData() {
     const ws = XLSX.utils.json_to_sheet(ListDataFull);        
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'datanhaplieu.xlsx');  
 }
-// Export Example Excel
-function onExportExcel() {
-    const rowData_temp = [
-        { STT: 1, maNhaVuon: "NV_2", tenNhaVuon: "Đoàn Thị Diệu Hiền (giang)", KG: 99, TSC: 99, DRC: 99, thanhPham: 99, thanhPhamLyTam: 99 },
+// Export Excel Mẫu
+function onExportExcel(soLuong, fileName) {    
+    // 1) Lấy cấu hình cột từ ag-Grid
+    const headers = gridApi.getColumnDefs().filter(x => x.field != 'action').map(c => c.headerName);
+    const fieldByHeader = h => colDefs.find(c => c.headerName === h)?.field || h;
+
+    // 2) Sinh dữ liệu mẫu
+    const names = ['Phan Thị Dự 1 3 4', 'Đoàn Thị Diệu Hiền', 'Hoàng Thị Long', 'Nguyễn Văn Hải'];
+    function sampleValue(h, i) {
+        if (h === 'Số thứ tự') return i + 1;
+        if (h === 'Mã Nhà Vườn') return `NV_${String(i + 1).padStart(3, '0')}`;
+        if (h === 'Tên Nhà Vườn') return names[i % names.length];
+        if (h === 'Khối lượng') return +(30 + Math.random() * 20).toFixed(2);
+        if (h === 'TSC') return +(25 + Math.random() * 25).toFixed(1);
+        if (h === 'DRC') return +(15 + Math.random() * 15).toFixed(1);
+        if (h === 'Người cập nhật') return 'admin';
+        if (h === 'Thời gian cập nhật') return new Date().toISOString().slice(0, 19).replace('T', ' ');
+        if (h === 'Trạng thái') return ['Đã xác nhận'][i % 3];
+        return '';
+    }
+    const rows = Array.from({ length: soLuong }, (_, i) => {
+        const r = {};
+        headers.forEach(h => { r[fieldByHeader(h)] = sampleValue(h, i); });
+        const kg = Number(r[fieldByHeader('Khối lượng')] || 0);
+        const drc = Number(r[fieldByHeader('DRC')] || 0);
+        r[fieldByHeader('Thành Phẩm')] = +(kg * drc / 100).toFixed(2);
+        r[fieldByHeader('Thành Phẩm Ly Tâm')] = +(kg * 0.15).toFixed(2);
+        return r;
+    });
+
+    // 3) Xây AOA: 3 dòng header + dòng tiêu đề bảng + dữ liệu
+    const today = new Date();
+    const d = String(today.getDate()).padStart(2, '0');
+    const m = String(today.getMonth() + 1).padStart(2, '0');
+    const y = today.getFullYear();
+
+    const title = 'BẢNG THEO DÕI MỦ FSC BẰNG TẨM';
+    const dateStr = `Ngày: ${d}/${m}/${y}`;
+    const product = 'Sản phẩm/ Product: Mủ nước Latex, FSC 100%, Hevea Brasiliensis, CU-FM/COC-903950';
+
+    const aoa = [
+        [title],
+        [dateStr],
+        [product],
+        headers,
+        ...rows.map(r => headers.map(h => r[fieldByHeader(h)]))
     ];
-    const ws = XLSX.utils.json_to_sheet(rowData_temp);
+
+    // 4) Tạo sheet
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const lastCol = headers.length - 1;
+
+    // Merge 3 dòng đầu
+    ws['!merges'] = [
+        { s: { r: 0, c: 0 }, e: { r: 0, c: lastCol } },
+        { s: { r: 1, c: 0 }, e: { r: 1, c: lastCol } },
+        { s: { r: 2, c: 0 }, e: { r: 2, c: lastCol } }
+    ];
+
+    // 5) ÁP DỤNG STYLE - QUAN TRỌNG: Phải tạo object style hoàn chỉnh
+    const headerStyle1 = {
+        font: { name: 'Calibri', sz: 14, bold: true, color: { rgb: '000000' } },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
+        fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
+    };
+
+    const headerStyle2 = {
+        font: { name: 'Calibri', sz: 12, bold: true, color: { rgb: '000000' } },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
+        fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
+    };
+
+    const headerStyle3 = {
+        font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: '000000' } },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+        fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
+    };
+
+    const tableHeaderStyle = {
+        font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: '000000' } },
+        alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
+        fill: { patternType: 'solid', fgColor: { rgb: 'D9D9D9' } },
+        border: {
+            top: { style: 'thin', color: { rgb: '000000' } },
+            bottom: { style: 'thin', color: { rgb: '000000' } },
+            left: { style: 'thin', color: { rgb: '000000' } },
+            right: { style: 'thin', color: { rgb: '000000' } }
+        }
+    };
+
+    const dataBorder = {
+        top: { style: 'thin', color: { rgb: '000000' } },
+        bottom: { style: 'thin', color: { rgb: '000000' } },
+        left: { style: 'thin', color: { rgb: '000000' } },
+        right: { style: 'thin', color: { rgb: '000000' } }
+    };
+
+    // Áp style cho dòng 1 (tiêu đề)
+    for (let c = 0; c <= lastCol; c++) {
+        const addr = XLSX.utils.encode_cell({ r: 0, c });
+        if (ws[addr]) ws[addr].s = headerStyle1;
+    }
+
+    // Áp style cho dòng 2 (ngày)
+    for (let c = 0; c <= lastCol; c++) {
+        const addr = XLSX.utils.encode_cell({ r: 1, c });
+        if (ws[addr]) ws[addr].s = headerStyle2;
+    }
+
+    // Áp style cho dòng 3 (sản phẩm)
+    for (let c = 0; c <= lastCol; c++) {
+        const addr = XLSX.utils.encode_cell({ r: 2, c });
+        if (ws[addr]) ws[addr].s = headerStyle3;
+    }
+
+    // Áp style cho dòng 4 (header bảng)
+    for (let c = 0; c <= lastCol; c++) {
+        const addr = XLSX.utils.encode_cell({ r: 3, c });
+        if (ws[addr]) ws[addr].s = tableHeaderStyle;
+    }
+
+    // Áp style cho dữ liệu (từ dòng 5)
+    const dataStartRow = 4;
+    const dataEndRow = 4 + rows.length - 1;
+
+    for (let r = dataStartRow; r <= dataEndRow; r++) {
+        for (let c = 0; c <= lastCol; c++) {
+            const addr = XLSX.utils.encode_cell({ r, c });
+            if (ws[addr]) {
+                const isNumber = typeof ws[addr].v === 'number';
+                ws[addr].s = {
+                    font: { name: 'Calibri', sz: 11 },
+                    alignment: {
+                        horizontal: isNumber ? 'right' : 'left',
+                        vertical: 'center',
+                        wrapText: false
+                    },
+                    border: dataBorder
+                };
+            }
+        }
+    }
+
+    // 6) Độ rộng cột
+    ws['!cols'] = headers.map(h => ({ wch: Math.max(15, h.length + 2) }));
+
+    // 7) Chiều cao dòng cho 3 dòng đầu
+    ws['!rows'] = [
+        { hpt: 25 },  // Dòng 1
+        { hpt: 20 },  // Dòng 2
+        { hpt: 30 },  // Dòng 3
+        { hpt: 20 }   // Dòng 4 (header)
+    ];
+
+    // 8) GHI FILE - QUAN TRỌNG: Phải dùng bookType: 'xlsx' và cellStyles: true
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    XLSX.writeFile(wb, 'mau.xlsx');
+
+    // Sử dụng writeFile với options đầy đủ
+    XLSX.writeFile(wb, 'Du_Lieu_Mau.xlsx', {
+        bookType: 'xlsx',
+        bookSST: false,
+        type: 'binary',
+        cellStyles: true  // Bật style
+    });
 }
-const ordered;
+// Lưu thứ tự hiện tại sau khi kéo thả
+var ordered;
 function persistCurrentPageOrder() {
     const start = (page - 1) * pageSize;
     const n = gridApi.getDisplayedRowCount();
@@ -487,6 +712,7 @@ function renderPage() {
         }
     });
 }
+// Thêm dòng mới
 function addNewRowBody() {
     const res = gridApi.applyTransaction({ add: [{ maNhaVuon: null, tenNhaVuon: null, KG: null, TSC: null, DRC: null, thanhPham: null, thanhPhamLyTam: null }] });
     const node = res.add[0]; // là dòng cuối nếu không đặt addIndex
@@ -495,7 +721,7 @@ function addNewRowBody() {
     gridApi.setFocusedCell(node.rowIndex, "symbol");
     gridApi.startEditingCell({ rowIndex: node.rowIndex, colKey: "symbol" });
 }
-
+// Import Excel Data
 function ImportExcelData(rows) {
     $.ajax({
         async: true,
@@ -518,7 +744,7 @@ function ImportExcelData(rows) {
         }
 	});
 }
-
+// Bắt đầu chỉnh sửa ô đang chọn
 function onBtStartEditing() {
     const selectedNode = gridApi.getFocusedCell();
     if (selectedNode) {
@@ -528,7 +754,7 @@ function onBtStartEditing() {
         });
     }
 }
-
+// Phê duyệt dữ liệu
 function ApproveData(intakeId, status) {
     $.ajax({
         async: true,
@@ -559,3 +785,4 @@ function ApproveData(intakeId, status) {
         }
     });
 }
+

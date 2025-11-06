@@ -55,8 +55,8 @@
                                 <label for="importExcel" class="btn btn-primary">Import Excel</label>
                                 <input type="file" id="importExcel" hidden>
                                 <span id="file-name" class="ms-2 d-none"></span>
-                                <button onclick="onExportExcelData()" class="btn btn-primary buttonSearch">Xuất Excel</button>
-                                <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Mẫu Excel</button>
+                                <button onclick="InputNameFile(1)" class="btn btn-primary buttonSearch">Xuất Excel</button>
+                                <button onclick="InputNameFile(2)" class="btn btn-primary buttonSearch">Mẫu Excel</button>
                                 <button onclick="addNewRowBody()" class="btn btn-primary buttonSearch">Thêm mới</button>
                                 <button class="btn btn-primary buttonSearch">Phê duyệt tất cả</button>
                             </div>
@@ -77,7 +77,9 @@
                                         </select>
                                     </label>
                                 </div>
-                                <button class="btn btn-primary buttonSearch">Phê duyệt</button>
+                                <div class="button_filter">
+                                    <button class="btn btn-primary buttonSearch">Phê duyệt</button>
+                                </div>
                             </div>
                             <!-- [ Main Content ] end -->
                             <div id="RubberGardenGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
@@ -124,8 +126,10 @@
     <script>
         RegisterEventExcelInput('importExcel');
         var listdataEventsActual;
+        var listdataEventsActual;
         var RubberGarden = '#RubberGardenGrid';
         var IsOptionAll = false;
+        var listComboFarmCode = @Json.Serialize(ViewBag.ComboFarmCode)
         CreateGridRubberGarden();
         $('#ListCboAgent').change(function (e) {
             let dataAgent = $(this).val();

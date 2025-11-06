@@ -2,16 +2,20 @@
 using System.Globalization;
 using TAS.Helpers;
 using TAS.Models;
+using TAS.Repository;
+using TAS.Services;
 using TAS.TagHelpers;
+
 
 namespace TAS.ViewModels
 {
 	public class RubberGardenModels
 	{
+		private readonly ICurrentUser _userManage;
 		ConnectDbHelper dbHelper = new ConnectDbHelper();
-		public RubberGardenModels()
+		public RubberGardenModels(ICurrentUser userManage)
 		{
-
+			_userManage = userManage;
 		}
 		// Model
 		public async Task<List<RubberIntakeRequest>> GetRubberFarmAsync()
@@ -47,56 +51,48 @@ namespace TAS.ViewModels
 					throw new ArgumentNullException(nameof(rubberIntakeRequest), "Input data cannot be null.");
 				}
 				var sql = @"
-				DECLARE @FarmCode nvarchar(200) = " + rubberIntakeRequest.farmCode + @",
-						@FarmerName nvarchar(200) = " + rubberIntakeRequest.farmerName + @",
-						@RubberKg decimal(12,3) = " + rubberIntakeRequest.rubberKg + @",
-						@TSCPercent decimal(5,2) = " + rubberIntakeRequest.tscPercent + @",
-						@DRCPercent decimal(5,2) = " + rubberIntakeRequest.drcPercent + @",
-						@FinishedProductKg decimal(12,3) = " + rubberIntakeRequest.finishedProductKg + @",
-						@CentrifugeProductKg decimal(12,3) = " + rubberIntakeRequest.centrifugeProductKg + @",
-						@Status bit = " + rubberIntakeRequest.status + @",
-						@RegisterPerson nvarchar(50) = " + rubberIntakeRequest.farmCode + @";
-				IF NOT EXISTS ()
+				IF EXISTS (SELECT 1 FROM RubberIntake WHERE IntakeId = @IntakeId)
+				BEGIN
+					UPDATE RubberIntake SET
+					FarmCode            = @FarmCode,
+					FarmerName          = @FarmerName,
+					RubberKg            = @RubberKg,
+					TSCPercent          = @TSCPercent,
+					DRCPercent          = @DRCPercent,
+					FinishedProductKg   = @FinishedProductKg,
+					CentrifugeProductKg = @CentrifugeProductKg,
+					[Status]            = @Status,
+					UpdateDate          = SYSUTCDATETIME(),
+					UpdatePerson        = @UpdatePerson
+					WHERE IntakeId = @IntakeId
+				END
+				ELSE
 				BEGIN
 					INSERT INTO RubberIntake
-					(
-						FarmCode, FarmerName,
-						RubberKg, TSCPercent, DRCPercent,
-						FinishedProductKg, CentrifugeProductKg,
-						Status,
-						RegisterDate, RegisterPerson
-					)
+					(FarmCode, FarmerName, RubberKg, TSCPercent, DRCPercent,
+						FinishedProductKg, CentrifugeProductKg, [Status],
+						RegisterDate, RegisterPerson)
 					VALUES
-					(
-						@FarmCode, @FarmerName,
-						@RubberKg, @TSCPercent, @DRCPercent,
-						@FinishedProductKg, @CentrifugeProductKg,
-						@Status,
-						GETDATE(), @RegisterPerson
-					);
-				END
-				ELSE 
-				BEGIN 
-					UPDATE RubberIntake
-					SET
-						FarmCode            = @FarmCode,
-						FarmerName          = @FarmerName,
-						RubberKg                  = @RubberKg,
-						TSCPercent          = @TSCPercent,
-						DRCPercent          = @DRCPercent,
-						FinishedProductKg   = @FinishedProductKg,
-						CentrifugeProductKg = @CentrifugeProductKg,
-						Status              = @Status,
-						UpdateDate          = SYSUTCDATETIME(),
-						UpdatePerson        = @UpdatePerson,
-						IntakeDate          = @IntakeDate
-					WHERE Id = @Id;
-				END
-				SELECT 1;		
-				";
+					(@FarmCode, @FarmerName, @RubberKg, @TSCPercent, @DRCPercent,
+						@FinishedProductKg, @CentrifugeProductKg, @Status,
+						SYSUTCDATETIME(), @RegisterPerson)
+				END";
 				// With this line:
-				int resultData = dbHelper.Execute(sql);
-				return resultData;
+				dbHelper.Execute(sql, new
+				{
+					FarmCode = rubberIntakeRequest.farmCode,
+					FarmerName = rubberIntakeRequest.farmerName,
+					RubberKg = rubberIntakeRequest.rubberKg,
+					TSCPercent = rubberIntakeRequest.tscPercent,
+					DRCPercent = rubberIntakeRequest.drcPercent,
+					FinishedProductKg = rubberIntakeRequest.finishedProductKg,   // 4.62m
+					CentrifugeProductKg = rubberIntakeRequest.centrifugeProductKg, // 6.93m
+					Status = rubberIntakeRequest.status,
+					UpdatePerson = _userManage.Name,
+					RegisterPerson = _userManage.Name,
+					IntakeId = rubberIntakeRequest.intakeId
+				});
+				return 1;
 			}
 			catch(Exception ex)
 			{
@@ -146,6 +142,20 @@ namespace TAS.ViewModels
 			catch (Exception ex)
 			{
 				return 0;
+			}
+		}
+		public async Task<List<RubberFarmRequest>> ComboFarmCode()
+		{
+			try
+			{
+				string sql = @"
+					SELECT DISTINCT FarmCode, FarmerName FROM RubberFarm WHERE FarmCode IS NOT NULL
+				";
+				return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
+			}
+			catch (Exception ex)
+			{
+				return null;
 			}
 		}
 	}

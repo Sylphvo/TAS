@@ -7,6 +7,8 @@ using System.Globalization;
 using TAS.AttributeTargets;
 using TAS.Data;
 using TAS.Helpers;
+using TAS.Repository;
+using TAS.Services;
 using TAS.TagHelpers;
 using TAS.ViewModels; // DbContext của bạn
 
@@ -16,11 +18,13 @@ var builder = WebApplication.CreateBuilder(args);
 // lấy chuỗi kết nối: appsettings.ConnectionStrings.Default
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
-// Đăng ký CommonDb
-builder.Services.AddScoped<ConnectDbHelper>();
 
-// Đăng ký RubberGardenModels
-builder.Services.AddScoped<RubberGardenModels>();
+builder.Services.AddScoped<ConnectDbHelper>();// Đăng ký CommonDb
+builder.Services.AddHttpContextAccessor();// Đăng ký LanguageService
+builder.Services.AddScoped<ICurrentUser, CurrentUserService>();// Đăng ký dịch vụ lấy thông tin người dùng hiện tại
+builder.Services.AddScoped<CommonModels>();           // <-- bắt buộc
+builder.Services.AddScoped<RubberGardenModels>();     // <-- bắt buộc
+builder.Services.AddScoped<ILanguageService, LanguageService>();// Đăng ký dịch vụ ngôn ngữ
 
 builder.Services.AddIdentityCore<UserAccountIdentity>()
 	.AddRoles<IdentityRole<Guid>>()
@@ -73,11 +77,6 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
         new AcceptLanguageHeaderRequestCultureProvider() // Header
     };
 });
-// Đăng ký LanguageService
-builder.Services.AddHttpContextAccessor();
-// Đăng ký dịch vụ ngôn ngữ
-builder.Services.AddScoped<ILanguageService, LanguageService>();
-
 
 // Đăng ký Authorization
 builder.Services.AddAuthorization();
