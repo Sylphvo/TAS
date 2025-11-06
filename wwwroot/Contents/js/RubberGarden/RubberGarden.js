@@ -1,6 +1,12 @@
 ﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
 var gridOptionsRubberGarden, ListDataFull;
 var page, pageSize, gridApi, pagerApi;
+var arrValueFilter = {
+    statusApprove: 1,// 1: Đã phê duyệt
+    statusRestore: 0,// 0: Chưa phê duyệt
+};
+
+
 const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -164,13 +170,13 @@ function CreateColModelRubberGarden() {
             field: 'drcPercent', headerName: 'DRC', width: width_Col, minWidth: width_Col
             //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
         },
         {
             field: 'finishedProductKg', headerName: 'Thành Phẩm', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -179,7 +185,7 @@ function CreateColModelRubberGarden() {
         {
             field: 'centrifugeProductKg', headerName: 'Thành Phẩm Ly Tâm', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -188,16 +194,16 @@ function CreateColModelRubberGarden() {
         {
             field: 'timeDate_Person', headerName: 'Người cập nhật', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
             //}
         },
         {
-            field: 'timeDate', headerName: 'Thời gian cập nhật', width: width_Col, minWidth: width_Col
+            field: 'timeDate', headerName: 'Thời gian cập nhật', width: 120, minWidth: 120
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -230,7 +236,6 @@ function CreateColModelRubberGarden() {
     return columnDefs;
 }
 function ActionRenderer(params) {
-    console.log(params.data.status);
     const wrap = document.createElement('div');
     wrap.innerHTML =
     (params.data.status == 0 ?
@@ -249,13 +254,13 @@ function ActionRenderer(params) {
     if (params.data.status == 0) {
         const btnApprove = wrap.querySelector('.js-Approve');
         btnApprove.addEventListener('click', (e) => {
-            ApproveData(params.data.intakeId, params.data.status);            
+            ApproveData(params.data.intakeId, arrValueFilter.statusApprove);            
         });
     }
     else {
         const btnRestore = wrap.querySelector('.js-Restore');
         btnRestore.addEventListener('click', (e) => {
-            ApproveData(params.data.intakeId, params.data.status);
+            ApproveData(params.data.intakeId, arrValueFilter.statusRestore);
         });
     }
    
@@ -442,11 +447,11 @@ function onExportExcel() {
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, 'mau.xlsx');
 }
-
+const ordered;
 function persistCurrentPageOrder() {
     const start = (page - 1) * pageSize;
     const n = gridApi.getDisplayedRowCount();
-    const ordered = [];
+    ordered = [];
     for (let i = 0; i < n; i++) {
         ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
     }
@@ -499,13 +504,11 @@ function ImportExcelData(rows) {
         contentType: 'application/json',
         data: JSON.stringify(rows),
         success: function (res) {
-            if (res == 1) {
-                Toast.fire({
-                    icon: "success",
-                    title: "Import file Excel thành công"
-                });
-                RefreshAllGridWhenChangeData();
-            }
+            Toast.fire({
+                icon: "success",
+                title: "Import file Excel thành công"
+            });
+            RefreshAllGridWhenChangeData();
         },
         error: function () {
             Toast.fire({
@@ -534,10 +537,18 @@ function ApproveData(intakeId, status) {
         dataType: 'json',
         data: { intakeId: intakeId, status: status },
         success: function (res) {
-            Toast.fire({
-                icon: "success",
-                title: "Approve thành công"
-            });
+            if (status == 1) {
+                Toast.fire({
+                    icon: "success",
+                    title: "Phê duyệt thành công"
+                });
+            }
+            else {
+                Toast.fire({
+                    icon: "success",
+                    title: "Khôi phục thành công"
+                });
+            }
             RefreshAllGridWhenChangeData();
         },
         error: function () {

@@ -19,18 +19,21 @@ namespace TAS.ViewModels
 			var sql = @"
 				SELECT 
 					rowNo = ROW_NUMBER() OVER(ORDER BY IntakeId ASC),
-					intakeId,
-					farmCode,
-					farmerName,
-					rubberKg,
-					tscPercent,
-					drcPercent,
-					finishedProductKg,
-					centrifugeProductKg,
-					status,
-					timeDate_Person = ISNULL(UpdatePerson, RegisterPerson),
-					timeDate = CONVERT(VARCHAR,ISNULL(UpdateDate, RegisterDate),111) + ' ' + CONVERT(VARCHAR(5),ISNULL(UpdateDate, RegisterDate), 108)
-				FROM RubberIntake
+					intakeId = A.intakeId,
+					agentCode = C.AgentCode,
+					farmCode = A.FarmCode,
+					farmerName = A.farmerName,
+					rubberKg = A.rubberKg,
+					tscPercent = A.tscPercent,
+					drcPercent = A.drcPercent,
+					finishedProductKg = A.finishedProductKg,
+					centrifugeProductKg = A.centrifugeProductKg,
+					status = A.status,
+					timeDate_Person = ISNULL(A.UpdatePerson, A.RegisterPerson),
+					timeDate = CONVERT(VARCHAR,ISNULL(A.UpdateDate, A.RegisterDate),111) + ' ' + CONVERT(VARCHAR(5),ISNULL(A.UpdateDate, A.RegisterDate), 108)
+				FROM [RubberIntake] A
+				LEFT JOIN RubberFarm B ON B.FarmCode = A.FarmCode
+				LEFT JOIN RubberAgent C ON C.AgentCode = B.AgentCode
 			";
 			return await dbHelper.QueryAsync<RubberIntakeRequest>(sql);
 		}

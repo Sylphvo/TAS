@@ -57,6 +57,7 @@ namespace TAS.Models
 	
 		public int?		rowNo { get; set; } // STT
 		public int?		intakeId { get; set; } // STT
+		public string	agentCode { get; set; } = string.Empty;  // Mã nhà vườn
 		public string	farmCode { get; set; } = string.Empty;  // Mã nhà vườn
 		public string	farmerName { get; set; } = string.Empty;  // Tên nhà vườn
 		public decimal? rubberKg { get; set; }    // KG

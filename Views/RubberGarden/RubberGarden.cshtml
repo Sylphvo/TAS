@@ -41,9 +41,10 @@
                                     @{
                                         if (ListAgent != null)
                                         {
+                                            <option value="*" selected>All</option>
                                             foreach (var item in ListAgent)
                                             {
-                                                <option value="@item.AgentId">@item.AgentName</option>
+                                                <option value="@item.AgentCode">@item.AgentName</option>
                                             }
                                         }
                                     }
@@ -57,7 +58,7 @@
                                 <button onclick="onExportExcelData()" class="btn btn-primary buttonSearch">Xuất Excel</button>
                                 <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Mẫu Excel</button>
                                 <button onclick="addNewRowBody()" class="btn btn-primary buttonSearch">Thêm mới</button>
-                                <button class="btn btn-primary buttonSearch">Chuyển dữ liệu</button>
+                                <button class="btn btn-primary buttonSearch">Phê duyệt tất cả</button>
                             </div>
                         </div>
                     </div>
@@ -72,10 +73,11 @@
                                             <option value="10" selected>10</option>
                                             <option value="20">20</option>
                                             <option value="50">50</option>
-                                            <option value="All">All</option>
+                                            <option value="*">All</option>
                                         </select>
                                     </label>
                                 </div>
+                                <button class="btn btn-primary buttonSearch">Phê duyệt</button>
                             </div>
                             <!-- [ Main Content ] end -->
                             <div id="RubberGardenGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
@@ -126,10 +128,18 @@
         var IsOptionAll = false;
         CreateGridRubberGarden();
         $('#ListCboAgent').change(function (e) {
-            RefreshAllGridWhenChangeData();
+            let dataAgent = $(this).val();
+            if(dataAgent == '*'){
+                 gridApi.setRowData(ListDataFull);
+            }
+            else{
+                gridApi.setRowData(ListDataFull.filter(x => x.agentCode == dataAgent));
+            }
+            //RefreshAllGridWhenChangeData();
         });
         $('.selector-paging').change(function (e) {
-            IsOptionAll = $(this).val() == 'All';
+            let selectPage = $(this).val();
+            IsOptionAll = selectPage == '*';
             RefreshAllGridWhenChangeData();
         });        
     </script>
