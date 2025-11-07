@@ -45,6 +45,7 @@ namespace TAS.Data
 				// Unique nếu có TaxCode
 				e.HasIndex(x => x.TaxCode).IsUnique().HasFilter("[TaxCode] IS NOT NULL");
 			});
+
 			// RubberFarmDb configuration
 			modelBuilder.Entity<RubberFarmDb>(e =>
             {
@@ -67,9 +68,8 @@ namespace TAS.Data
 				 .OnDelete(DeleteBehavior.Restrict);
 
 				e.Property(x => x.FarmerName).HasMaxLength(200);
-				e.Property(x => x.FarmerPhone).HasMaxLength(20);
-				e.Property(x => x.FarmerAddress).HasMaxLength(300);
-				e.Property(x => x.FarmerMap).HasMaxLength(300);
+				e.Property(x => x.FarmPhone).HasMaxLength(20);
+				e.Property(x => x.FarmAddress).HasMaxLength(300);
 				e.Property(x => x.Certificates).HasMaxLength(500);
 
 				e.Property(x => x.TotalAreaHa).HasPrecision(12, 2);
@@ -79,15 +79,13 @@ namespace TAS.Data
 				e.Property(x => x.IsActive).HasDefaultValue(true);
 
 				// SQL Server
-				e.Property(x => x.CreatedAt).HasColumnType("datetime2").HasDefaultValueSql("GETUTCDATE()");
-				e.Property(x => x.UpdatedAt).HasColumnType("datetime2");
+				e.Property(x => x.RegisterDate).HasColumnType("datetime2").HasDefaultValueSql("GETUTCDATE()");
+				e.Property(x => x.UpdateDate).HasColumnType("datetime2");
 
-				e.Property(x => x.CreatedBy).HasMaxLength(100);
-				e.Property(x => x.UpdatedBy).HasMaxLength(100);
-				e.Property(x => x.PolygonMap).HasMaxLength(500);
+				e.Property(x => x.RegisterPerson).HasMaxLength(100);
+				e.Property(x => x.UpdatePerson).HasMaxLength(100);
+				e.Property(x => x.Polygon).HasMaxLength(500);
 			});
-
-
 			
 			// UserAccount configuration
 			modelBuilder.Entity<UserAccount>(e =>
@@ -113,6 +111,7 @@ namespace TAS.Data
 				e.HasIndex(x => x.Email).IsUnique().HasFilter("[Email] IS NOT NULL");
                 e.HasIndex(x => x.UserName).IsUnique().HasFilter("[UserName] IS NOT NULL");
 			});
+
 			// Tùy chọn: đổi tên bảng, KHÔNG đụng tới HasKey/HasNoKey
 			base.OnModelCreating(modelBuilder); // bắt buộc
 			modelBuilder.ApplyConfiguration(new UserAccountIdentityConfig());
@@ -159,6 +158,7 @@ namespace TAS.Data
 				e.HasIndex(x => x.FarmCode);
 				e.HasIndex(x => new { x.FarmCode, x.RegisterDate });
 			});
+
 			// RubberOrderSummary configuration
 			modelBuilder.Entity<RubberOrderSummary>(entity =>
 			{
@@ -176,6 +176,7 @@ namespace TAS.Data
 				entity.Property(e => e.IsActive).HasDefaultValue(true);
 				entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
 			});
+
 			// RubberPalletDb configuration
 			modelBuilder.Entity<RubberPalletDb>(e =>	
 			{
