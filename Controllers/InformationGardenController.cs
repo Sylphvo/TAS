@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TAS.Models;
 using TAS.ViewModels;
 
 namespace TAS.Controllers
@@ -31,6 +32,14 @@ namespace TAS.Controllers
 		public IActionResult Delete(int id)
 		{
 			return View();
+		}
+
+
+		[HttpPost]
+		public JsonResult ImportPolygon([FromBody] string polygon, int farmId)
+		{
+			int result = models.ImportPolygon(polygon, farmId);
+			return Json(result);
 		}
 		#endregion
 	}

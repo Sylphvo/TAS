@@ -128,3 +128,63 @@ select {
 .btn-light-warning {
     border-color: rgb(252 233 233 / 0%) !important;
 }
+.btn-light-info {
+    border-color: rgb(252 233 233 / 0%) !important;
+}
+.btn-light-primary {
+    border-color: rgb(252 233 233 / 0%) !important;
+}
+.btn-light-secondary {
+    border-color: rgb(252 233 233 / 0%) !important;
+}
+.btn-light-dark {
+    border-color: rgb(252 233 233 / 0%) !important;
+}
+/* vị trí khi mở dropdown */
+.select2-container--open .select2-dropdown {
+    left: -10px;
+}
+
+ /* css paging ag-grid */
+.ag-paging-button-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.grid-paging {
+    display: flex;
+    margin-bottom: 0 !important;
+}
+
+    .grid-paging li.page-item {
+        list-style-type: none;
+        margin: auto 5px;
+        color: #000;
+    }
+
+        .grid-paging li.page-item:not(.active) .page-link i {
+            color: #000 !important;
+        }
+
+        .grid-paging li.page-item.disabled .page-link {
+            color: #cdcdcd !important;
+        }
+
+        .grid-paging li.page-item:hover:not(.disabled) .page-link {
+            color: #fff !important;
+        }
+
+        .grid-paging li.page-item.active .page-link.btn {
+            cursor: default;
+        }
+/* css paging ag-grid */
+
+
+.button_action_custom {
+    margin-left: 5px;
+}
+
+label.btn_custom {
+    cursor: pointer;
+    margin-bottom:9px;
+}

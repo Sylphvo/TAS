@@ -46,12 +46,13 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\" />
+    <Folder Include="Document\File_Import\demoGeoMap\" />
     <Folder Include="Helper\" />
     <Folder Include="Log\" />
     <Folder Include="Filters\" />
     <Folder Include="Middleware\" />
     <Folder Include="Migrations\" />
-    <Folder Include="ScriptSQL\" />
+    <Folder Include="Document\ScriptSQL\" />
     <Folder Include="Publish\" />
   </ItemGroup>
 

@@ -13,46 +13,52 @@ namespace TAS.Helpers
 
         // Chủ hộ
 		public string? FarmerName { get; set; }
-        public string? FarmerPhone { get; set; }
-        public string? FarmerAddress { get; set; }
-        public string? FarmerMap { get; set; }
+        public string? FarmPhone { get; set; }
+        public string? FarmAddress { get; set; }
 		public string? Certificates { get; set; }// 
 		
 		public decimal? TotalAreaHa { get; set; }//Tổng diện tích (ha)
-		public decimal? RubberAreaHa { get; set; }//Tổng diện tích (ha)
+		public decimal? RubberAreaHa { get; set; }//Diện tích (ha)
 		public decimal? TotalExploit { get; set; }//Tổng Khai thác (kg)
 
 		public bool IsActive { get; set; } = true;// trạng thái đại lý 
-		public DateTime CreatedAt { get; set; }//thời gian tạo
-		public string? CreatedBy { get; set; }//người tạo 
-		public DateTime? UpdatedAt { get; set; }//thời gian cập nhật
-		public string? UpdatedBy { get; set; }//người cập nhật
-		public string? PolygonMap { get; set; }//vị tri trí bản đồ dạng polygon
+
+		public DateTime RegisterDate { get; set; }//thời gian tạo
+		public string? RegisterPerson { get; set; }//người tạo 
+		public DateTime? UpdateDate { get; set; }//thời gian cập nhật
+		public string? UpdatePerson { get; set; }//người cập nhật
+		public string? Polygon { get; set; } //vị tri trí bản đồ dạng polygon
 
 		public RubberAgent? Rubber_Agent { get; set; }            // navigation
 	}
 	// Request Model
 	public class RubberFarmRequest
 	{
+		public long RowNo { get; set; }
 		public long FarmId { get; set; }
 		public string? FarmCode { get; set; }//mã nhà vườn 
 		public string? AgentCode { get; set; }// mã đại lý liên kết
+		public string? AgentName { get; set; }// tên đại lý
 
 		// Chủ hộ
 		public string? FarmerName { get; set; }
-		public string? FarmerPhone { get; set; }
-		public string? FarmerAddress { get; set; }
-		public string? FarmerMap { get; set; }
+		public string? FarmPhone { get; set; }
+		public string? FarmAddress { get; set; }
+		public string? AgentAddress { get; set; }
 		public string? Certificates { get; set; }// 
 
 		public decimal? TotalAreaHa { get; set; }//Tổng diện tích (ha)
-		public decimal? RubberAreaHa { get; set; }//Tổng diện tích (ha)
+		public decimal? RubberAreaHa { get; set; }//Diện tích (ha)
 		public decimal? TotalExploit { get; set; }//Tổng Khai thác (kg)
+		public string? Polygon { get; set; }//người tạo 
 
-		public bool IsActive { get; set; } = true;// trạng thái đại lý 
-		public DateTime CreatedAt { get; set; }//thời gian tạo
-		public string? CreatedBy { get; set; }//người tạo 
-		public DateTime? UpdatedAt { get; set; }//thời gian cập nhật
-		public string? UpdatedBy { get; set; }//người cập nhật
+		public bool IsActive { get; set; } = true;// trạng thái nhà vườn
+		public string? UpdateBy { get; set; }//người tạo 
+		public string? UpdateTime { get; set; }//người tạo 
+
+		public DateTime registerDate { get; set; }//thời gian tạo
+		public string? registerPerson { get; set; }//người tạo 
+		public DateTime? updateDate { get; set; }//thời gian cập nhật
+		public string? updatePerson { get; set; }//người cập nhật
 	}
 }

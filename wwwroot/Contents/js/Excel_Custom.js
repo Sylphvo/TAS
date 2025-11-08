@@ -47,7 +47,8 @@ function toColN(header, records) {
     });
     return { header: cols, records: out };
 }
-function RegisterEventExcelInput(inputElementId) {
+
+function ImportExcelRubberGarden(inputElementId) {
     const el = document.getElementById(inputElementId);
     if (!el) return;
 
@@ -62,12 +63,12 @@ function RegisterEventExcelInput(inputElementId) {
         const file = e.target.files && e.target.files[0];
         if (!file) return;
         try {
-            const { headerRow, header, records, matrix } = await readExcelAsData(file);
-            const { header: h2, records: rowsColN } = toColN(header, records);
+            const { header, records, } = await readExcelAsData(file);
+            const { records: rowsColN } = toColN(header, records);
             var rowsData = rowsColN.map(r => ({
 				STT: r.col_1,
-				farmCode: r.col_2,
-                farmerName: r.col_3,
+				FarmCode: r.col_2,
+                FarmerName: r.col_3,
                 RubberKG: r.col_4,
                 TSCPercent: r.col_5,
                 DRCPercent: r.col_6,
@@ -78,10 +79,53 @@ function RegisterEventExcelInput(inputElementId) {
             ImportExcelData(rowsData);
         } catch (err) {
             console.error(err);
-            alert('Không đọc được file Excel');
         } finally {
             // cho lần sau, kể cả cùng file
             el.value = '';
         }
     });
+}
+function ImportExcelRubberFarm(inputElementId) {
+    const el = document.getElementById(inputElementId);
+    if (!el) return;
+
+    // tránh đăng ký trùng
+    if (el.dataset.excelWired === '1') return;
+    el.dataset.excelWired = '1';
+
+    // cho phép chọn lại cùng 1 file
+    el.addEventListener('click', () => { el.value = ''; });
+
+    el.addEventListener('change', async e => {
+        const file = e.target.files && e.target.files[0];
+        if (!file) return;
+        try {
+            const { header, records, } = await readExcelAsData(file);
+            const { records: rowsColN } = toColN(header, records);
+            var rowsData = rowsColN.map(r => ({
+                STT: r.col_1,
+                FarmCode: r.col_2,
+                FarmerName: r.col_3,
+                RubberKG: r.col_4,
+                TSCPercent: r.col_5,
+                DRCPercent: r.col_6,
+                FinishedProductKg: r.col_7,
+                CentrifugeProductKg: r.col_8,
+                Status: r.col_9
+            }));
+            ImportExcelData(rowsData);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            // cho lần sau, kể cả cùng file
+            el.value = '';
+        }
+    });
+}
+// Export Excel Data
+function onExportExcelData(fileName) {
+    const ws = XLSX.utils.json_to_sheet(ListDataFull);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Data');
+    XLSX.writeFile(wb, fileName + '.xlsx');
 }
