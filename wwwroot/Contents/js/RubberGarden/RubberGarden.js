@@ -499,11 +499,11 @@ function InputNameFile(typeExcel) {
     });
 }
 // Export Excel Data
-function onExportExcelData() {
+function onExportExcelData(fileName) {
     const ws = XLSX.utils.json_to_sheet(ListDataFull);        
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
-    XLSX.writeFile(wb, 'datanhaplieu.xlsx');  
+    XLSX.writeFile(wb, fileName + '.xlsx');  
 }
 // Export Excel Mẫu
 function onExportExcel(soLuong, fileName) {    
@@ -664,7 +664,7 @@ function onExportExcel(soLuong, fileName) {
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
 
     // Sử dụng writeFile với options đầy đủ
-    XLSX.writeFile(wb, 'Du_Lieu_Mau.xlsx', {
+    XLSX.writeFile(wb, fileName + '.xlsx', {
         bookType: 'xlsx',
         bookSST: false,
         type: 'binary',
