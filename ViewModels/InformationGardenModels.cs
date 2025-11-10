@@ -35,8 +35,6 @@ namespace TAS.ViewModels
 					UpdateTime = CONVERT(VARCHAR,ISNULL(A.UpdateDate, A.RegisterDate),111) + ' ' + CONVERT(VARCHAR(5),ISNULL(A.UpdateDate, A.RegisterDate), 108)
 				FROM RubberFarm A
 				LEFT JOIN RubberAgent B ON A.AgentCode = B.AgentCode
-
-
 			";
 			return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
 		}
