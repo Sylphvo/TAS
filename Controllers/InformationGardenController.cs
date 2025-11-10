@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TAS.Helpers;
 using TAS.Models;
 using TAS.ViewModels;
 
@@ -36,9 +37,9 @@ namespace TAS.Controllers
 
 
 		[HttpPost]
-		public JsonResult ImportPolygon([FromBody] string polygon, int farmId)
+		public JsonResult ImportPolygon([FromBody] RubberFarmRequest rubberFarmRequest)
 		{
-			int result = models.ImportPolygon(polygon, farmId);
+			int result = models.ImportPolygon(rubberFarmRequest);
 			return Json(result);
 		}
 		#endregion

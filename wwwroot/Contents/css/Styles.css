@@ -253,3 +253,6 @@ div.ag-cell-value {
     align-items: center;
     justify-content: center;
 }
+.ag-header-icon {
+	display: none !important;
+}

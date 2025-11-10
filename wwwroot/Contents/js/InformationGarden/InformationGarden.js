@@ -28,7 +28,8 @@ function CreateGridInformationGarden() {
 			filter: true,
 			floatingFilter: true,
 		},
-		height: 45,
+		rowHeight: 45,//
+		headerHeight: 45,// 
 		rowData: [],
 		rowDragManaged: true,
 		rowDragMultiRow: true,
@@ -37,7 +38,7 @@ function CreateGridInformationGarden() {
 		animateRows: true,
 		singleClickEdit: true,
 		components: {
-			customFloatingFilterInput: getFloatingFilterInputComponent(),
+			//customFloatingFilterInput: getFloatingFilterInputComponent(),
 			//customheader: CustomHeaderInformationGarden,
 		},
 		cellSelection: true,
@@ -53,8 +54,11 @@ function CreateGridInformationGarden() {
 		}
 
 	};
-	var eGridDiv = document.querySelector(InformationGarden);
-	new agGrid.Grid(eGridDiv, gridOptionsInformationGarden);
+	const eGridDiv = document.querySelector(InformationGarden);
+	gridApi = agGrid.createGrid(eGridDiv, gridOptionsInformationGarden);
+
+	//var eGridDiv = document.querySelector(InformationGarden);
+	//new agGrid.Grid(eGridDiv, gridOptionsInformationGarden);
 	//SetButtonOnPagingForInformationGarden();
 	CreateRowDataInformationGarden();
 	resizeGridInformationGarden();
@@ -91,7 +95,8 @@ function CreateRowDataInformationGarden() {
 		dataType: "json",
 		success: function (data) {
 			ListDataFull = data;
-			gridOptionsInformationGarden.api.setRowData(data);
+			//gridOptionsInformationGarden.api.setRowData(data);
+			gridApi.setGridOption("rowData", data);
 			renderPage();
 		}
 	});
@@ -118,8 +123,8 @@ function CreateColModelInformationGarden() {
 			, width: 110
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
-			, editable: false
-			, filter: false
+			, editable: true
+			, filter: true
 			, floatingFilterComponent: 'customFloatingFilterInput'
 			, floatingFilterComponentParams: { suppressFilterButton: true }
 			, headerComponent: "customHeader"
@@ -143,8 +148,8 @@ function CreateColModelInformationGarden() {
 		{
 			field: 'farmerName'
 			, headerName: 'Tên nhà vườn'
-			, width: 110
-			, minWidth: 110
+			, width: 170
+			, minWidth: 170
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
 			, filter: true
@@ -200,7 +205,7 @@ function CreateColModelInformationGarden() {
 			, width: 110
 			, minWidth: 110
 			, cellStyle: { 'text-align': 'center' }
-			, editable: true
+			, editable: false
 			, cellRenderer: function (params) {
 				if (params.value == 0) {
 					return '<span class="badge text-bg-primary">không hoạt động</span>';
@@ -265,7 +270,7 @@ function CreateColModelInformationGarden() {
 	return columnDefs;
 }
 function cellRender_Polygon(params) {
-	var classDisabled = !IsNullOrEmpty(params.value) ? '' : '';
+	var classDisabled = !IsNullOrEmpty(params.value) ? '' : 'disabled';
 	const wrap = document.createElement('div');
 	wrap.innerHTML =		
 		`<button class="button_action_custom avtar avtar-xs btn-light-info js-cancel btn ` + classDisabled +`" title="Xem vị trí">
@@ -368,12 +373,16 @@ function ActionRenderer(params) {
 				});
 				// Lọc bỏ các dòng trống sau tiêu đề
 				const body = matrix.slice(1).filter(r => (r || []).some(c => c !== null && String(c).trim() !== ''));
+				var rowDatas = {};
+				rowDatas.polygon = JSON.stringify(body);
+				rowDatas.farmId = farmId;
+
 				$.ajax({
 					async: true,
 					method: 'POST',
 					url: "/InformationGarden/ImportPolygon",
 					contentType: 'application/json',
-					data: { polygon: JSON.stringify(body), farmId: farmId },
+					data: JSON.stringify(rowDatas),
 					success: function (res) {
 						Toast.fire({
 							icon: "success",
@@ -533,7 +542,8 @@ document.getElementById('importExcel').addEventListener('change', async e => {
 		const wb = XLSX.read(buf, { type: 'array', cellDates: true });
 		const ws = wb.Sheets[wb.SheetNames[0]];
 		const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-		gridApi.setRowData(rows);
+		//gridApi.setRowData(rows);
+		gridApi.setGridOption("rowData", data);
 		notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
 	} catch (err) {
 		notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
@@ -547,8 +557,22 @@ function onExportExcelData() {
 	XLSX.writeFile(wb, 'datanhaplieu.xlsx');
 }
 // Export Example Excel
-function onExportExcel() {
-	const ws = XLSX.utils.json_to_sheet(ListDataFull);
+function onExportTemplateExcel() {
+	var lstDataTemplate = {};
+	lstDataTemplate['Số thứ tự'] = '1';
+	lstDataTemplate['Mã Nhà Vườn'] = 'NV_1';
+	lstDataTemplate['Mã đại lý'] = 'NV_1';
+	lstDataTemplate['Tên Nhà Vườn'] = 'Nhà Vườn A';
+	lstDataTemplate['Địa chỉ'] = '9';
+	lstDataTemplate['Tổng diện tích (ha)'] = '9';
+	lstDataTemplate['Diện tích (ha)'] = '9';
+	lstDataTemplate['Tổng Khai thác (kg)'] = '9';
+	lstDataTemplate['Trạng thái hoạt động'] = '9';
+	lstDataTemplate['Vị trí'] = '9';
+	lstDataTemplate['Thời gian tạo'] = '9';
+	lstDataTemplate['Người tạo'] = '9';
+	lstDataTemplate = [lstDataTemplate];
+	const ws = XLSX.utils.json_to_sheet(lstDataTemplate);
 	const wb = XLSX.utils.book_new();
 	XLSX.utils.book_append_sheet(wb, ws, 'Data');
 	XLSX.writeFile(wb, 'mau.xlsx');
@@ -584,10 +608,10 @@ function renderPage() {
 			$('#start-entries').text(start);
 			$('#last-entries').text(last);
 			if (IsOptionAll) {
-				gridApi.setRowData(ListDataFull.slice(1, total));
+				gridApi.setGridOption("rowData", ListDataFull.slice(1, total));
 			}
 			else {
-				gridApi.setRowData(ListDataFull.slice(s.start, last));
+				gridApi.setGridOption("rowData", ListDataFull.slice(s.start, last));
 			}
 		}
 	});

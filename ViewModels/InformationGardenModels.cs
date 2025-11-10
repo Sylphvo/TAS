@@ -41,12 +41,12 @@ namespace TAS.ViewModels
 			return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
 		}
 
-		public int ImportPolygon(string polygon, int farmId)
+		public int ImportPolygon(RubberFarmRequest rubberFarmRequest)
 		{
 			try
 			{
 				string sql = @"
-				UPDATE RubberFarm SET Polygon = '" + polygon + @"' WHERE FarmId = '" + farmId + @"'";
+				UPDATE RubberFarm SET Polygon = N'" + rubberFarmRequest.Polygon + @"' WHERE FarmId = '" + rubberFarmRequest.FarmId + @"'";
 				dbHelper.Execute(sql);
 				return 1;
 			}
