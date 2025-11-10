@@ -7,16 +7,20 @@ namespace TAS.Controllers
 {
     public class InformationGardenController : Controller
     {
-		InformationGardenModels models;
-		public InformationGardenController()
+		private readonly InformationGardenModels models;
+		private readonly CommonModels _common;
+		public InformationGardenController(InformationGardenModels _models, CommonModels common)
 		{
-			models = new InformationGardenModels();
+			models = _models;
+			_common = common;
 		}
 
-		public IActionResult InformationGarden()
+		public async Task<IActionResult> InformationGarden()
         {
-            return View();
+			ViewBag.ComboAgent = await _common.ComboAgent();
+			return View();
         }
+
 		#region handle Data
 		[HttpPost]
         public async Task<JsonResult> InformationGardens()
@@ -24,17 +28,19 @@ namespace TAS.Controllers
 			var lstData = await models.GetRubberFarmAsync();
 			return new JsonResult(lstData);
 		}
-		[HttpPost("AddOrUpdate")]
-		public IActionResult AddOrUpdate()
+
+		[HttpPost]
+		public JsonResult AddOrUpdate([FromBody] RubberFarmRequest rubberFarmRequest)
 		{
-			return View();
+			int result = models.AddOrUpdateRubberFarm(rubberFarmRequest);
+			return Json(result);
 		}
+
 		[HttpPost("Delete/{id}")]
 		public IActionResult Delete(int id)
 		{
 			return View();
 		}
-
 
 		[HttpPost]
 		public JsonResult ImportPolygon([FromBody] RubberFarmRequest rubberFarmRequest)
@@ -43,5 +49,12 @@ namespace TAS.Controllers
 			return Json(result);
 		}
 		#endregion
+
+		[HttpPost]
+		public JsonResult ApproveDataFarm(int FarmId, int status)
+		{
+			int result = models.ApproveDataFarm(FarmId, status);
+			return Json(result);
+		}
 	}
 }

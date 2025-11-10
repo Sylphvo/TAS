@@ -96,6 +96,7 @@ function showCustomMenu(params) {
     });
 }
 // Cập nhật dữ liệu sau khi chỉnh sửa
+// status: 0 - chỉnh sửa, 1 - thêm mới
 function UpdateDataAfterEdit(status, rowData) {
     var rowDataObj = {};
     if (status == 1) {

@@ -310,12 +310,12 @@ function ActionRenderer(params) {
 	wrap.innerHTML =
 	``
 	+
-	(params.data.status == 0 ?
-		` <button class="button_action_custom avtar avtar-xs btn-light-success js-change_status" title="đổi trạng thái hoạt động">
+	(params.data.isActive == 0 ?
+		` <button class="button_action_custom avtar avtar-xs btn-light-success js-change_isActive" title="đổi trạng thái hoạt động">
         <i class="ti ti-check f-20"></i>
     </button>`
 		:
-		`<button class="button_action_custom avtar avtar-xs btn-light-danger js-change_status" title="đổi trạng thái hoạt động">
+		`<button class="button_action_custom avtar avtar-xs btn-light-danger js-change_isActive" title="đổi trạng thái hoạt động">
         <i class="ti ti-x f-20"></i>
     </button>`)
 	+
@@ -329,32 +329,23 @@ function ActionRenderer(params) {
       <i class="ti ti-trash f-20"></i>
     </button>
 	`;
-	const btnChangeStatus = wrap.querySelector('.js-change_status');
 	const btnUpload = wrap.querySelector('.import_polygon');
 	const btnDelete = wrap.querySelector('.js-delete');
 	['mousedown', 'click', 'dblclick', 'contextmenu'].forEach(ev => {
 		btnUpload.addEventListener(ev, e => e.stopPropagation(), { capture: true });
 	});
-	btnChangeStatus.addEventListener('click', (e) => {
-		// e.stopPropagation();
-		Swal.fire({
-			title: 'Xóa dòng này?',
-			icon: "error",
-			showDenyButton: false,
-			showCancelButton: true,
-			confirmButtonText: `Lưu`,
-			showCloseButton: true
-		}).then((result) => {
-			if (result.isConfirmed) {
-				// remove theo đúng object data của node
-				params.api.applyTransaction({ remove: [params.node.data] });
-				Toast.fire({
-					icon: "success",
-					title: "Xóa thành công"
-				});
-			}
+	if (params.data.isActive == 0) {
+		const btnChangeIsActive = wrap.querySelector('.js-change_isActive');
+		btnChangeIsActive.addEventListener('click', (e) => {
+			ApproveDataFarm(params.data.farmId, 1);
 		});
-	});
+	}
+	else {
+		const btnChangeIsActive = wrap.querySelector('.js-change_isActive');
+		btnChangeIsActive.addEventListener('click', (e) => {
+			ApproveDataFarm(params.data.farmId, 0);
+		});
+	}
 	// cho phép chọn lại cùng 1 file	
 	btnUpload.addEventListener('change', async e => {
 		e.preventDefault();
@@ -614,5 +605,56 @@ function renderPage() {
 				gridApi.setGridOption("rowData", ListDataFull.slice(s.start, last));
 			}
 		}
+	});
+}
+function ApproveDataFarm(farmId, status) {
+	$.ajax({
+		async: true,
+		method: 'POST',
+		url: "/InformationGarden/ApproveDataFarm",
+		dataType: 'json',
+		data: { farmId: farmId, status: status },
+		success: function (res) {
+			Toast.fire({
+				icon: "success",
+				title: "Đổi trạng thái thành công"
+			});
+			RefreshAllGridWhenChangeData();
+		},
+		error: function () {
+			Toast.fire({
+				icon: "danger",
+				title: "Đổi trạng thái thất bại"
+			});
+		}
+	});
+}
+// Cập nhật dữ liệu sau khi chỉnh sửa
+// status: 1: edit, 2: add
+function UpdateDataAfterEdit(status, rowData) {
+	var rowDataObj = {};
+	if (status == 1) {
+		rowDataObj.farmCode = $('#ListCboFarmCode').val();
+		rowDataObj.agentCode = $('#ListCboFarmerName').val();
+		rowDataObj.farmerName = num($('#RubberKg').val());
+		rowDataObj.farmPhone = num($('#TSCPercent').val());
+		rowDataObj.farmAddress = num($('#TSCPercent').val());
+		rowDataObj.certificates = num($('#TSCPercent').val());
+		rowDataObj.totalAreaHa = num($('#TSCPercent').val());
+		rowDataObj.rubberAreaHa = num($('#TSCPercent').val());
+		rowDataObj.totalExploit = num($('#TSCPercent').val());
+		rowDataObj.isActive = num($('#TSCPercent').val());
+		rowData = rowDataObj;
+	}
+	$.ajax({
+		async: true,
+		url: "/InformationGarden/AddOrUpdate",
+		type: 'POST',
+		contentType: 'application/json; charset=utf-8',
+		data: JSON.stringify(rowData),
+		success: function (res) {
+			RefreshAllGridWhenChangeData();
+		},
+		error: function () { }
 	});
 }

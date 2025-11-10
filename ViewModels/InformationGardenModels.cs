@@ -1,5 +1,7 @@
-﻿using TAS.Helpers;
+﻿using Microsoft.AspNetCore.Identity;
+using TAS.Helpers;
 using TAS.Models;
+using TAS.Repository;
 using TAS.TagHelpers;
 using static Raven.Database.Indexing.IndexingWorkStats;
 
@@ -7,10 +9,11 @@ namespace TAS.ViewModels
 {
 	public class InformationGardenModels
 	{
-		ConnectDbHelper dbHelper;
-		public InformationGardenModels()
+		private readonly ICurrentUser _userManage;
+		ConnectDbHelper dbHelper = new ConnectDbHelper();
+		public InformationGardenModels(ICurrentUser userManage)
 		{
-			dbHelper = new ConnectDbHelper();
+			_userManage = userManage;
 		}
 		// Model
 		public async Task<List<RubberFarmRequest>> GetRubberFarmAsync()
@@ -47,6 +50,83 @@ namespace TAS.ViewModels
 				UPDATE RubberFarm SET Polygon = N'" + rubberFarmRequest.Polygon + @"' WHERE FarmId = '" + rubberFarmRequest.FarmId + @"'";
 				dbHelper.Execute(sql);
 				return 1;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
+		public int ApproveDataFarm(int FarmId, int status)
+		{
+			try
+			{
+				string sql = @"
+				UPDATE RubberFarm SET IsActive = " + status + @" WHERE FarmId = " + FarmId + @"";
+				dbHelper.Execute(sql);
+				return 1;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
+		public int AddOrUpdateRubberFarm(RubberFarmRequest rubberFarmRequest)
+		{
+			try
+			{
+				if (rubberFarmRequest == null)
+				{
+					throw new ArgumentNullException(nameof(rubberFarmRequest), "Input data cannot be null.");
+				}
+				var sql = @"
+				IF EXISTS (SELECT 1 FROM RubberFarm WHERE FarmId = @FarmId)
+				BEGIN
+					UPDATE RubberFarm SET
+					FarmCode        = @FarmCode,
+					AgentCode		= @AgentCode,
+					FarmerName      = @FarmerName,
+					FarmPhone		= @FarmPhone,
+					FarmAddress     = @FarmAddress,
+					Certificates	= @Certificates,
+					TotalAreaHa		= @TotalAreaHa,
+					RubberAreaHa    = @RubberAreaHa,
+					TotalExploit    = @TotalExploit,
+					IsActive        = @IsActive,
+					UpdateDate      = GETDATE(),
+					UpdatePerson    = @UpdatePerson
+					WHERE FarmId = @FarmId
+					SELECT 0;
+				END
+				ELSE
+				BEGIN
+					INSERT INTO RubberFarm
+					(FarmCode, AgentCode, FarmerName, FarmPhone, FarmAddress,
+						Certificates, TotalAreaHa, RubberAreaHa,
+						TotalExploit, IsActive, RegisterDate, RegisterPerson)
+					VALUES
+					(@FarmCode, @AgentCode, @FarmerName, @FarmPhone, @FarmAddress,
+						@Certificates, @TotalAreaHa, @RubberAreaHa,
+						@TotalExploit, @IsActive, GETDATE(), @RegisterPerson)
+					SELECT SCOPE_IDENTITY() AS NewFarmId;
+				END";
+				// With this line:
+				var lstResult = dbHelper.Execute(sql, new
+				{
+					FarmCode = rubberFarmRequest.FarmCode,
+					AgentCode = rubberFarmRequest.AgentCode,
+					FarmerName = rubberFarmRequest.FarmerName,
+					FarmPhone = rubberFarmRequest.FarmPhone,
+					FarmAddress = rubberFarmRequest.FarmAddress,
+					Certificates = rubberFarmRequest.Certificates,
+					TotalAreaHa = rubberFarmRequest.TotalAreaHa,   // 4.62m
+					RubberAreaHa = rubberFarmRequest.RubberAreaHa, // 6.93m
+					TotalExploit = rubberFarmRequest.TotalExploit, // 6.93m
+					IsActive = rubberFarmRequest.IsActive,
+					UpdatePerson = _userManage.Name,
+					RegisterPerson = _userManage.Name,
+					FarmId = rubberFarmRequest.FarmId
+				});
+				return lstResult;
 			}
 			catch (Exception ex)
 			{

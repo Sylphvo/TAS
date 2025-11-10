@@ -17,21 +17,16 @@ namespace TAS.Controllers
 		public async Task<IActionResult> RubberGardenAsync()
 		{
 			ViewBag.ComboAgent = await _common.ComboAgent();
-			ViewBag.ComboFarmCode = await _models.ComboFarmCode();
+			ViewBag.ComboFarmCode = await _common.ComboFarmCode();
 			return View();
 		}
+
 		#region handle Data
 		[HttpPost]
         public async Task<IActionResult> RubberGardens()
         {
 			var lstData = await _models.GetRubberFarmAsync();
 
-			return new JsonResult(lstData);
-		}
-		[HttpPost]
-		public async Task<IActionResult> ComboAgent()
-		{
-			var lstData = await _models.GetRubberFarmAsync();
 			return new JsonResult(lstData);
 		}
 

@@ -100,7 +100,6 @@ namespace TAS.ViewModels
 			{
 				return 0;
 			}
-			
 		}
 		public int ImportListData(List<RubberIntakeRequest> lstRubberIntakeRequest)
 		{
@@ -160,20 +159,6 @@ namespace TAS.ViewModels
 			{
 				return 0;
 			}
-		}
-		public async Task<List<RubberFarmRequest>> ComboFarmCode()
-		{
-			try
-			{
-				string sql = @"
-					SELECT DISTINCT FarmCode, FarmerName FROM RubberFarm WHERE FarmCode IS NOT NULL
-				";
-				return await dbHelper.QueryAsync<RubberFarmRequest>(sql);
-			}
-			catch (Exception ex)
-			{
-				return null;
-			}
-		}
+		}		
 	}
 }
