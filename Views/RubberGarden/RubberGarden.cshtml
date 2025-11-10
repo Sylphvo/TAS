@@ -56,10 +56,10 @@
                                 <label for="importExcel" class="btn btn-primary"><i class="ti ti-upload f-20"></i>&nbsp; Import Excel</label>
                                 <input type="file" id="importExcel" hidden>
                                 <span id="file-name" class="ms-2 d-none"></span>
-                                <button onclick="InputNameFile(1)" class="btn btn-primary buttonSearch">Xuất Excel</button>
-                                <button onclick="InputNameFile(2)" class="btn btn-primary buttonSearch">Mẫu Excel</button>
-                                <button class="btn btn-primary buttonSearch" data-bs-toggle="modal" data-bs-target="#AddNewRubber"> Thêm mới</button>
-                                <button class="btn btn-primary buttonSearch">Phê duyệt tất cả</button>
+                                <button onclick="InputNameFile(1)" class="btn btn-primary buttonSearch"><i class="ti ti-download f-20"></i>&nbsp; Xuất Excel</button>
+                                <button onclick="InputNameFile(2)" class="btn btn-primary buttonSearch"><i class="ti ti-file-x f-20"></i>&nbsp; Mẫu Excel</button>
+                                <button class="btn btn-primary buttonSearch" data-bs-toggle="modal" data-bs-target="#AddNewRubber"><i class="ti ti-plus f-20"></i>&nbsp;  Thêm mới</button>
+                                <button onclick="ApproveAllData(2)" class="btn btn-primary buttonSearch"><i class="ti ti-checks f-20"></i>&nbsp;  Phê duyệt tất cả</button>
                             </div>
                         </div>
                     </div>
@@ -154,24 +154,17 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
                                 <div class="mb-3 ps-2">
                                     <label class="form-label">Khối lượng</label>
-                                    <input type="number" class="form-control p-2" placeholder="nhập khối lượng">
+                                    <input type="number" class="form-control p-2" placeholder="nhập khối lượng" id="RubberKg">
                                     @* <small class="form-text text-muted">Please enter your full name</small> *@
                                 </div>
                             </div>
-                            <div class="col-lg-4">
-                                <div class="mb-3">
-                                    <label class="form-label">TSC</label>
-                                    <input type="number" class="form-control p-2" placeholder="nhập TSC">
-                                    @* <small class="form-text text-muted">Please enter your Email id</small> *@
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
+                            <div class="col-lg-6">
                                 <div class="mb-3 pe-2">
-                                    <label class="form-label">DRC</label>
-                                    <input type="number" class="form-control p-2" placeholder="nhập DRC">
+                                    <label class="form-label">TSC</label>
+                                    <input type="number" class="form-control p-2" placeholder="nhập TSC" id="TSCPercent">
                                     @* <small class="form-text text-muted">Please enter your Email id</small> *@
                                 </div>
                             </div>
@@ -182,7 +175,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Save</button>
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="UpdateDataAfterEdit(1)">Save</button>
             </div>
         </div>
     </div>
@@ -199,10 +192,12 @@
         $('#ListCboAgent').change(function (e) {
             let dataAgent = $(this).val();
             if(dataAgent == '*'){
-                 gridApi.setRowData(ListDataFull);
+                gridApi.setGridOption("rowData", ListDataFull);
+                //gridApi.setRowData(ListDataFull);
             }
             else{
-                gridApi.setRowData(ListDataFull.filter(x => x.agentCode == dataAgent));
+                gridApi.setGridOption("rowData", ListDataFull.filter(x => x.agentCode == dataAgent));
+                //gridApi.setRowData(ListDataFull.filter(x => x.agentCode == dataAgent));
             }
             //RefreshAllGridWhenChangeData();
         });
@@ -211,10 +206,11 @@
             IsOptionAll = selectPage == '*';
             RefreshAllGridWhenChangeData();
         });
-
         $('#ListCboAgent').select2();
         $('#ListCboFarmCode').select2();
         $('#ListCboFarmerName').select2();
-
+        $('.selector-paging').select2({
+            minimumResultsForSearch: Infinity
+        });
     </script>
 }

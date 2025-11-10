@@ -62,9 +62,10 @@ namespace TAS.ViewModels
 					FinishedProductKg   = @FinishedProductKg,
 					CentrifugeProductKg = @CentrifugeProductKg,
 					[Status]            = @Status,
-					UpdateDate          = SYSUTCDATETIME(),
+					UpdateDate          = GETDATE(),
 					UpdatePerson        = @UpdatePerson
 					WHERE IntakeId = @IntakeId
+					SELECT 0;
 				END
 				ELSE
 				BEGIN
@@ -75,10 +76,11 @@ namespace TAS.ViewModels
 					VALUES
 					(@FarmCode, @FarmerName, @RubberKg, @TSCPercent, @DRCPercent,
 						@FinishedProductKg, @CentrifugeProductKg, @Status,
-						SYSUTCDATETIME(), @RegisterPerson)
+						GETDATE(), @RegisterPerson)
+					SELECT SCOPE_IDENTITY() AS NewIntakeId;
 				END";
 				// With this line:
-				dbHelper.Execute(sql, new
+				var lstResult = dbHelper.Execute(sql, new
 				{
 					FarmCode = rubberIntakeRequest.farmCode,
 					FarmerName = rubberIntakeRequest.farmerName,
@@ -87,12 +89,12 @@ namespace TAS.ViewModels
 					DRCPercent = rubberIntakeRequest.drcPercent,
 					FinishedProductKg = rubberIntakeRequest.finishedProductKg,   // 4.62m
 					CentrifugeProductKg = rubberIntakeRequest.centrifugeProductKg, // 6.93m
-					Status = rubberIntakeRequest.status,
+					Status = rubberIntakeRequest.status == null ? 0 : 1,
 					UpdatePerson = _userManage.Name,
 					RegisterPerson = _userManage.Name,
 					IntakeId = rubberIntakeRequest.intakeId
 				});
-				return 1;
+				return lstResult;
 			}
 			catch(Exception ex)
 			{
@@ -123,6 +125,7 @@ namespace TAS.ViewModels
 					Status = 0,
 					RegisterPerson = "admin"
 				}));
+
 				return 1;
 			}
 			catch(Exception ex)
@@ -136,6 +139,20 @@ namespace TAS.ViewModels
 			{
 				string sql = @"
 				UPDATE RubberIntake SET Status = "+ status + @" WHERE IntakeId = "+ intakeId + @"" ;
+				dbHelper.Execute(sql);
+				return 1;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
+		public int ApproveAllDataRubber()
+		{
+			try
+			{
+				string sql = @"
+				UPDATE RubberIntake SET Status = 1";
 				dbHelper.Execute(sql);
 				return 1;
 			}

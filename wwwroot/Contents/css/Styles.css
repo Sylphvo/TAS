@@ -42,7 +42,7 @@
 }
 
 .ag-pinned-left-cols-container .ag-cell:not(div[col-id="IS_ACTIVE"]), .ag-center-cols-container .ag-cell:not(div[col-id="IS_CHECK"]):not(div[col-id="IS_ACTIVE"]):not(div[col-id="Edit"]) {
-    margin: 1px !important;
+    margin: 0px !important;
     padding: 0 !important;
 }
 select {
@@ -235,4 +235,21 @@ div.ag-cell-value {
 }
 .ag-cell-highlight {
     background-color: #51515126 !important;
+}
+.ag-cell-range-selected-1:not(.ag-cell-focus), .ag-root:not(.ag-context-menu-open) .ag-body-viewport:not(.ag-has-focus) .ag-cell-range-selected-1:not(.ag-cell-inline-editing) {
+    border: 1px solid #918f8f !important;
+}
+.ag-ltr .ag-cell-range-single-cell {
+    border: 1px solid #918f8f !important;
+}
+.ag-cell .ag-cell-value {
+    height: 105%;
+    margin-right: -1px;
+}
+.ag-cell[col-id="rowNo"] .ag-cell-value {
+    height: 105%;
+    margin-right: -1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }

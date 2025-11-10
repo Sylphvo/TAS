@@ -56,7 +56,7 @@ function CreateGridRubberGarden() {
         },
         onCellValueChanged: e => {
             if (e.colDef.field == 'tscPercent') {
-                calcTSCPercent(e.data);
+                calcDRCPercent(e.data);
                 e.api.refreshCells({ rowNodes: [e.node], columns: ['drcPercent'], force: true });
             }
 
@@ -66,8 +66,7 @@ function CreateGridRubberGarden() {
                 e.api.refreshCells({ rowNodes: [e.node], columns: ['finishedProductKg'], force: true });
                 e.api.refreshCells({ rowNodes: [e.node], columns: ['centrifugeProductKg'], force: true });
             }
-            console.log('Data after change is', e.data);
-            UpdateDataAfterEdit(e.data);
+            UpdateDataAfterEdit(0, e.data);
         },
         enableRangeSelection: true,
         allowContextMenuWithControlKey: true, // giữ Ctrl + click phải vẫn hiện
@@ -96,8 +95,19 @@ function showCustomMenu(params) {
         gridApi.setGridOption("rowData", ListDataFull.filter(x => x[params.colDef.field] = params.data[params.colDef.field]));
     });
 }
-
-function UpdateDataAfterEdit(rowData) {
+// Cập nhật dữ liệu sau khi chỉnh sửa
+function UpdateDataAfterEdit(status, rowData) {
+    var rowDataObj = {};
+    if (status == 1) {
+        rowDataObj.farmCode = $('#ListCboFarmCode').val();
+        rowDataObj.farmerName = $('#ListCboFarmerName').val();
+        rowDataObj.rubberKg = num($('#RubberKg').val());
+        rowDataObj.tscPercent = num($('#TSCPercent').val());
+        calcDRCPercent(rowDataObj);
+        calcFinish(rowDataObj);
+        calcCentrifuge(rowDataObj);        
+        rowData = rowDataObj;
+    }
     $.ajax({
         async: true,
         url: "/RubberGarden/AddOrUpdate",
@@ -105,25 +115,30 @@ function UpdateDataAfterEdit(rowData) {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(rowData),
         success: function (res) {
+            console.log(res);
             RefreshAllGridWhenChangeData();
         },
         error: function () {}
     });
 }
-
+// Chuyển chuỗi sang số
 const num = v => {
     const x = parseFloat(String(v ?? '').replace(',', '.'));
     return Number.isFinite(x) ? x : 0;
 };
-function calcTSCPercent(row) {
+// TSC %
+function calcDRCPercent(row) {
     row.drcPercent = row.tscPercent - 3;
 }
+// Thành phẩm
 function calcFinish(row) {
     row.finishedProductKg = +(num(row.rubberKg) * num(row.drcPercent) / 100).toFixed(3);
 }
+// Thành phẩm ly tâm
 function calcCentrifuge(row) {
     row.centrifugeProductKg = +((num(row.rubberKg) * num(row.drcPercent) / 100) * 1.5).toFixed(3);
 }
+// Lưu thứ tự hiện tại sau khi kéo thả
 function resizeGridRubberGarden() {
     setTimeout(function () {
         setWidthHeightGrid(45);
@@ -425,45 +440,7 @@ CustomHeaderRubberGarden.prototype.init = function (params) {
     }
 };
 function cellStyle_Col_Model_EventActual(params) {
-    //let colName = params.colDef.field;
-    //let rowObject = params.data;
     let cellAttr = {};
-
-    //if (rowObject.row_type == arrConstantRubberGarden.RowTypeStaff) {
-    //    cellAttr['background-color'] = '#f1f182';
-    //    cellAttr['color'] = 'black';
-    //    cellAttr['padding-left'] = '25px !important';
-    //    if (colName == 'start_date' || colName == 'end_date') {
-    //        cellAttr['text-align'] = 'left';
-    //        cellAttr['font-weight'] = '700';
-    //    }
-    //}
-    //else if (rowObject.row_type == arrConstantRubberGarden.RowTypeDate) {
-    //    if (colName == 'start_date') {
-    //        cellAttr['font-weight'] = 'bold';
-    //    }
-
-    //    cellAttr['background-color'] = colorSortOrder_1;
-    //}
-    //else if (rowObject.row_type == arrConstantRubberGarden.RowTypeGroup) {
-    //    if (colName == 'start_date') {
-    //        cellAttr['font-weight'] = '600';
-    //    }
-    //    cellAttr['padding-left'] = '45px !important';
-    //    cellAttr['background-color'] = colorSortOrder_4;
-    //}
-    //else if (rowObject.row_type == arrConstantRubberGarden.RowTypeItem && rowObject.row_status == arrConstantRubberGarden.RowStatusPast) {
-    //    cellAttr['background-color'] = colorSortOrder_3;
-    //    if (colName == 'start_date' || colName == 'end_date') {
-    //        cellAttr['text-align'] = 'center';
-    //    }
-    //}
-    //else {
-    //    if (colName == 'start_date' || colName == 'end_date' || colName == 'check_start_actual' || colName == 'start_date_actual' || colName == 'check_end_actual'
-    //        || colName == 'end_date_actual') {
-    //        cellAttr['text-align'] = 'center';
-    //    }
-    //}
     cellAttr['text-align'] = 'center';
     return cellAttr;
 }
@@ -531,7 +508,23 @@ function InputNameFile(typeExcel) {
 }
 // Export Excel Data
 function onExportExcelData(fileName) {
-    const ws = XLSX.utils.json_to_sheet(ListDataFull);        
+    const headers = gridApi.getColumnDefs().filter(x => x.field != 'action').map(item => item.headerName);
+    const keys = gridApi.getColumnDefs().filter(x => x.field != 'action').map(item => item.field);
+
+    const data = ListDataFull;
+    // tạo mảng mới với key tiếng Việt
+    const newData = data.map(obj => {
+        const newObj = {};
+        keys.forEach((k, i) => {
+            if (k == 'status') {
+                newObj[headers[i]] = obj[k] == 1 ? 'Đã xác nhận' : 'Chưa xác nhận';
+            }
+            else {
+                newObj[headers[i]] = obj[k];
+            }
+        }); return newObj;
+    });
+    const ws = XLSX.utils.json_to_sheet(newData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data');
     XLSX.writeFile(wb, fileName + '.xlsx');  
@@ -540,6 +533,7 @@ function onExportExcelData(fileName) {
 function onExportExcel(soLuong, fileName) {    
     // 1) Lấy cấu hình cột từ ag-Grid
     const headers = gridApi.getColumnDefs().filter(x => x.field != 'action').map(c => c.headerName);
+
     const fieldByHeader = h => colDefs.find(c => c.headerName === h)?.field || h;
 
     // 2) Sinh dữ liệu mẫu
@@ -587,33 +581,28 @@ function onExportExcel(soLuong, fileName) {
     // 4) Tạo sheet
     const ws = XLSX.utils.aoa_to_sheet(aoa);
     const lastCol = headers.length - 1;
-
     // Merge 3 dòng đầu
     ws['!merges'] = [
         { s: { r: 0, c: 0 }, e: { r: 0, c: lastCol } },
         { s: { r: 1, c: 0 }, e: { r: 1, c: lastCol } },
         { s: { r: 2, c: 0 }, e: { r: 2, c: lastCol } }
     ];
-
     // 5) ÁP DỤNG STYLE - QUAN TRỌNG: Phải tạo object style hoàn chỉnh
     const headerStyle1 = {
         font: { name: 'Calibri', sz: 14, bold: true, color: { rgb: '000000' } },
         alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
         fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
     };
-
     const headerStyle2 = {
         font: { name: 'Calibri', sz: 12, bold: true, color: { rgb: '000000' } },
         alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
         fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
     };
-
     const headerStyle3 = {
         font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: '000000' } },
         alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
         fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
     };
-
     const tableHeaderStyle = {
         font: { name: 'Calibri', sz: 11, bold: true, color: { rgb: '000000' } },
         alignment: { horizontal: 'center', vertical: 'center', wrapText: false },
@@ -625,7 +614,6 @@ function onExportExcel(soLuong, fileName) {
             right: { style: 'thin', color: { rgb: '000000' } }
         }
     };
-
     const dataBorder = {
         top: { style: 'thin', color: { rgb: '000000' } },
         bottom: { style: 'thin', color: { rgb: '000000' } },
@@ -818,4 +806,26 @@ function ApproveData(intakeId, status) {
         }
     });
 }
-
+function ApproveAllData() {
+    $.ajax({
+        async: true,
+        method: 'POST',
+        url: "/RubberGarden/ApproveAllDataRubber",
+        dataType: 'json',
+        success: function (res) {
+            if (res == 1) {
+                Toast.fire({
+                    icon: "success",
+                    title: "Phê duyệt thành công"
+                });
+            }
+            RefreshAllGridWhenChangeData();
+        },
+        error: function () {
+            Toast.fire({
+                icon: "danger",
+                title: "Phê duyệt thất bại"
+            });
+        }
+    });
+}

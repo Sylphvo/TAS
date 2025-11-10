@@ -56,6 +56,13 @@ namespace TAS.Controllers
 			return Json(result);
 		}
 
+		[HttpPost]
+		public JsonResult ApproveAllDataRubber()
+		{
+			int result = _models.ApproveAllDataRubber();
+			return Json(result);
+		}
+
 		
 		[HttpPost("Delete/{id}")]
 		public IActionResult Delete(int id)
