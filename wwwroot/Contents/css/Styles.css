@@ -188,3 +188,12 @@ label.btn_custom {
     cursor: pointer;
     margin-bottom:9px;
 }
+.select2-container--open .select2-dropdown {
+    z-index: 1091;
+}
+.datatable-selector, .form-select, .searchInput {
+    margin-left: 0 !important;
+}
+#AddNewRubber .select2-container {
+    margin-left: 0 !important;
+}

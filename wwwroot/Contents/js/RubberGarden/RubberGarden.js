@@ -67,7 +67,10 @@ function CreateGridRubberGarden() {
             }
             console.log('Data after change is', e.data);
             UpdateDataAfterEdit(e.data);
-        }
+        },
+        context: any = {
+            reportingCurrency: "EUR",
+        };
     };
 
     var eGridDiv = document.querySelector(RubberGarden);
