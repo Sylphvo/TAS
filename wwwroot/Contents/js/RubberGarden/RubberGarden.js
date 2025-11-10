@@ -34,20 +34,21 @@ function CreateGridRubberGarden() {
             filter: true,
             floatingFilter: true,
         },
-        height: 45,
+        rowHeight: 45,//
+        headerHeight: 45,// 
         rowData: [],        
         rowSelection: 'multiple',
         suppressRowClickSelection: true,
         animateRows: true,
         singleClickEdit: true,
         components: {
-            customFloatingFilterInput: getFloatingFilterInputComponent(),
+           /* /customFloatingFilterInput: getFloatingFilterInputComponent(),*/
             //customheader: CustomHeaderRubberGarden,
         },
         cellSelection: true,
         onGridReady: function (params) {          
             gridApi = params.api;
-            params.api.sizeColumnsToFit();           
+            //params.api.sizeColumnsToFit();           
         },
         rowDragManaged: true,
         onRowDragEnd() {
@@ -68,16 +69,34 @@ function CreateGridRubberGarden() {
             console.log('Data after change is', e.data);
             UpdateDataAfterEdit(e.data);
         },
-        context: any = {
-            reportingCurrency: "EUR",
-        };
+        enableRangeSelection: true,
+        allowContextMenuWithControlKey: true, // giữ Ctrl + click phải vẫn hiện
+        suppressContextMenu: false, // cho phép hiện menu ag-Grid
+        getContextMenuItems: params => {
+            const result = [
+                'applyfullwidth'
+            ];
+            return result;
+        },
+        onCellContextMenu: (params) => {
+            params.event.preventDefault(); // chặn menu mặc định trình duyệt
+            // hiển thị menu custom của bạn
+            showCustomMenu(params);
+        },
     };
+    const eGridDiv = document.querySelector(RubberGarden);
+    gridApi = agGrid.createGrid(eGridDiv, gridOptionsRubberGarden);
 
-    var eGridDiv = document.querySelector(RubberGarden);
-    new agGrid.Grid(eGridDiv, gridOptionsRubberGarden);
     CreateRowDataRubberGarden();
     resizeGridRubberGarden();
 }
+function showCustomMenu(params) {
+    var menuitem = document.querySelector('.ag-menu-option');
+    menuitem.addEventListener("click", () => {
+        gridApi.setGridOption("rowData", ListDataFull.filter(x => x[params.colDef.field] = params.data[params.colDef.field]));
+    });
+}
+
 function UpdateDataAfterEdit(rowData) {
     $.ajax({
         async: true,
@@ -107,11 +126,11 @@ function calcCentrifuge(row) {
 }
 function resizeGridRubberGarden() {
     setTimeout(function () {
-        setWidthHeightGrid(25);
+        setWidthHeightGrid(45);
     }, 100);
 }
 function setWidthHeightGrid(heithlayout) {
-    gridOptionsRubberGarden.api.sizeColumnsToFit();
+    gridApi.sizeColumnsToFit();
 }
 function RefreshAllGridWhenChangeData() {
     ShowHideLoading(true, RubberGarden);
@@ -146,7 +165,8 @@ function CreateRowDataRubberGarden() {
         dataType: "json",
         success: function (data) {
             ListDataFull = data;
-            gridOptionsRubberGarden.api.setRowData(data);
+            gridApi.setGridOption("rowData", data);
+            //gridOptionsRubberGarden.api.setRowData(data);
             renderPage();
             $('.ag-header-select-all:not(.ag-hidden)').on('click', function (e) {
                 let IsChecked = $(this).find('.ag-input-field-input');
@@ -200,13 +220,14 @@ function CreateColModelRubberGarden() {
                     return f ? `${f.farmCode} - ${f.farmerName}` : (p.value ?? '');
                 }
             }),
-            headerComponent: "customHeader",
+            filter: "agTextColumnFilter",
             cellStyle: { 'text-align': 'center' }
         },
         {
             field: 'farmerName', headerName: 'Tên Nhà Vườn', width: 150, minWidth: 150
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
@@ -214,6 +235,7 @@ function CreateColModelRubberGarden() {
             field: 'rubberKg', headerName: 'Khối lượng', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">params.value</div>`;
@@ -224,6 +246,7 @@ function CreateColModelRubberGarden() {
             //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
         },
         {
@@ -231,12 +254,14 @@ function CreateColModelRubberGarden() {
             //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
         },
         {
             field: 'finishedProductKg', headerName: 'Thành Phẩm', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -246,6 +271,7 @@ function CreateColModelRubberGarden() {
             field: 'centrifugeProductKg', headerName: 'Thành Phẩm Ly Tâm', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -255,6 +281,7 @@ function CreateColModelRubberGarden() {
             field: 'timeDate_Person', headerName: 'Người cập nhật', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -264,6 +291,7 @@ function CreateColModelRubberGarden() {
             field: 'timeDate', headerName: 'Thời gian cập nhật', width: 120, minWidth: 120
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
+            , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
@@ -707,10 +735,12 @@ function renderPage() {
             $('#start-entries').text(start);
             $('#last-entries').text(last);
             if (IsOptionAll) {
-                gridApi.setRowData(ListDataFull.slice(1, total));
+                gridApi.setGridOption("rowData", ListDataFull.slice(1, total));
+                //gridApi.setRowData(ListDataFull.slice(1, total));
             }
             else {
-                gridApi.setRowData(ListDataFull.slice(s.start, last));
+                gridApi.setGridOption("rowData", ListDataFull.slice(s.start, last));
+                //gridApi.setRowData(ListDataFull.slice(s.start, last));
             }
         }
     });

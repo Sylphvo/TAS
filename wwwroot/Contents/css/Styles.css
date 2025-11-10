@@ -197,3 +197,42 @@ label.btn_custom {
 #AddNewRubber .select2-container {
     margin-left: 0 !important;
 }
+.ag-text-field-input {
+    padding: 7px;
+    width: 100%;
+    border-radius: 4px !important;
+}
+
+div.ag-cell-value {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.ag-menu-option {
+    border-radius: 6px !important;
+    display: block;
+    padding: 0;
+    /*display: block;*/
+}
+    .ag-menu-option:hover {
+        background-color: #404040d6;
+        border-radius: 6px !important;
+        display: block;
+        padding: 0;
+    }
+.ag-menu-option-icon span.ag-icon {
+    /*color: white;*/
+}
+.ag-popup-child {
+    background-color: aliceblue !important;
+    border-radius: 5px !important;
+}
+.ag-menu-option-icon{
+    padding: 10px 0;
+}
+.ag-menu-list {
+    padding: 5px !important;
+}
+.ag-cell-highlight {
+    background-color: #51515126 !important;
+}
