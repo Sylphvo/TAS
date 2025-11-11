@@ -14,7 +14,7 @@
        
     @RenderBody()
 
-    <partial name="./Footer/_Footer.cshtml" />
+    @await Component.InvokeAsync("Footer")
     <partial name="./Footer/_FooterLink.cshtml" />
     @await RenderSectionAsync("Scripts", required: false)
 </body>

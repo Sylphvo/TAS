@@ -14,34 +14,33 @@ function CreateGridAgent() {
             filter: true,
             floatingFilter: true,
         },
-        height: 45,
-        rowData: [],
-        rowDragManaged: true,
-        rowDragMultiRow: true,
+		rowHeight: 45,// chiều cao hàng
+		headerHeight: 45,// chiều cao header
+		rowData: [],//data sẽ được load sau
+		rowDragManaged: true,// cho phép kéo thả hàng
+		rowDragMultiRow: true,// cho phép kéo thả nhiều hàng
         rowSelection: 'multiple',         // cho phép chọn nhiều hàng
         suppressRowClickSelection: false, // cho phép click hàng để chọn
-        animateRows: true,
+		animateRows: true,// hiệu ứng khi sắp xếp lại hàng
         components: {
-            customFloatingFilterInput: getFloatingFilterInputComponent(),
+            //customFloatingFilterInput: getFloatingFilterInputComponent(),
             //customheader: CustomHeaderAgent,
         },
         cellSelection: true,
         onGridReady: function (params) {
             gridApi = params.api;
             params.api.sizeColumnsToFit();
-            //renderPage();          // nạp trang đầu
-            //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
             persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
+        },
+        onCellValueChanged: e => {
+            UpdateDataAfterEdit(0, e.data);
         }
-
     };
-
-    var eGridDiv = document.querySelector(Agent);
-    new agGrid.Grid(eGridDiv, gridOptionsAgent);
-    //SetButtonOnPagingForAgent();
+    const eGridDiv = document.querySelector(Agent);
+    gridApi = agGrid.createGrid(eGridDiv, gridOptionsAgent);
     CreateRowDataAgent();
     resizeGridAgent();
 }
@@ -67,13 +66,6 @@ function RefreshAllGridWhenChangeData() {
 }
 function CreateRowDataAgent() {
     var listSearchAgent = {};
-    //ListDataFull = rowData;
-
-    //gridOptionsAgent.api.setRowData(rowData);
-    //listTotal = [];
-    //var listSearchAgent = GetParamSearchAgent();
-    //ShowHideLoading(true, divAgent);
-    //$('#AgentModal .ag-overlay-no-rows-center').hide();
     $.ajax({
         async: !false,
         type: 'POST',
@@ -81,14 +73,9 @@ function CreateRowDataAgent() {
         data: listSearchAgent,
         dataType: "json",
         success: function (data) {
-            ListDataFull = data;
-            gridOptionsAgent.api.setRowData(data);
-            //setTimeout(function () {
-            //    ShowHideLoading(false, divAgent);
-            //    $('#AgentModal .ag-overlay-no-rows-center').show();
-            //    setWidthHeightGridAgent(25, true);
-            //    FocusRowAgent();
-            //}, 100);
+            ListDataFull = data;            
+            gridApi.setGridOption("rowData", data);
+            renderPage();
         }
     });
 }
@@ -102,18 +89,18 @@ function CreateColModelAgent() {
             , headerCheckbox: true
             , headerCheckboxSelection: true // checkbox ở header để chọn tất cả
             , rowDrag: true
-            , filter: true
+            , filter: "agTextColumnFilter"
             , floatingFilterComponent: 'customFloatingFilterInput'
             , floatingFilterComponentParams: { suppressFilterButton: true }
             , headerComponent: "customHeader"
             //, cellRenderer: cellRender_StartDate
             //, colSpan: 2
-            , headerComponent: "customHeader"
         },
         {
             field: 'agentName', headerName: 'Tên đại lý', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
@@ -121,6 +108,7 @@ function CreateColModelAgent() {
             field: 'ownerName', headerName: 'Chủ đại lý', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
@@ -128,6 +116,7 @@ function CreateColModelAgent() {
             field: 'agentAddress', headerName: 'Địa chỉ', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
@@ -135,38 +124,57 @@ function CreateColModelAgent() {
             field: 'taxCode', headerName: 'Điện thoại', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'createdAt', headerName: 'Ngày tạo', width: 110, minWidth: 110
+            field: 'isActive', headerName: 'Trạng thái', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
+            , filter: false
+            , cellRenderer: function (params) {
+                if (params.value == 0) {
+                    return '<span class="badge text-bg-primary">không hoạt động</span>';
+                }
+                if (params.value == 1) {
+                    return '<span class="badge text-bg-success">đang hoạt động</span>';
+                }
+            }
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'createdBy', headerName: 'Người tạo', width: 110, minWidth: 110
+            field: 'updateTime', headerName: 'Ngày tạo', width: 110, minWidth: 110
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
+        {
+            field: 'updateBy', headerName: 'Người tạo', width: 110, minWidth: 110
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: true
+            , filter: "agTextColumnFilter"
+            //, cellRenderer: cellRender_StartDate
+            , headerComponent: "customHeader"
+        },
+        {
+            field: 'action', headerName: 'Chức năng', width: 160, minWidth: 160
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: false
+            , filter: false
+            , editType: 'fullRow'
+            , headerComponent: "customHeader"
+            , cellRenderer: ActionRenderer
+        }
         
     ]
     return columnDefs;
 }
 function onRowSelected(event) {
-    //if (event.node.isSelected()) {
-    //	var id_list = GetIdListEventActual(event.data.id);
-    //	if (id_list !== PFN_readCookie('id_list')) {
-    //		$('.ag-body-viewport div.ag-row').removeClass('ag-row-selected');
-    //           $('.ag-body-viewport div[row-index="' + $('.' + PFN_readCookie('id_list')).parent().attr('row-index') + '"]').removeClass('ag-row-selected');
-    //	}
-    //	if (IsNullOrEmpty(PFN_readCookie('focus_row')) && event.type == 'rowSelected' && event.source == 'rowClicked') {
-    //		$('.ag-body-viewport div[row-index="' + event.rowIndex + '"]').addClass('ag-row-selected');
-    //	}
-    //   }
+   
 }
 
 function CustomHeaderAgent() { }
@@ -212,45 +220,7 @@ CustomHeaderAgent.prototype.init = function (params) {
     }
 };
 function cellStyle_Col_Model_EventActual(params) {
-    //let colName = params.colDef.field;
-    //let rowObject = params.data;
     let cellAttr = {};
-
-    //if (rowObject.row_type == arrConstantAgent.RowTypeStaff) {
-    //    cellAttr['background-color'] = '#f1f182';
-    //    cellAttr['color'] = 'black';
-    //    cellAttr['padding-left'] = '25px !important';
-    //    if (colName == 'start_date' || colName == 'end_date') {
-    //        cellAttr['text-align'] = 'left';
-    //        cellAttr['font-weight'] = '700';
-    //    }
-    //}
-    //else if (rowObject.row_type == arrConstantAgent.RowTypeDate) {
-    //    if (colName == 'start_date') {
-    //        cellAttr['font-weight'] = 'bold';
-    //    }
-
-    //    cellAttr['background-color'] = colorSortOrder_1;
-    //}
-    //else if (rowObject.row_type == arrConstantAgent.RowTypeGroup) {
-    //    if (colName == 'start_date') {
-    //        cellAttr['font-weight'] = '600';
-    //    }
-    //    cellAttr['padding-left'] = '45px !important';
-    //    cellAttr['background-color'] = colorSortOrder_4;
-    //}
-    //else if (rowObject.row_type == arrConstantAgent.RowTypeItem && rowObject.row_status == arrConstantAgent.RowStatusPast) {
-    //    cellAttr['background-color'] = colorSortOrder_3;
-    //    if (colName == 'start_date' || colName == 'end_date') {
-    //        cellAttr['text-align'] = 'center';
-    //    }
-    //}
-    //else {
-    //    if (colName == 'start_date' || colName == 'end_date' || colName == 'check_start_actual' || colName == 'start_date_actual' || colName == 'check_end_actual'
-    //        || colName == 'end_date_actual') {
-    //        cellAttr['text-align'] = 'center';
-    //    }
-    //}
     cellAttr['text-align'] = 'center';
     return cellAttr;
 }
@@ -303,8 +273,8 @@ document.getElementById('importExcel').addEventListener('change', async e => {
         const buf = await file.arrayBuffer();
         const wb = XLSX.read(buf, { type: 'array', cellDates: true });
         const ws = wb.Sheets[wb.SheetNames[0]];
-        const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-        gridApi.setRowData(rows);
+        const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });     
+        gridApi.setGridOption("rowData", rows);
         notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
     } catch (err) {
         notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
@@ -340,25 +310,189 @@ function persistCurrentPageOrder() {
 }
 
 // --- helpers ---
-function renderPage() {
-    const start = (page - 1) * pageSize;
-    const slice = ListDataFull.slice(start, start + pageSize);
-    gridApi.setRowData(slice);
-}
-function setupPager() {
-    pagerApi = makePaginator({
-        listEl: '#dummy',
-        pagerEl: '#pager',
-        page,
-        pageSize,
-        total: ListDataFull.length,
-        render: () => '', // không render list
-        onChange: ({ page: p, pageSize: sz }) => {
-            // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
-            persistCurrentPageOrder();
-            page = p;
-            pageSize = sz;
-            renderPage();
+
+
+// Chuyển chuỗi sang số
+const num = v => {
+    const x = parseFloat(String(v ?? '').replace(',', '.'));
+    return Number.isFinite(x) ? x : 0;
+};
+// Cập nhật dữ liệu sau khi chỉnh sửa
+// status: 1: edit, 2: add
+function UpdateDataAfterEdit(status, rowData) {
+    var rowDataObj = {};
+    if (status == 1) {
+        rowDataObj.agentCode = $('#agentCode').val();//Mã đại lý
+        rowDataObj.agentName = $('#agentName').val();//Tên đại lý
+        rowDataObj.ownerName = $('#ownerName').val();//Chủ đại lý
+        rowDataObj.agentAddress = $('#agentAddress').val();//địa chỉ
+        rowDataObj.taxCode = $('#taxCode').val();//
+        rowDataObj.isActive = 1;//Tổng khai thác
+        rowData = rowDataObj;
+    }
+    $.ajax({
+        async: true,
+        url: "/Agent/AddOrUpdate",
+        type: 'POST',
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify(rowData),
+        success: function (res) {
+            Toast.fire({
+                icon: "success",
+                title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thành công"
+            });
+            RefreshAllGridWhenChangeData();
+        },
+        error: function () {
+            Toast.fire({
+                icon: "danger",
+                title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thất bại"
+            });
         }
     });
+}
+// --- helpers ---
+function renderPage() {
+    pagerApi = makePaginator({
+        data: ListDataFull,
+        listEl: '#pager',
+        pagerEl: '#list-paging',
+        page: 1,
+        pageSize: $('.selector-paging').val(),
+        renderItem: x => ``,
+        onChange: s => {
+            let total = s.total;
+            let start = (s.start == 0 ? 1 : s.start);
+            let last = s.start + parseInt(s.pageSize);
+            if (last > total) {
+                last = total;
+            }
+            $('#total-entries').text(total);
+            $('#start-entries').text(start);
+            $('#last-entries').text(last);
+            if (IsOptionAll) {
+                gridApi.setGridOption("rowData", ListDataFull.slice(1, total));
+                //gridApi.setRowData(ListDataFull.slice(1, total));
+            }
+            else {
+                gridApi.setGridOption("rowData", ListDataFull.slice(s.start, last));
+                //gridApi.setRowData(ListDataFull.slice(s.start, last));
+            }
+        }
+    });
+}
+
+function ActionRenderer(params) {
+    const wrap = document.createElement('div');
+    wrap.innerHTML =
+        ``
+        +
+        (params.data.isActive == 0 ?
+            ` <button class="button_action_custom avtar avtar-xs btn-light-success js-change_isActive" title="đổi trạng thái hoạt động">
+        <i class="ti ti-check f-20"></i>
+    </button>`
+            :
+            `<button class="button_action_custom avtar avtar-xs btn-light-danger js-change_isActive" title="đổi trạng thái hoạt động">
+        <i class="ti ti-x f-20"></i>
+    </button>`)
+        +
+        `
+	<label for="importExcelPolygon_`+ params.data.farmId + `" class="button_action_custom avtar avtar-xs btn-light-primary btn_custom"><i class="ti ti-upload f-20"></i></label>
+    <input type="file" id="importExcelPolygon_`+ params.data.farmId + `" class="import_polygon"  data-id="` + params.data.farmId + `" data-rowIndex="` + params.node.rowIndex + `" hidden>
+    <span id="file-name" class="ms-2 d-none"></span>
+
+	
+	<button class="button_action_custom avtar avtar-xs btn-light-danger js-delete" title="Xóa dòng">
+      <i class="ti ti-trash f-20"></i>
+    </button>
+	`;
+    const btnUpload = wrap.querySelector('.import_polygon');
+    const btnDelete = wrap.querySelector('.js-delete');
+    ['mousedown', 'click', 'dblclick', 'contextmenu'].forEach(ev => {
+        btnUpload.addEventListener(ev, e => e.stopPropagation(), { capture: true });
+    });
+    if (params.data.isActive == 0) {
+        const btnChangeIsActive = wrap.querySelector('.js-change_isActive');
+        btnChangeIsActive.addEventListener('click', (e) => {
+            ApproveDataFarm(params.data.farmId, 1);
+        });
+    }
+    else {
+        const btnChangeIsActive = wrap.querySelector('.js-change_isActive');
+        btnChangeIsActive.addEventListener('click', (e) => {
+            ApproveDataFarm(params.data.farmId, 0);
+        });
+    }
+    // cho phép chọn lại cùng 1 file	
+    btnUpload.addEventListener('change', async e => {
+        e.preventDefault();
+        const file = e.target.files && e.target.files[0];
+        const farmId = $(e.target).attr('data-id');
+        if (!file) return;
+        try {
+            await readExcelAsDataa(file);
+            async function readExcelAsDataa(file, opts = {}) {
+                const buf = await file.arrayBuffer();
+                const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+                const ws = wb.Sheets[wb.SheetNames[0]];
+                // Ma trận 2D
+                const matrix = XLSX.utils.sheet_to_json(ws, {
+                    header: 1, raw: true, defval: null, blankrows: false
+                });
+                // Lọc bỏ các dòng trống sau tiêu đề
+                const body = matrix.slice(1).filter(r => (r || []).some(c => c !== null && String(c).trim() !== ''));
+                var rowDatas = {};
+                rowDatas.polygon = JSON.stringify(body);
+                rowDatas.farmId = farmId;
+
+                $.ajax({
+                    async: true,
+                    method: 'POST',
+                    url: "/InformationGarden/ImportPolygon",
+                    contentType: 'application/json',
+                    data: JSON.stringify(rowDatas),
+                    success: function (res) {
+                        Toast.fire({
+                            icon: "success",
+                            title: "Import polygon thành công"
+                        });
+                        RefreshAllGridWhenChangeData();
+                    },
+                    error: function () {
+                        Toast.fire({
+                            icon: "danger",
+                            title: "Lỗi khi import polygon!"
+                        });
+                    }
+                });
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            // cho lần sau, kể cả cùng file
+            btnUpload.value = '';
+        }
+    });
+    btnDelete.addEventListener('click', (e) => {
+        // e.stopPropagation();
+        Swal.fire({
+            title: 'Xóa dòng này?',
+            icon: "error",
+            showDenyButton: false,
+            showCancelButton: true,
+            confirmButtonText: `Lưu`,
+            showCloseButton: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // remove theo đúng object data của node
+                params.api.applyTransaction({ remove: [params.node.data] });
+                Toast.fire({
+                    icon: "success",
+                    title: "Xóa thành công"
+                });
+            }
+        });
+    });
+
+    return wrap;
 }

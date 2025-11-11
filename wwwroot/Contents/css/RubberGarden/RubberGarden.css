@@ -9,7 +9,6 @@
 	align-items: center;
 }
 
-
 div.ag-cell-value[col-id="status"] > span {
 	margin-top: -3px !important;
 	display: block;

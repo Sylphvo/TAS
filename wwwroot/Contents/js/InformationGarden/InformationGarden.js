@@ -34,7 +34,7 @@ function CreateGridInformationGarden() {
 		rowDragManaged: true,
 		rowDragMultiRow: true,
 		rowSelection: 'multiple',         // cho phép chọn nhiều hàng
-		suppressRowClickSelection: false, // cho phép click hàng để chọn
+		suppressRowClickSelection: true, // cho phép click hàng để chọn
 		animateRows: true,
 		singleClickEdit: true,
 		components: {
@@ -53,14 +53,14 @@ function CreateGridInformationGarden() {
 		onCellValueChanged: e => {
 			UpdateDataAfterEdit(0, e.data);
 		},
+		enableRangeSelection: true,
+		allowContextMenuWithControlKey: true, // giữ Ctrl + click phải vẫn hiện
+		suppressContextMenu: false, // cho phép hiện menu ag-Grid
 
 	};
 	const eGridDiv = document.querySelector(InformationGarden);
 	gridApi = agGrid.createGrid(eGridDiv, gridOptionsInformationGarden);
 
-	//var eGridDiv = document.querySelector(InformationGarden);
-	//new agGrid.Grid(eGridDiv, gridOptionsInformationGarden);
-	//SetButtonOnPagingForInformationGarden();
 	CreateRowDataInformationGarden();
 	resizeGridInformationGarden();
 }
@@ -96,7 +96,6 @@ function CreateRowDataInformationGarden() {
 		dataType: "json",
 		success: function (data) {
 			ListDataFull = data;
-			//gridOptionsInformationGarden.api.setRowData(data);
 			gridApi.setGridOption("rowData", data);
 			renderPage();
 		}
@@ -115,8 +114,7 @@ function CreateColModelInformationGarden() {
 			, floatingFilterComponent: 'customFloatingFilterInput'
 			, floatingFilterComponentParams: { suppressFilterButton: true }
 			, headerComponent: "customHeader"
-			//, cellRenderer: cellRender_StartDate
-			, headerComponent: "customHeader"
+			//, cellRenderer: cellRender_StartDate			
 		},
 		{
 			field: 'farmCode'
@@ -125,7 +123,6 @@ function CreateColModelInformationGarden() {
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
-			, filter: true
 			, floatingFilterComponent: 'customFloatingFilterInput'
 			, floatingFilterComponentParams: { suppressFilterButton: true }
 			, headerComponent: "customHeader"
@@ -139,6 +136,7 @@ function CreateColModelInformationGarden() {
 					return f ? `${f.farmCode} - ${f.farmerName}` : (p.value ?? '');
 				}
 			})
+			, filter: "agTextColumnFilter"
 		},
 		{
 			field: 'agentCode'
@@ -170,7 +168,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 200
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
-			, filter: true
+			, filter: "agTextColumnFilter"
 			, floatingFilterComponent: 'customFloatingFilterInput'
 			, floatingFilterComponentParams: { suppressFilterButton: true }
 			, headerComponent: "customHeader"
@@ -183,6 +181,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 200
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
+			, filter: "agTextColumnFilter"
 			//, cellRenderer: cellRender_StartDate
 			, headerComponent: "customHeader"
 		},
@@ -193,6 +192,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
+			, filter: "agTextColumnFilter"
 			//, cellRenderer: cellRender_StartDate
 			, headerComponent: "customHeader"
 		},
@@ -203,6 +203,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
+			, filter: "agTextColumnFilter"
 			//, cellRenderer: cellRender_StartDate
 			, headerComponent: "customHeader"
 		},
@@ -213,6 +214,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
+			, filter: "agTextColumnFilter"
 			//, cellRenderer: cellRender_StartDate
 			, headerComponent: "customHeader"
 		},
@@ -223,6 +225,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 110
 			, cellStyle: { 'text-align': 'center' }
 			, editable: false
+			, filter: false
 			, cellRenderer: function (params) {
 				if (params.value == 0) {
 					return '<span class="badge text-bg-primary">không hoạt động</span>';
@@ -240,6 +243,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 70
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: false
+			, filter: false
 			, cellRenderer: cellRender_Polygon
 			, headerComponent: "customHeader"
 		},
@@ -250,6 +254,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: false
+			, filter: false
 			, cellRenderer: cellRender_Certificates
 			, headerComponent: "customHeader"
 		},
@@ -260,6 +265,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 130
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: false
+			, filter: "agTextColumnFilter"
 			//, cellRenderer: cellRender_StartDate
 			, headerComponent: "customHeader"
 		},
@@ -270,6 +276,7 @@ function CreateColModelInformationGarden() {
 			, minWidth: 100
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: false
+			, filter: "agTextColumnFilter"
 			//, cellRenderer: cellRender_StartDate
 			, headerComponent: "customHeader"
 		},

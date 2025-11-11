@@ -1,5 +1,5 @@
 ﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
-var gridOptions, listDataFull, listRowChild;
+var gridOptionsTraceability, listDataFull, listRowChild;
 var page = 1;
 var pageSize = 20;
 var gridApi;
@@ -26,7 +26,7 @@ function RegEventTraceability() {
 
 // Tạo grid Traceability
 function CreateGridTraceability() {
-    gridOptions = {
+    gridOptionsTraceability = {
         //pagination: true,
         paginationPageSize: 100,
         columnDefs: CreateColModelTraceability(),
@@ -35,7 +35,8 @@ function CreateGridTraceability() {
             filter: true,
             floatingFilter: true,
         },
-        height: 45,
+        rowHeight: 45,// chiều cao hàng
+        headerHeight: 45,// chiều cao header
         rowData: [],
         rowDragManaged: true,
         rowDragMultiRow: true,
@@ -43,7 +44,7 @@ function CreateGridTraceability() {
         suppressRowClickSelection: false, // cho phép click hàng để chọn
         animateRows: true,
         components: {
-            customFloatingFilterInput: getFloatingFilterInputComponent(),
+            //customFloatingFilterInput: getFloatingFilterInputComponent(),
             //customheader: CustomHeaderTraceability,
         },
         cellSelection: true,
@@ -60,8 +61,8 @@ function CreateGridTraceability() {
 
     };
 
-    var eGridDiv = document.querySelector(Traceability);
-    new agGrid.Grid(eGridDiv, gridOptions);
+    const eGridDiv = document.querySelector(Traceability);
+    gridApi = agGrid.createGrid(eGridDiv, gridOptionsTraceability);
     //SetButtonOnPagingForTraceability();
     CreateRowDataTraceability();
     resizeGridTraceability();
@@ -100,7 +101,7 @@ function CreateRowDataTraceability() {
         success: function (data) {
             listDataFull = data;
 			listRowChild = data.filter(x => x.sortOrder != 1);
-            gridOptions.api.setRowData(data);
+            gridApi.setGridOption("rowData", data);
             //setTimeout(function () {
             //    ShowHideLoading(false, divTraceability);
             //    $('#TraceabilityModal .ag-overlay-no-rows-center').show();

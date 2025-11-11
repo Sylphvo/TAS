@@ -17,9 +17,24 @@ namespace TAS.Helpers
 		public string? AgentAddress { get; set; } // Địa chỉ đại lý 
 
         public bool IsActive { get; set; } = true;// trạng thái đại lý 
-        public DateTime CreatedAt { get; set; }//thời gian tạo
-		public string? CreatedBy { get; set; }//người tạo 
-		public DateTime? UpdatedAt { get; set; }//thời gian cập nhật
-		public string? UpdatedBy { get; set; }//người cập nhật
+        public DateTime RegisterDate { get; set; }//thời gian tạo
+		public string? RegisterPerson { get; set; }//người tạo 
+		public DateTime? UpdateDate { get; set; }//thời gian cập nhật
+		public string? UpdatePerson { get; set; }//người cập nhật
     }
+	public class RubberAgentRequest
+	{
+		public long agentId { get; set; } //Khóa định danh đại lý
+		public string? agentCode { get; set; } //Khóa định danh đại lý
+		public string? agentName { get; set; } //Tên đại lý
+		public string? ownerName { get; set; } //Chủ sở hữu/Người đại diện
+		public string? taxCode { get; set; } // Mã số thuế
+		public string? agentAddress { get; set; } // Địa chỉ đại lý 
+
+		public bool isActive { get; set; } = true;// trạng thái đại lý 
+		public DateTime registerDate { get; set; }//thời gian tạo
+		public string? registerPerson { get; set; }//người tạo 
+		public DateTime? updateDate { get; set; }//thời gian cập nhật
+		public string? updatePerson { get; set; }//người cập nhật
+	}
 }

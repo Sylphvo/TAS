@@ -37,10 +37,10 @@ namespace TAS.Data
 				e.Property(x => x.IsActive).HasDefaultValue(true);
 
 				// SQL Server
-				e.Property(x => x.CreatedAt).HasColumnType("datetime2").HasDefaultValueSql("GETUTCDATE()");
-				e.Property(x => x.UpdatedAt).HasColumnType("datetime2");
-				e.Property(x => x.CreatedBy).HasMaxLength(100);
-				e.Property(x => x.UpdatedBy).HasMaxLength(100);
+				e.Property(x => x.RegisterDate).HasColumnType("datetime2").HasDefaultValueSql("GETUTCDATE()");
+				e.Property(x => x.UpdateDate).HasColumnType("datetime2");
+				e.Property(x => x.RegisterPerson).HasMaxLength(100);
+				e.Property(x => x.UpdatePerson).HasMaxLength(100);
 
 				// Unique nếu có TaxCode
 				e.HasIndex(x => x.TaxCode).IsUnique().HasFilter("[TaxCode] IS NOT NULL");

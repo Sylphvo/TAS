@@ -27,10 +27,13 @@ namespace TAS.Controllers
 		{
 			return PartialView("_Layout");
 		}
-		public IActionResult Header()
+		public IActionResult PDFViewer()
 		{
-			return PartialView("_Header");
+			return View();
 		}
-
+		public IActionResult LanguageManage()
+		{
+			return View();
+		}
 	}
 }

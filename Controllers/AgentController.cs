@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TAS.Helpers;
 using TAS.ViewModels;
 using static Azure.Core.HttpHeader;
 
@@ -24,10 +25,11 @@ namespace TAS.Controllers
 			var lstData = await models.GetRubberAgentAsync();
 			return new JsonResult(lstData);
 		}
-		[HttpPost("AddOrUpdate")]
-		public IActionResult AddOrUpdate()
+		[HttpPost]
+		public JsonResult AddOrUpdate([FromBody] RubberAgent rubberAgent)
 		{
-			return View();
+			int result = models.AddOrUpdateRubberAgent(rubberAgent);
+			return Json(result);
 		}
 		[HttpPost("Delete/{id}")]
 		public IActionResult Delete(int id)

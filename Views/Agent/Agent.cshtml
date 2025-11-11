@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.Extensions.Localization
+@inject Microsoft.Extensions.Localization.IStringLocalizer<TAS.Resources.SharedResource> localizerShared
+@inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
+@{
     ViewData["Title"] = "Thông Tin Đại lý";
 }
 
@@ -29,42 +32,53 @@
                     <div class="card-header">
                         <div class="d-flex align-items-center justify-content-between">
                             <div class="d-flex align-items-center">
-                                <label class="form-label" for="inputState">Đại lý</label>
-                                <select id="inputState" class="form-select">
-                                </select>
+
                             </div>
                             <div class="d-flex">
                                 <!-- Nút chọn file -->
-                                <label for="importExcel" class="btn btn-primary">Chọn file</label>
+                                <label for="importExcel" class="btn btn-primary"><i class="ti ti-upload f-20"></i>&nbsp; Import Excel</label>
                                 <input type="file" id="importExcel" hidden>
                                 <span id="file-name" class="ms-2 d-none"></span>
-                                <button onclick="onExportExcelData()" class="btn btn-primary buttonSearch">Xuất Excel</button>
-                                <button onclick="onExportExcel()" class="btn btn-primary buttonSearch">Mẫu Excel</button>
+                                <button onclick="onExportTemplateExcel()" class="btn btn-primary buttonSearch"><i class="ti ti-file-x f-20"></i>&nbsp; Mẫu Excel</button>
+                                <button class="btn btn-primary buttonSearch" data-bs-toggle="modal" data-bs-target="#AddNewRubberAgent"><i class="ti ti-plus f-20"></i>&nbsp;  Thêm mới</button>
                             </div>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
+                            <div class="datatable-top">
+                                <div class="datatable-dropdown">
+                                    <label>
+                                        @localizer["key_rowperpage"]:
+                                        <select class="datatable-selector selector-paging" name="per-page">
+                                            <option value="5">5</option>
+                                            <option value="10" selected>10</option>
+                                            <option value="15">15</option>
+                                            <option value="20">20</option>
+                                            <option value="25">25</option>
+                                        </select>
+                                    </label>
+                                </div>
+                                <div>
+                                    <label></label>
+                                </div>
+                            </div>
                             <!-- [ Main Content ] end -->
                             <div id="AgentGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
-                            <div id="topPager" class="pager">
-                                <label>Rows/Page</label>
-                                <select id="pageSize">
-                                    <option>20</option>
-                                    <option selected>50</option>
-                                    <option>100</option>
-                                    <option>200</option>
-                                </select>
-
-                                <a href="#" class="avtar avtar-s btn-link-secondary" id="first"><i class="ti ti-chevrons-left f-18"></i></a>
-                                <a href="#" class="avtar avtar-s btn-link-secondary" id="prev"><i class="ti ti-chevron-left f-18"></i></a>
-
-                                <span id="pageInfo"></span>
-
-                                <a href="#" class="avtar avtar-s btn-link-secondary" id="next"><i class="ti ti-chevron-right f-18"></i></a>
-                                <a href="#" class="avtar avtar-s btn-link-secondary" id="last"><i class="ti ti-chevrons-right f-18"></i></a>
-
-                                <span id="rowCount" style="margin-left:12px">Rows: 0</span>
+                            <div id="topPager" class="ag-paging-button-wrapper">
+                                <div class="grid-info">
+                                    <label>
+                                        <span id="start-entries">1</span>
+                                        <span>-</span>
+                                        <span id="last-entries"></span>
+                                        <span>@localizer["key_of"]</span>
+                                        <span id="total-entries"></span>
+                                    </label>
+                                </div>
+                                <nav class="grid-paging" id="list-paging">
+                                    <ul id="pager" class="pagination pagination-sm mb-0"></ul>
+                                    <span id="rowCount" style="margin-left:12px"></span>
+                                </nav>
                             </div>
                         </div>
                     </div>
@@ -74,6 +88,7 @@
 
     </div>
 </div>
+<partial name="./_PopupAddNewAgent.cshtml" />
 @section Scripts {
     <script type="text/javascript" src="~/Contents/js/Agent/Agent.js"></script>
     <script>
@@ -81,5 +96,13 @@
         var Agent = '#AgentGrid';
         CreateGridAgent(true);
         CreateRowDataAgent();
+        $('.selector-paging').select2({
+            minimumResultsForSearch: Infinity
+        });
+        $('.selector-paging').change(function (e) {
+            let selectPage = $(this).val();
+            IsOptionAll = selectPage == '*';
+            RefreshAllGridWhenChangeData();
+        });
     </script>
 }
