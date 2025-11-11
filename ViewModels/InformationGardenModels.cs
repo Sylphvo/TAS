@@ -47,7 +47,7 @@ namespace TAS.ViewModels
 			try
 			{
 				string sql = @"
-				UPDATE RubberFarm SET Polygon = N'" + rubberFarmRequest.Polygon + @"' WHERE FarmId = '" + rubberFarmRequest.FarmId + @"'";
+					UPDATE RubberFarm SET Polygon = N'" + rubberFarmRequest.Polygon + @"' WHERE FarmId = '" + rubberFarmRequest.FarmId + @"'";
 				dbHelper.Execute(sql);
 				return 1;
 			}

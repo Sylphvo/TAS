@@ -1,14 +1,16 @@
 ﻿using TAS.Helpers;
+using TAS.Repository;
 using TAS.TagHelpers;
 
 namespace TAS.ViewModels
 {
 	public class AgentModels
 	{
-		ConnectDbHelper dbHelper;
-		public AgentModels()
+		private readonly ICurrentUser _userManage;
+		ConnectDbHelper dbHelper = new ConnectDbHelper();
+		public AgentModels(ICurrentUser userManage)
 		{
-			dbHelper = new ConnectDbHelper();
+			_userManage = userManage;
 		}
 		// Model
 		public async Task<List<RubberAgent>> GetRubberAgentAsync()

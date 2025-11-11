@@ -45,13 +45,14 @@ function CreateGridInformationGarden() {
 		onGridReady: function (params) {
 			gridApi = params.api;
 			params.api.sizeColumnsToFit();
-			//renderPage();          // nạp trang đầu
-			//setupPager();          // tạo pager ngoài
 		},
 		rowDragManaged: true,
 		onRowDragEnd() {
 			persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
-		}
+		},
+		onCellValueChanged: e => {
+			UpdateDataAfterEdit(0, e.data);
+		},
 
 	};
 	const eGridDiv = document.querySelector(InformationGarden);
@@ -129,7 +130,15 @@ function CreateColModelInformationGarden() {
 			, floatingFilterComponentParams: { suppressFilterButton: true }
 			, headerComponent: "customHeader"
 			//, cellRenderer: cellRender_StartDate
-			, headerComponent: "customHeader"
+			, cellEditorParams: () => ({
+				values: listComboFarmCode.map(f => f.farmCode),
+				allowTyping: true,
+				searchType: 'matchAny',
+				cellRenderer: (p) => {
+					const f = farmByCode[p.value];
+					return f ? `${f.farmCode} - ${f.farmerName}` : (p.value ?? '');
+				}
+			})
 		},
 		{
 			field: 'agentCode'
@@ -139,17 +148,26 @@ function CreateColModelInformationGarden() {
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
 			, filter: true
-			, floatingFilterComponent: 'customFloatingFilterInput'
-			, floatingFilterComponentParams: { suppressFilterButton: true }
+			, cellEditor: 'agSelectCellEditor'
+			, popupPosition: 'under'
 			, headerComponent: "customHeader"
 			//, cellRenderer: cellRender_StartDate
-			, headerComponent: "customHeader"
+			, cellEditorParams: () => ({
+				values: ListAgent.map(f => f.agentCode),
+				allowTyping: true,
+				searchType: 'matchAny',
+				cellRenderer: (p) => {
+					const f = farmByCode[p.value];
+					return f ? `${f.agentCode} - ${f.agentName}` : (p.value ?? '');
+				}
+			})
+			, filter: "agTextColumnFilter"
 		},
 		{
 			field: 'farmerName'
 			, headerName: 'Tên nhà vườn'
-			, width: 170
-			, minWidth: 170
+			, width: 200
+			, minWidth: 200
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
 			, filter: true
@@ -157,13 +175,12 @@ function CreateColModelInformationGarden() {
 			, floatingFilterComponentParams: { suppressFilterButton: true }
 			, headerComponent: "customHeader"
 			//, cellRenderer: cellRender_StartDate
-			, headerComponent: "customHeader"
 		},
 		{
 			field: 'farmAddress'
 			, headerName: 'Địa chỉ'
-			, width: 110
-			, minWidth: 110
+			, width: 200
+			, minWidth: 200
 			, cellStyle: cellStyle_Col_Model_EventActual
 			, editable: true
 			//, cellRenderer: cellRender_StartDate
@@ -232,8 +249,8 @@ function CreateColModelInformationGarden() {
 			, width: 110
 			, minWidth: 110
 			, cellStyle: cellStyle_Col_Model_EventActual
-			, editable: true
-			//, cellRenderer: cellRender_StartDate
+			, editable: false
+			, cellRenderer: cellRender_Certificates
 			, headerComponent: "customHeader"
 		},
 		{
@@ -304,6 +321,9 @@ function cellRender_Polygon(params) {
 		openUrl(url);
 	});
 	return wrap;
+}
+function cellRender_Certificates(params) {
+	return `<a href="#">` + params.value + `<a>`;
 }
 function ActionRenderer(params) {
 	const wrap = document.createElement('div');
@@ -629,21 +649,26 @@ function ApproveDataFarm(farmId, status) {
 		}
 	});
 }
+// Chuyển chuỗi sang số
+const num = v => {
+	const x = parseFloat(String(v ?? '').replace(',', '.'));
+	return Number.isFinite(x) ? x : 0;
+};
 // Cập nhật dữ liệu sau khi chỉnh sửa
 // status: 1: edit, 2: add
 function UpdateDataAfterEdit(status, rowData) {
 	var rowDataObj = {};
 	if (status == 1) {
-		rowDataObj.farmCode = $('#ListCboFarmCode').val();
-		rowDataObj.agentCode = $('#ListCboFarmerName').val();
-		rowDataObj.farmerName = num($('#RubberKg').val());
-		rowDataObj.farmPhone = num($('#TSCPercent').val());
-		rowDataObj.farmAddress = num($('#TSCPercent').val());
-		rowDataObj.certificates = num($('#TSCPercent').val());
-		rowDataObj.totalAreaHa = num($('#TSCPercent').val());
-		rowDataObj.rubberAreaHa = num($('#TSCPercent').val());
-		rowDataObj.totalExploit = num($('#TSCPercent').val());
-		rowDataObj.isActive = num($('#TSCPercent').val());
+		rowDataObj.agentCode = $('#ListCboAgentCode').val();//Mã đại lý
+		rowDataObj.farmCode = $('#FarmCode').val();//Mã nhà vườn
+		rowDataObj.farmerName = $('#FarmerName').val();//Tên nhà vườn
+		rowDataObj.farmPhone = $('#FarmPhone').val();//Số điện thoại
+		rowDataObj.farmAddress = $('#FarmAddress').val();//Địa chỉ
+		rowDataObj.certificates = $('#Certificates').val(); //Giấy phép
+		rowDataObj.totalAreaHa = num($('#TotalAreaHa').val());//Tổng diện tích
+		rowDataObj.rubberAreaHa = num($('#RubberAreaHa').val());//Diện tích
+		rowDataObj.totalExploit = num($('#TotalExploit').val());//Tổng khai thác
+		rowDataObj.isActive = 1;//Tổng khai thác
 		rowData = rowDataObj;
 	}
 	$.ajax({
@@ -653,8 +678,17 @@ function UpdateDataAfterEdit(status, rowData) {
 		contentType: 'application/json; charset=utf-8',
 		data: JSON.stringify(rowData),
 		success: function (res) {
+			Toast.fire({
+				icon: "success",
+				title: (status == 1 ?"Cập nhật" : "Thành công") + " dữ liệu thành công"
+			});
 			RefreshAllGridWhenChangeData();
 		},
-		error: function () { }
+		error: function () {
+			Toast.fire({
+				icon: "danger",
+				title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thất bại"
+			});
+		}
 	});
 }

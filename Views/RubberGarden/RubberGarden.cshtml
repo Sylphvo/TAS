@@ -2,10 +2,7 @@
 @inject Microsoft.Extensions.Localization.IStringLocalizer<TAS.Resources.SharedResource> localizerShared
 @inject Microsoft.AspNetCore.Mvc.Localization.IViewLocalizer localizer
 @{
-    ViewData["Title"] = "Cập nhật Số liệu";
-    var ListAgent = ViewBag.ComboAgent;
-    var ListFarmCode = ViewBag.ComboFarmCode;
-
+    ViewData["Title"] = "Cập nhật Số liệu";    
 }
 @section Style {
     <link rel="stylesheet" href="../Contents/css/RubberGarden/RubberGarden.css">
@@ -40,10 +37,10 @@
                                 <label class="form-label" for="inputState">Đại lý</label>
                                 <select id="ListCboAgent" class="form-select">
                                     @{
-                                        if (ListAgent != null)
+                                        if (ViewBag.ComboAgent != null)
                                         {
                                             <option value="*" selected>All</option>
-                                            foreach (var item in ListAgent)
+                                            foreach (var item in ViewBag.ComboAgent)
                                             {
                                                 <option value="@item.AgentCode">@item.AgentName</option>
                                             }
@@ -106,77 +103,7 @@
         </div>
     </div>
 </div>
-<div class="modal fade bd-example-modal-lg" id="AddNewRubber" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Thêm mới Rubber</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <!-- [ form-element ] start -->
-                    <div class="col-lg-12">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3 ps-2">
-                                    <label class="form-label">Mã nhà vườn: *</label>
-                                    <select id="ListCboFarmCode" class="form-select form-control">
-                                        @{
-                                            if (ListFarmCode != null)
-                                            {
-                                                foreach (var item in ListFarmCode)
-                                                {
-                                                    <option value="@item.FarmCode">@item.FarmCode</option>
-                                                }
-                                            }
-                                        }
-                                    </select>
-                                    @* <small class="form-text text-muted">Please enter your full name</small> *@
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3 pe-2">
-                                    <label class="form-label">Tên nhà vườn: *</label>
-                                    <select id="ListCboFarmerName" class="form-select form-control">
-                                        @{
-                                            if (ListFarmCode != null)
-                                            {
-                                                foreach (var item in ListFarmCode)
-                                                {
-                                                    <option value="@item.FarmerName">@item.FarmerName</option>
-                                                }
-                                            }
-                                        }
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="mb-3 ps-2">
-                                    <label class="form-label">Khối lượng</label>
-                                    <input type="number" class="form-control p-2" placeholder="nhập khối lượng" id="RubberKg">
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="mb-3 pe-2">
-                                    <label class="form-label">TSC</label>
-                                    <input type="number" class="form-control p-2" placeholder="nhập TSC" id="TSCPercent">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- [ form-element ] end -->
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal" onclick="UpdateDataAfterEdit(1)">Save</button>
-            </div>
-        </div>
-    </div>
-</div>
+<partial name="./_PopupAddNewRubber.cshtml" />
 @section Scripts {
     <script type="text/javascript" src="~/Contents/js/RubberGarden/RubberGarden.js"></script>
     <script>
@@ -184,7 +111,7 @@
         var listdataEventsActual;
         var RubberGarden = '#RubberGardenGrid';
         var IsOptionAll = false;
-        var listComboFarmCode = @Json.Serialize(ListFarmCode)
+        var listComboFarmCode = @Json.Serialize(ViewBag.ComboFarmCode)
         CreateGridRubberGarden();
         $('#ListCboAgent').change(function (e) {
             let dataAgent = $(this).val();

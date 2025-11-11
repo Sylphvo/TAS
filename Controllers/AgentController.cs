@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TAS.ViewModels;
+using static Azure.Core.HttpHeader;
 
 namespace TAS.Controllers
 {
     public class AgentController : Controller
     {
-		AgentModels models;
-		public AgentController()
+		private readonly AgentModels models;
+		private readonly CommonModels _common;
+		public AgentController(AgentModels _models, CommonModels common)
 		{
-			models = new AgentModels();
+			models = _models;
+			_common = common;
 		}
 		public IActionResult Agent()
         {

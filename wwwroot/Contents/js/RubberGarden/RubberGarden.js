@@ -116,9 +116,18 @@ function UpdateDataAfterEdit(status, rowData) {
         contentType: 'application/json; charset=utf-8',
         data: JSON.stringify(rowData),
         success: function (res) {
+            Toast.fire({
+                icon: "success",
+                title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thành công"
+            });
             RefreshAllGridWhenChangeData();
         },
-        error: function () {}
+        error: function () {
+            Toast.fire({
+                icon: "danger",
+                title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thất bại"
+            });
+        }
     });
 }
 // Chuyển chuỗi sang số

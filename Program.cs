@@ -18,13 +18,18 @@ var builder = WebApplication.CreateBuilder(args);
 // lấy chuỗi kết nối: appsettings.ConnectionStrings.Default
 var cs = builder.Configuration.GetConnectionString("DefaultConnection");
 
-
+// Đăng ký Identity
 builder.Services.AddScoped<ConnectDbHelper>();// Đăng ký CommonDb
 builder.Services.AddHttpContextAccessor();// Đăng ký LanguageService
 builder.Services.AddScoped<ICurrentUser, CurrentUserService>();// Đăng ký dịch vụ lấy thông tin người dùng hiện tại
 builder.Services.AddScoped<CommonModels>();           // <-- bắt buộc
 builder.Services.AddScoped<RubberGardenModels>();     // <-- bắt buộc
+builder.Services.AddScoped<InformationGardenModels>();     // <-- bắt buộc
+builder.Services.AddScoped<AgentModels>();     // <-- bắt buộc
+builder.Services.AddScoped<TraceabilityModels>();     // <-- bắt buộc
 builder.Services.AddScoped<ILanguageService, LanguageService>();// Đăng ký dịch vụ ngôn ngữ
+// Đăng ký Identity
+
 
 builder.Services.AddIdentityCore<UserAccountIdentity>()
 	.AddRoles<IdentityRole<Guid>>()

@@ -52,7 +52,7 @@ namespace TAS.Helpers
 		public decimal? TotalExploit { get; set; }//Tổng Khai thác (kg)
 		public string? Polygon { get; set; }//người tạo 
 
-		public bool IsActive { get; set; } = true;// trạng thái nhà vườn
+		public int IsActive { get; set; }// trạng thái nhà vườn
 		public string? UpdateBy { get; set; }//người tạo 
 		public string? UpdateTime { get; set; }//người tạo 
 

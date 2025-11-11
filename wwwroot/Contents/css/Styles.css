@@ -256,3 +256,17 @@ div.ag-cell-value {
 .ag-header-icon {
 	display: none !important;
 }
+.ag-select-list-item {
+    padding: 20px 9px !important;
+}
+
+	.ag-select-list-item:hover {
+		background-color: #404040d6 !important;
+        color: #fff;
+	}
+
+/*.ag-cell-inline-editing .ag-cell-wrapper, .ag-cell-inline-editing .ag-cell-edit-wrapper, .ag-cell-inline-editing .ag-cell-editor, .ag-cell-inline-editing .ag-cell-editor .ag-wrapper, .ag-cell-inline-editing .ag-cell-editor input {
+    height: 85% !important;
+    width: 95%;
+    margin: 0 auto;
+}*/
