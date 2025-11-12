@@ -16,7 +16,7 @@ namespace TAS.Helpers
 		public string? TaxCode { get; set; } // Mã số thuế
 		public string? AgentAddress { get; set; } // Địa chỉ đại lý 
 
-        public bool IsActive { get; set; } = true;// trạng thái đại lý 
+        public int IsActive { get; set; }// trạng thái đại lý 
         public DateTime RegisterDate { get; set; }//thời gian tạo
 		public string? RegisterPerson { get; set; }//người tạo 
 		public DateTime? UpdateDate { get; set; }//thời gian cập nhật
@@ -31,7 +31,7 @@ namespace TAS.Helpers
 		public string? taxCode { get; set; } // Mã số thuế
 		public string? agentAddress { get; set; } // Địa chỉ đại lý 
 
-		public bool isActive { get; set; } = true;// trạng thái đại lý 
+		public int isActive { get; set; }// trạng thái đại lý 
 		public DateTime registerDate { get; set; }//thời gian tạo
 		public string? registerPerson { get; set; }//người tạo 
 		public DateTime? updateDate { get; set; }//thời gian cập nhật

@@ -14,7 +14,7 @@ namespace TAS.Data
 		public DbSet<RubberAgent> rubberAgent { get; set; }
 		public DbSet<RubberFarmDb> gardens { get; set; }
 		public DbSet<RubberIntakeDb> rubberIntakeDb { get; set; }
-		public DbSet<RubberOrderSummary> rubberOrderSummaries { get; set; }
+		//public DbSet<RubberOrderSummary> rubberOrderSummaries { get; set; }
 		public DbSet<RubberPalletDb> rubberPallets { get; set; }
 		public DbSet<UserAccount> Users { get; set; }
 		// Configure entity mappings and relationships
@@ -160,33 +160,33 @@ namespace TAS.Data
 			});
 
 			// RubberOrderSummary configuration
-			modelBuilder.Entity<RubberOrderSummary>(entity =>
-			{
-				entity.HasKey(e => e.OrderId);
-				entity.Property(e => e.OrderCode).IsRequired().HasMaxLength(50);
-				entity.Property(e => e.OrderName).IsRequired().HasMaxLength(200);
-				entity.Property(e => e.AgentCode).HasMaxLength(50);
-				entity.Property(e => e.AgentName).HasMaxLength(200);
-				entity.Property(e => e.FarmCode).HasMaxLength(50);
-				entity.Property(e => e.FarmerName).HasMaxLength(200);
-				entity.Property(e => e.TotalWeightKg).HasColumnType("decimal(18,2)");
-				entity.Property(e => e.PricePerKg).HasColumnType("decimal(18,2)");
-				entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
-				entity.Property(e => e.SortOrder).HasDefaultValue(1);
-				entity.Property(e => e.IsActive).HasDefaultValue(true);
-				entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
-			});
+			//modelBuilder.Entity<RubberOrderSummary>(entity =>
+			//{
+			//	entity.HasKey(e => e.OrderId);
+			//	entity.Property(e => e.OrderCode).IsRequired().HasMaxLength(50);
+			//	entity.Property(e => e.OrderName).IsRequired().HasMaxLength(200);
+			//	entity.Property(e => e.AgentCode).HasMaxLength(50);
+			//	entity.Property(e => e.AgentName).HasMaxLength(200);
+			//	entity.Property(e => e.FarmCode).HasMaxLength(50);
+			//	entity.Property(e => e.FarmerName).HasMaxLength(200);
+			//	entity.Property(e => e.TotalWeightKg).HasColumnType("decimal(18,2)");
+			//	entity.Property(e => e.PricePerKg).HasColumnType("decimal(18,2)");
+			//	entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
+			//	entity.Property(e => e.SortOrder).HasDefaultValue(1);
+			//	entity.Property(e => e.IsActive).HasDefaultValue(true);
+			//	entity.Property(e => e.CreatedAt).HasDefaultValueSql("GETUTCDATE()");
+			//});
 
 			// RubberPalletDb configuration
-			modelBuilder.Entity<RubberPalletDb>(e =>	
-			{
-				e.Property(x => x.WeightKg).HasPrecision(12, 3);
-				e.HasIndex(x => new { x.OrderId, x.PalletNo }).IsUnique();
-				e.HasOne<RubberOrderSummary>()
-				 .WithMany()
-				 .HasForeignKey(x => x.OrderId)
-				 .OnDelete(DeleteBehavior.Cascade);
-			});
+			//modelBuilder.Entity<RubberPalletDb>(e =>	
+			//{
+			//	e.Property(x => x.WeightKg).HasPrecision(12, 3);
+			//	e.HasIndex(x => new { x.OrderId, x.PalletNo }).IsUnique();
+			//	e.HasOne<RubberOrderSummary>()
+			//	 .WithMany()
+			//	 .HasForeignKey(x => x.OrderId)
+			//	 .OnDelete(DeleteBehavior.Cascade);
+			//});
 		}
 	}
 }

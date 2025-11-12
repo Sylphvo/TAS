@@ -36,8 +36,8 @@
                             </div>
                             <div class="d-flex">
                                 <!-- Nút chọn file -->
-                                <label for="importExcel" class="btn btn-primary"><i class="ti ti-upload f-20"></i>&nbsp; Import Excel</label>
-                                <input type="file" id="importExcel" hidden>
+                                <label for="importExcelAgent" class="btn btn-primary"><i class="ti ti-upload f-20"></i>&nbsp; Import Excel</label>
+                                <input type="file" id="importExcelAgent" hidden>
                                 <span id="file-name" class="ms-2 d-none"></span>
                                 <button onclick="onExportTemplateExcel()" class="btn btn-primary buttonSearch"><i class="ti ti-file-x f-20"></i>&nbsp; Mẫu Excel</button>
                                 <button class="btn btn-primary buttonSearch" data-bs-toggle="modal" data-bs-target="#AddNewRubberAgent"><i class="ti ti-plus f-20"></i>&nbsp;  Thêm mới</button>
@@ -94,6 +94,7 @@
     <script>
         // var listdataEventsActual;
         var Agent = '#AgentGrid';
+        var IsOptionAll = false;
         CreateGridAgent(true);
         CreateRowDataAgent();
         $('.selector-paging').select2({

@@ -2,7 +2,7 @@
 var gridOptionsPallet, listDataFullPallet, listRowChildPallet;
 var page = 1;
 var pageSize = 20;
-var gridApi;
+var gridApiPallet;
 var pagerApi;
 
 // Các hằng số cho Pallet
@@ -22,20 +22,22 @@ function CreateGridPallet() {
             filter: true,
             floatingFilter: true,
         },
-        height: 45,
+        rowHeight: 45,// chiều cao hàng
+        headerHeight: 45,// chiều cao header
         rowData: [],
         rowDragManaged: true,
         rowDragMultiRow: true,
         rowSelection: 'multiple',         // cho phép chọn nhiều hàng
         suppressRowClickSelection: false, // cho phép click hàng để chọn
         animateRows: true,
+        singleClickEdit: true,
         components: {
-            customFloatingFilterInput: getFloatingFilterInputComponent(),
+            //customFloatingFilterInput: getFloatingFilterInputComponent(),
             //customheader: CustomHeaderPallet,
         },
         cellSelection: true,
         onGridReady: function (params) {
-            gridApi = params.api;
+            gridApiPallet = params.api;
             params.api.sizeColumnsToFit();
             //renderPage();          // nạp trang đầu
             //setupPager();          // tạo pager ngoài
@@ -47,8 +49,8 @@ function CreateGridPallet() {
 
     };
 
-    var eGridDiv = document.querySelector(Pallet);
-    new agGrid.Grid(eGridDiv, gridOptionsPallet);
+    const eGridDiv = document.querySelector(Pallet);
+    gridApiPallet = agGrid.createGrid(eGridDiv, gridOptionsPallet);
     //SetButtonOnPagingForPallet();
     CreateRowDataPallet();
     resizeGridPallet();
@@ -87,7 +89,8 @@ function CreateRowDataPallet() {
         success: function (data) {
             listDataFullPallet = data;
             listRowChildPallet = data.filter(x => x.sortOrder != 1);
-            gridOptionsPallet.api.setRowData(data);
+            //gridOptionsPallet.api.setRowData(data);
+            gridApiPallet.setGridOption("rowData", data);
             //setTimeout(function () {
             //    ShowHideLoading(false, divPallet);
             //    $('#PalletModal .ag-overlay-no-rows-center').show();
@@ -290,7 +293,7 @@ CustomHeaderPallet.prototype.destroy = function () {
     );
 };
 function updateRowIndex() {
-    gridApi.forEachNodeAfterFilterAndSort((node, index) => {
+    gridApiPallet.forEachNodeAfterFilterAndSort((node, index) => {
         node.setDataValue('STT', index + 1);
     });
 }
@@ -331,10 +334,10 @@ function onExportExcel() {
 
 function persistCurrentPageOrder() {
     const start = (page - 1) * pageSize;
-    const n = gridApi.getDisplayedRowCount();
+    const n = gridApiPallet.getDisplayedRowCount();
     const ordered = [];
     for (let i = 0; i < n; i++) {
-        ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
+        ordered.push(gridApiPallet.getDisplayedRowAtIndex(i).data);
     }
     // ghi đè đoạn trang hiện tại vào mảng gốc
     listDataFullPallet.splice(start, n, ...ordered);
@@ -344,7 +347,8 @@ function persistCurrentPageOrder() {
 function renderPage() {
     const start = (page - 1) * pageSize;
     const slice = listDataFullPallet.slice(start, start + pageSize);
-    gridApi.setRowData(slice);
+    //gridApiPallet.setRowData(slice);
+    gridApiPallet.setGridOption("rowData", slice);
 }
 function setupPager() {
     pagerApi = makePaginator({
@@ -408,11 +412,11 @@ function ShowOrHideAllRowChildren(isCheckAll) {
     if (isCheckAll)
     {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-closed').addClass('ag-icon-tree-open');
-        gridApi.applyTransaction({ add: listDataChildToAdd });
+        gridApiPallet.applyTransaction({ add: listDataChildToAdd });
     }
     else {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-open').addClass('ag-icon-tree-closed');
-        gridApi.applyTransaction({ remove: listDataChildToAdd });
+        gridApiPallet.applyTransaction({ remove: listDataChildToAdd });
     }
     listDataFullPallet.filter(x => x.isOpenChild = isCheckAll);
 }

@@ -15,7 +15,19 @@ namespace TAS.ViewModels
 		// Model
 		public async Task<List<RubberAgent>> GetRubberAgentAsync()
 		{
-			var sql = @"SELECT * FROM RubberAgent";
+			var sql = @"
+			SELECT 
+				rowNo = ROW_NUMBER() OVER(ORDER BY AgentId ASC),
+				AgentCode,
+				AgentName,
+				OwnerName,
+				AgentAddress,
+				TaxCode,
+				IsActive,
+				UpdatePerson = ISNULL(UpdatePerson, RegisterPerson),
+				UpdateDate = CONVERT(VARCHAR,ISNULL(UpdateDate, RegisterDate),111) + ' ' + CONVERT(VARCHAR(5),ISNULL(UpdateDate, RegisterDate), 108)
+			FROM RubberAgent
+			";
 			return await dbHelper.QueryAsync<RubberAgent>(sql);
 		}
 		public int AddOrUpdateRubberAgent(RubberAgent rubberAgent)
@@ -27,14 +39,14 @@ namespace TAS.ViewModels
 					throw new ArgumentNullException(nameof(rubberAgent), "Input data cannot be null.");
 				}
 				var sql = @"
-				IF EXISTS (SELECT 1 FROM RubberAgent WHERE AgentId = @AgentId)
+				IF EXISTS (SELECT TOP 1 AgentId FROM RubberAgent WHERE AgentId = @AgentId)
 				BEGIN
 					UPDATE RubberAgent SET
-					AgentCode        = @AgentCode,
+					AgentCode       = @AgentCode,
 					AgentName		= @AgentName,
-					OwnerName      = @OwnerName,
-					TaxCode		= @TaxCode,
-
+					OwnerName		= @OwnerName,
+					AgentAddress		= @AgentAddress,
+					TaxCode			= @TaxCode,
 					IsActive        = @IsActive,
 					UpdateDate      = GETDATE(),
 					UpdatePerson    = @UpdatePerson
@@ -44,12 +56,11 @@ namespace TAS.ViewModels
 				ELSE
 				BEGIN
 					INSERT INTO RubberAgent
-					(AgentCode, AgentName, OwnerName, TaxCode,
+					(AgentCode, AgentName, OwnerName, AgentAddress, TaxCode,
 						IsActive, RegisterDate, RegisterPerson)
 					VALUES
-					(@AgentCode, @AgentName, @OwnerName, @TaxCode,
-						@Certificates, @TotalAreaHa, @RubberAreaHa,
-						@IsActive, GETDATE(), @RegisterPerson)
+					(@AgentCode, @AgentName, @OwnerName, @AgentAddress, @TaxCode,
+						@IsActive, GETDATE(), @UpdatePerson)
 					SELECT SCOPE_IDENTITY() AS NewAgentId;
 				END";
 				// With this line:
@@ -62,10 +73,41 @@ namespace TAS.ViewModels
 					TaxCode			= rubberAgent.TaxCode,
 					IsActive		= rubberAgent.IsActive,
 					UpdatePerson	= _userManage.Name,
-					RegisterPerson	= _userManage.Name,
 					AgentId = rubberAgent.AgentId
 				});
 				return lstResult;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
+
+		public int DeleteRubberAgent(int agentId)
+		{
+			try
+			{
+				string sql = @"
+					DELETE FROM RubberAgent WHERE AgentId = " + agentId + @"
+				";
+				dbHelper.Execute(sql);
+				return 1;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
+
+		public int ApproveDataRubberAgent(int agentId, int status)
+		{
+			try
+			{
+				string sql = @"
+					UPDATE RubberAgent SET IsActive = " + status + @" WHERE AgentId = " + agentId + @"
+				";
+				dbHelper.Execute(sql);
+				return 1;
 			}
 			catch (Exception ex)
 			{

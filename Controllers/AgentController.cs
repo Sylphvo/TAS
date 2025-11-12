@@ -31,10 +31,17 @@ namespace TAS.Controllers
 			int result = models.AddOrUpdateRubberAgent(rubberAgent);
 			return Json(result);
 		}
-		[HttpPost("Delete/{id}")]
-		public IActionResult Delete(int id)
+
+		[HttpPost]
+		public JsonResult DeleteRubberAgent(int agentId)
 		{
-			return View();
+			return Json(models.DeleteRubberAgent(agentId));
+		}
+
+		[HttpPost]
+		public JsonResult ApproveDataRubberAgent(int agentId, int status)
+		{
+			return Json(models.ApproveDataRubberAgent(agentId, status));
 		}
 		#endregion
 	}

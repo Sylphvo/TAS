@@ -43,10 +43,9 @@ namespace TAS.Controllers
 
 		#region handle Data Pallets
 		[HttpPost]
-		public async Task<JsonResult> Pallets()
+		public async Task<JsonResult> GetPallets(int orderId)
 		{
-			var lstData = await models.GetTraceabilityAsync();
-
+			var lstData = await models.GetPallets();
 			return new JsonResult(lstData);
 		}
 		[HttpPost("AddOrUpdatePallet")]

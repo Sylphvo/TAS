@@ -58,12 +58,12 @@ namespace TAS.Controllers
 			return Json(result);
 		}
 
-		
-		[HttpPost("Delete/{id}")]
-		public IActionResult Delete(int id)
+		[HttpPost]
+		public JsonResult DeleteRubber(int intakeId)
 		{
-			return View();
+			return Json(_models.DeleteRubber(intakeId));
 		}
+
 		public JsonResult GetAllCombo()
 		{
 			return Json(null);

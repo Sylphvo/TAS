@@ -3943,3 +3943,62 @@ function LogoutAuth() {
         async: false,
     }).done(() => location.href = '/Account/Login');
 }
+
+
+function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sortOrder) {
+    var selectorCell = $(selector).parent().parent().parent();
+    var selectorRow = $(selectorCell).parent();
+    var itemParent = listDataFull.find(x => x.sortIdList == id_list);
+    var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
+    var listChild;
+    if (sortOrder == 1) {
+        listChild = listRowChild.filter(function (item) {
+            return id_list == id_list.substring(0, item.sortIdList.lastIndexOf('__'));
+        });
+    }
+    else if (sortOrder == 2) {
+        listChild = listRowChild.filter(function (item) {
+            return item.sortIdList.includes(id_list) && item.sortOrder == sortOrder + 1;
+        });
+    }
+
+    if (itemParent.isOpenChild) {
+        //Close Row
+        $(selector).attr('class', 'ag-icon ag-icon-tree-closed');
+        itemParent.isOpenChild = false;
+        gridApi.applyTransaction({ remove: listChild });
+        listChild.forEach(function (item) {
+            item.isOpenChild = false;
+        });
+
+        if (typeof funcSetValueArrParentIds === 'function') {
+            let arrParentIds = [...listChild.map(x => x.sortIdList)];
+            funcSetValueArrParentIds(arrParentIds, false);
+        }
+    } else {
+        if (sortOrder == 1) {
+            if (arrConstantTraceability.isCheckAll) {
+                listChild = listDataFull.filter(function (item) {
+                    return item.sortOrder > sortOrder;
+                });
+            }
+            else {
+                listChild = listChild.filter(function (item) {
+                    return item.sortOrder == sortOrder + 1;
+                });
+            }
+        }
+        //Open Row
+        $(selector).attr('class', 'ag-icon ag-icon-tree-open');
+        itemParent.isOpenChild = true;
+        gridApi.applyTransaction({
+            add: listChild,
+            addIndex: row_index,
+        });
+
+        if (typeof funcSetValueArrParentIds === 'function') {
+            let arrParentIds = [...listChild.map(x => x.sortIdList)];
+            funcSetValueArrParentIds(arrParentIds, true);
+        }
+    }
+}

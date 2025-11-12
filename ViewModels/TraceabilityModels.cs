@@ -12,12 +12,12 @@ namespace TAS.ViewModels
 
 		}
 		// Model
-		public async Task<List<RubberOrderSummaryReuqest>> GetTraceabilityAsync(CancellationToken ct = default)
+		public async Task<List<RubberOrderReuqest>> GetTraceabilityAsync(CancellationToken ct = default)
 		{
 			var sql = @"
 				-- Tạo bảng tạm với cấu trúc rõ ràng
 				CREATE TABLE #TempOrder (
-					Id INT,
+					OrderId INT,
 					ParentId INT NULL,
 					SortOrder INT,
 					OrderCode NVARCHAR(50) NULL,
@@ -26,61 +26,81 @@ namespace TAS.ViewModels
 					AgentName NVARCHAR(200) NULL,
 					FarmCode NVARCHAR(200) NULL,
 					FarmerName NVARCHAR(200) NULL,
-					WeightKg DECIMAL(18,2) NULL,
-					TotalAmount DECIMAL(18,2) NULL,
+					DatePurchase DATETIME,
+					TotalFinishedProductKg DECIMAL(18,2) NULL,
+					TotalCentrifugeProductKg DECIMAL(18,2) NULL,
 					SortIdList NVARCHAR(200) NULL,
 					IsOpenChild bit NULL
 				);
 
+
+
 				-- Level 1: Đơn hàng
-				INSERT INTO #TempOrder (Id, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, WeightKg, TotalAmount, SortIdList, IsOpenChild)
-				VALUES (1, NULL, 1, 'ORD20251029', N'đơn hàng 1', NULL, NULL, NULL, NULL, NULL, NULL, 'ORD20251029', 1);
+				INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
+				VALUES (1, NULL, 1, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), N'đơn hàng 1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), 1);
 
 				-- Level 2: Đại lý
-				INSERT INTO #TempOrder (Id, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, WeightKg, TotalAmount, SortIdList, IsOpenChild)
+				INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
 				SELECT 
-					ROW_NUMBER() OVER (ORDER BY A.AgentId) + 1 AS Id,
+					99 AS OrderId,
 					1 AS ParentId,
 					2 AS SortOrder,
 					NULL AS OrderCode,
 					NULL AS OrderName,
-					A.AgentCode,
-					A.OwnerName AS AgentName,
+					Agent.AgentCode,
+					Agent.AgentName,
 					NULL AS FarmCode,
 					NULL AS FarmerName,
-					NULL AS WeightKg,
-					NULL AS TotalAmount,
-					'ORD20251029' + '__' + A.AgentCode AS SortIdList,
-					IsOpenChild = 1
-				FROM RubberAgent A;
+					DatePurchase = CONVERT(VARCHAR(10), MAX(ISNULL(Intake.UpdateDate, Intake.RegisterDate)), 111),
+					SUM(ISNULL(Intake.FinishedProductKg, 0)) AS FinishedProductKg,
+					SUM(ISNULL(Intake.CentrifugeProductKg, 0)) AS CentrifugeProductKg,
+					'ORD' + FORMAT(GETDATE(), 'ddMMyyyy') + '__' + Agent.AgentCode AS SortList,
+					1 AS IsOpenChild
+				FROM RubberIntake Intake
+				LEFT JOIN RubberFarm Farm ON Farm.FarmCode = Intake.FarmCode
+				LEFT JOIN RubberAgent Agent ON Agent.AgentCode = Farm.AgentCode
+				WHERE Intake.Status = 1
+				GROUP BY Agent.AgentCode, Agent.AgentName
+				ORDER BY Agent.AgentCode;
 
 				-- Level 3: Nhà vườn
-				INSERT INTO #TempOrder (Id, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, WeightKg, TotalAmount, SortIdList, IsOpenChild)
+				INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
 				SELECT 
-					ROW_NUMBER() OVER (ORDER BY F.FarmId) + 100 AS Id,
+					ROW_NUMBER() OVER (ORDER BY Farm.FarmId) + 100 AS OrderId,
 					2 AS ParentId,
 					3 AS SortOrder,
 					NULL AS OrderCode,
 					NULL AS OrderName,
 					Agent.AgentCode,
 					NULL AS AgentName,
-					NULL AS FarmCode,
-					F.FarmerName,
-					I.TSCPercent AS WeightKg,
-					I.TSCPercent * 10 AS TotalAmount,
-					'ORD20251029' + '__' + Agent.AgentCode + '__' + F.FarmCode AS SortIdList,
+					Farm.FarmCode,
+					Farm.FarmerName,
+					DatePurchase = CONVERT(VARCHAR(10), ISNULL(Intake.UpdateDate, Intake.RegisterDate), 111),
+					Intake.FinishedProductKg,
+					Intake.CentrifugeProductKg,
+					'ORD' + FORMAT(GETDATE(), 'ddMMyyyy') + '__' + Agent.AgentCode + '__' + Farm.FarmCode AS SortIdList,
 					IsOpenChild = 0
-				FROM RubberFarm F
-				LEFT JOIN RubberIntake I ON F.FarmCode = I.FarmCode
-				LEFT JOIN RubberAgent Agent ON Agent.AgentCode = F.AgentCode
+				FROM RubberFarm Farm
+				LEFT JOIN RubberIntake Intake ON Farm.FarmCode = Intake.FarmCode
+				LEFT JOIN RubberAgent Agent ON Agent.AgentCode = Farm.AgentCode
+				WHERE Intake.Status = 1
 
 				-- Kết quả
-				SELECT Id, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, WeightKg, TotalAmount, SortIdList, IsOpenChild
+				SELECT OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild
 				FROM #TempOrder
-				ORDER BY OrderCode DESC, SortIdList;
+				ORDER BY OrderCode DESC, AgentCode, CASE WHEN FarmCode IS NULL THEN 0 ELSE 1 END
 				DROP TABLE #TempOrder;
 			";
-			return await dbHelper.QueryAsync<RubberOrderSummaryReuqest>(sql);
+			return await dbHelper.QueryAsync<RubberOrderReuqest>(sql);
+		}
+		public async Task<List<RubberAgent>> GetPallets()
+		{
+			var sql = @"
+				SELECT * 
+				FROM RubberPallets
+			";
+
+			return await dbHelper.QueryAsync<RubberAgent>(sql);
 		}
 	}
 }

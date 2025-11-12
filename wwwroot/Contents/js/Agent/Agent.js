@@ -4,9 +4,20 @@ var page = 1;
 var pageSize = 20;
 var gridApi;
 var pagerApi;
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
+
 function CreateGridAgent() {
     gridOptionsAgent = {
-        //pagination: true,
         paginationPageSize: 100,
         columnDefs: CreateColModelAgent(),
         defaultColDef: {
@@ -21,7 +32,8 @@ function CreateGridAgent() {
 		rowDragMultiRow: true,// cho phép kéo thả nhiều hàng
         rowSelection: 'multiple',         // cho phép chọn nhiều hàng
         suppressRowClickSelection: false, // cho phép click hàng để chọn
-		animateRows: true,// hiệu ứng khi sắp xếp lại hàng
+        animateRows: true,// hiệu ứng khi sắp xếp lại hàng
+        singleClickEdit: true,//
         components: {
             //customFloatingFilterInput: getFloatingFilterInputComponent(),
             //customheader: CustomHeaderAgent,
@@ -266,7 +278,7 @@ function updateRowIndex() {
 
 
 // Import từ URL demo
-document.getElementById('importExcel').addEventListener('change', async e => {
+document.getElementById('importExcelAgent').addEventListener('change', async e => {
     const file = e.target.files[0];
     if (!file) return;
     try {
@@ -326,7 +338,7 @@ function UpdateDataAfterEdit(status, rowData) {
         rowDataObj.agentName = $('#agentName').val();//Tên đại lý
         rowDataObj.ownerName = $('#ownerName').val();//Chủ đại lý
         rowDataObj.agentAddress = $('#agentAddress').val();//địa chỉ
-        rowDataObj.taxCode = $('#taxCode').val();//
+        rowDataObj.taxCode = $('#taxCode').val();//điện thoại
         rowDataObj.isActive = 1;//Tổng khai thác
         rowData = rowDataObj;
     }
@@ -339,14 +351,14 @@ function UpdateDataAfterEdit(status, rowData) {
         success: function (res) {
             Toast.fire({
                 icon: "success",
-                title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thành công"
+                title: (status == 0 ? "Cập nhật" : "Thành công") + " dữ liệu thành công"
             });
             RefreshAllGridWhenChangeData();
         },
         error: function () {
             Toast.fire({
                 icon: "danger",
-                title: (status == 1 ? "Cập nhật" : "Thành công") + " dữ liệu thất bại"
+                title: (status == 0 ? "Cập nhật" : "Thành công") + " dữ liệu thất bại"
             });
         }
     });
@@ -381,98 +393,36 @@ function renderPage() {
         }
     });
 }
-
 function ActionRenderer(params) {
     const wrap = document.createElement('div');
     wrap.innerHTML =
-        ``
-        +
-        (params.data.isActive == 0 ?
-            ` <button class="button_action_custom avtar avtar-xs btn-light-success js-change_isActive" title="đổi trạng thái hoạt động">
+    (params.data.isActive == 0 ?
+    ` <button class="button_action_custom avtar avtar-xs btn-light-success js-change_isActive" title="đổi trạng thái hoạt động">
         <i class="ti ti-check f-20"></i>
     </button>`
-            :
-            `<button class="button_action_custom avtar avtar-xs btn-light-danger js-change_isActive" title="đổi trạng thái hoạt động">
+    :
+    `<button class="button_action_custom avtar avtar-xs btn-light-danger js-change_isActive" title="đổi trạng thái hoạt động">
         <i class="ti ti-x f-20"></i>
     </button>`)
-        +
-        `
-	<label for="importExcelPolygon_`+ params.data.farmId + `" class="button_action_custom avtar avtar-xs btn-light-primary btn_custom"><i class="ti ti-upload f-20"></i></label>
-    <input type="file" id="importExcelPolygon_`+ params.data.farmId + `" class="import_polygon"  data-id="` + params.data.farmId + `" data-rowIndex="` + params.node.rowIndex + `" hidden>
-    <span id="file-name" class="ms-2 d-none"></span>
-
-	
-	<button class="button_action_custom avtar avtar-xs btn-light-danger js-delete" title="Xóa dòng">
+    +
+    `<button class="button_action_custom avtar avtar-xs btn-light-danger js-delete" title="Xóa dòng">
       <i class="ti ti-trash f-20"></i>
     </button>
 	`;
-    const btnUpload = wrap.querySelector('.import_polygon');
+    
     const btnDelete = wrap.querySelector('.js-delete');
-    ['mousedown', 'click', 'dblclick', 'contextmenu'].forEach(ev => {
-        btnUpload.addEventListener(ev, e => e.stopPropagation(), { capture: true });
-    });
     if (params.data.isActive == 0) {
         const btnChangeIsActive = wrap.querySelector('.js-change_isActive');
         btnChangeIsActive.addEventListener('click', (e) => {
-            ApproveDataFarm(params.data.farmId, 1);
+            ApproveDataRubberAgent(params.data.agentId, 1);
         });
     }
     else {
         const btnChangeIsActive = wrap.querySelector('.js-change_isActive');
         btnChangeIsActive.addEventListener('click', (e) => {
-            ApproveDataFarm(params.data.farmId, 0);
+            ApproveDataRubberAgent(params.data.agentId, 0);
         });
     }
-    // cho phép chọn lại cùng 1 file	
-    btnUpload.addEventListener('change', async e => {
-        e.preventDefault();
-        const file = e.target.files && e.target.files[0];
-        const farmId = $(e.target).attr('data-id');
-        if (!file) return;
-        try {
-            await readExcelAsDataa(file);
-            async function readExcelAsDataa(file, opts = {}) {
-                const buf = await file.arrayBuffer();
-                const wb = XLSX.read(buf, { type: 'array', cellDates: true });
-                const ws = wb.Sheets[wb.SheetNames[0]];
-                // Ma trận 2D
-                const matrix = XLSX.utils.sheet_to_json(ws, {
-                    header: 1, raw: true, defval: null, blankrows: false
-                });
-                // Lọc bỏ các dòng trống sau tiêu đề
-                const body = matrix.slice(1).filter(r => (r || []).some(c => c !== null && String(c).trim() !== ''));
-                var rowDatas = {};
-                rowDatas.polygon = JSON.stringify(body);
-                rowDatas.farmId = farmId;
-
-                $.ajax({
-                    async: true,
-                    method: 'POST',
-                    url: "/InformationGarden/ImportPolygon",
-                    contentType: 'application/json',
-                    data: JSON.stringify(rowDatas),
-                    success: function (res) {
-                        Toast.fire({
-                            icon: "success",
-                            title: "Import polygon thành công"
-                        });
-                        RefreshAllGridWhenChangeData();
-                    },
-                    error: function () {
-                        Toast.fire({
-                            icon: "danger",
-                            title: "Lỗi khi import polygon!"
-                        });
-                    }
-                });
-            }
-        } catch (err) {
-            console.error(err);
-        } finally {
-            // cho lần sau, kể cả cùng file
-            btnUpload.value = '';
-        }
-    });
     btnDelete.addEventListener('click', (e) => {
         // e.stopPropagation();
         Swal.fire({
@@ -484,11 +434,28 @@ function ActionRenderer(params) {
             showCloseButton: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // remove theo đúng object data của node
-                params.api.applyTransaction({ remove: [params.node.data] });
-                Toast.fire({
-                    icon: "success",
-                    title: "Xóa thành công"
+                $.ajax({
+                    async: true,
+                    method: 'POST',
+                    url: "/Agent/DeleteRubberAgent",
+                    dataType: 'json',
+                    data: { agentId: params.data.agentId },
+                    success: function (res) {
+                        if (res == 1) {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Xóa thành công"
+                            });
+                            params.api.applyTransaction({ remove: [params.node.data] });
+                            RefreshAllGridWhenChangeData();
+                        }
+                    },
+                    error: function () {
+                        Toast.fire({
+                            icon: "danger",
+                            title: "Xóa thất bại"
+                        });
+                    }
                 });
             }
         });
@@ -496,3 +463,27 @@ function ActionRenderer(params) {
 
     return wrap;
 }
+function ApproveDataRubberAgent(agentId, status) {
+    $.ajax({
+        async: true,
+        method: 'POST',
+        url: "/Agent/ApproveDataRubberAgent",
+        dataType: 'json',
+        data: { agentId: agentId, status: status },
+        success: function (res) {
+            if (status == 1) {
+                Toast.fire({
+                    icon: "success",
+                    title: "đổi trạng thái thành công"
+                });
+            }
+            RefreshAllGridWhenChangeData();
+        },
+        error: function () {
+            Toast.fire({
+                icon: "danger",
+                title: "đổi trạng thái thất bại"
+            });
+        }
+    });
+}                           

@@ -11,12 +11,15 @@ var arrConstantTraceability = {
 	SortOrder_Lot: 1, // Order
 	SortOrder_Agent: 2,// Agent
 	SortOrder_Farm: 3,// Farmer
+    isCheckAll: false,// Farmer
 }
 
 // Đăng ký sự kiện cho Traceability
 function RegEventTraceability() {
+    arrConstantTraceability.isCheckAll = $('#ChkAll').prop('checked');
     $('#ChkAll').on('change', function (e) {
-        ShowOrHideAllRowChildren(e.target.checked);
+        arrConstantTraceability.isCheckAll = e.target.checked;
+        ShowOrHideAllRowChildren();
     });
     $('.Col-orderName').on('click', function (e) {
         resizeGridPallet();
@@ -43,6 +46,7 @@ function CreateGridTraceability() {
         rowSelection: 'multiple',         // cho phép chọn nhiều hàng
         suppressRowClickSelection: false, // cho phép click hàng để chọn
         animateRows: true,
+        singleClickEdit: true,
         components: {
             //customFloatingFilterInput: getFloatingFilterInputComponent(),
             //customheader: CustomHeaderTraceability,
@@ -57,7 +61,13 @@ function CreateGridTraceability() {
         rowDragManaged: true,
         onRowDragEnd() {
             persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
-        }
+        },
+        onCellValueChanged: e => {
+            UpdateDataAfterEdit(0, e.data);
+        },
+        enableRangeSelection: true,
+        allowContextMenuWithControlKey: true, // giữ Ctrl + click phải vẫn hiện
+        suppressContextMenu: false, // cho phép hiện menu ag-Grid
 
     };
 
@@ -125,6 +135,7 @@ function CreateColModelTraceability() {
             , floatingFilterComponent: 'customFloatingFilterInput'
             , floatingFilterComponentParams: { suppressFilterButton: true }
             , headerComponent: "customHeader"
+            , filter: "agTextColumnFilter"
             //, cellRenderer: cellRender_StartDate
             //, colSpan: 2
         },
@@ -134,6 +145,7 @@ function CreateColModelTraceability() {
             , editable: false
             , cellRenderer: cellRender_ParentAndChild
             , headerComponent: "customHeader"
+            , filter: "agTextColumnFilter"
         },
         {
             field: 'agentName', headerName: 'Tên đại lý', width: 90, minWidth: 90
@@ -141,6 +153,7 @@ function CreateColModelTraceability() {
             , editable: false
             , headerComponent: "customHeader"
             , cellRenderer: cellRender_ParentAndChild
+            , filter: "agTextColumnFilter"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">params.value</div>`;
             //}
@@ -151,6 +164,7 @@ function CreateColModelTraceability() {
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
+            , filter: "agTextColumnFilter"
         },
         {
             field: 'WeightKg', headerName: 'Số kg', width: 90, minWidth: 90
@@ -158,12 +172,14 @@ function CreateColModelTraceability() {
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
+            , filter: "agTextColumnFilter"
         },
         {
             field: 'TotalAmount', headerName: 'Tổng', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
+            , filter: "agTextColumnFilter"
             //, cellRenderer: function (params) {
             //    return `<div class="text-cell-eclip">${params.value}</div>`;
             //}
@@ -416,10 +432,9 @@ function ResetValueArrParentIds() {
 }
 
 // Hiển thị hoặc ẩn các hàng con dựa trên việc chọn hoặc bỏ chọn checkbox "Chọn tất cả"
-function ShowOrHideAllRowChildren(isCheckAll) {
-    
+function ShowOrHideAllRowChildren() {
     let listDataChildToAdd = listDataFull.filter(x => x.sortOrder != arrConstantTraceability.SortOrder_Lot);
-    if (isCheckAll)
+    if (arrConstantTraceability.isCheckAll)
     {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-closed').addClass('ag-icon-tree-open');
         gridApi.applyTransaction({ add: listDataChildToAdd });
@@ -428,5 +443,5 @@ function ShowOrHideAllRowChildren(isCheckAll) {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-open').addClass('ag-icon-tree-closed');
         gridApi.applyTransaction({ remove: listDataChildToAdd });
     }
-    listDataFull.filter(x => x.isOpenChild = isCheckAll);
+    listDataFull.filter(x => x.isOpenChild = arrConstantTraceability.isCheckAll);
 }

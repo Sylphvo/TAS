@@ -390,6 +390,28 @@ function ActionRenderer(params) {
             showCloseButton: true
         }).then((result) => {
             if (result.isConfirmed) {
+                $.ajax({
+                    async: true,
+                    method: 'POST',
+                    url: "/RubberGarden/DeleteRubber",
+                    dataType: 'json',
+                    data: { idRubber: params.data.intakeId },
+                    success: function (res) {
+                        if (res == 1) {
+                            Toast.fire({
+                                icon: "success",
+                                title: "Phê duyệt thành công"
+                            });
+                        }
+                        RefreshAllGridWhenChangeData();
+                    },
+                    error: function () {
+                        Toast.fire({
+                            icon: "danger",
+                            title: "Phê duyệt thất bại"
+                        });
+                    }
+                });
                 // remove theo đúng object data của node
                 params.api.applyTransaction({ remove: [params.node.data] });
                 Toast.fire({

@@ -45,7 +45,8 @@ namespace TAS.ViewModels
 
 		public int AddOrUpdateRubber(RubberIntakeRequest rubberIntakeRequest)
 		{
-			try { 
+			try 
+			{ 
 				if (rubberIntakeRequest == null)
 				{
 					throw new ArgumentNullException(nameof(rubberIntakeRequest), "Input data cannot be null.");
@@ -122,7 +123,7 @@ namespace TAS.ViewModels
 					FinishedProductKg = x.finishedProductKg ?? 0m,
 					CentrifugeProductKg = x.centrifugeProductKg ?? 0m,
 					Status = 0,
-					RegisterPerson = "admin"
+					RegisterPerson = _userManage.Name
 				}));
 
 				return 1;
@@ -137,7 +138,8 @@ namespace TAS.ViewModels
 			try
 			{
 				string sql = @"
-				UPDATE RubberIntake SET Status = "+ status + @" WHERE IntakeId = "+ intakeId + @"" ;
+					UPDATE RubberIntake SET Status = "+ status + @" WHERE IntakeId = "+ intakeId + @"
+				";
 				dbHelper.Execute(sql);
 				return 1;
 			}
@@ -151,7 +153,9 @@ namespace TAS.ViewModels
 			try
 			{
 				string sql = @"
-				UPDATE RubberIntake SET Status = 1";
+					UPDATE RubberIntake 
+					SET Status = 1, UpdateDate = GETDATE(), UpdatePerson = '" + _userManage.Name + @"'
+				";
 				dbHelper.Execute(sql);
 				return 1;
 			}
@@ -159,6 +163,21 @@ namespace TAS.ViewModels
 			{
 				return 0;
 			}
-		}		
+		}
+		public int DeleteRubber(int intakeId)
+		{
+			try
+			{
+				string sql = @"
+					DELETE FROM RubberIntake WHERE IntakeId = " + intakeId + @"
+				";
+				dbHelper.Execute(sql);
+				return 1;
+			}
+			catch (Exception ex)
+			{
+				return 0;
+			}
+		}
 	}
 }

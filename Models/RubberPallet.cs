@@ -13,28 +13,32 @@ namespace TAS.Models
 		public long OrderId { get; set; }   // FK -> RubberOrderSummary.OrderId
 
 		[Required, StringLength(50)]
-		public string PalletCode { get; set; } = default!; // VD: ORD001-P001
+		public string PalletCode { get; set; } = default!; // VD: ORD__12112025__001__PL_001
+		public string PalletName { get; set; } = default!; // VD: ORD001-P001
 
 		public int PalletNo { get; set; } // 1..n
 
 		[Column(TypeName = "decimal(12,3)")]
 		public decimal WeightKg { get; set; }// Trọng lượng kg
-
-		public bool IsActive { get; set; } = true;// trạng thái pallet
-		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;//thời gian tạo
-		[StringLength(50)]
-		public string? CreatedBy { get; set; }//người tạo
+		public int IsActive { get; set; }// trạng thái pallet
+		public DateTime RegisterDate { get; set; }//thời gian tạo
+		public string? RegisterPerson { get; set; }//người tạo 
+		public DateTime? UpdateDate { get; set; }//thời gian cập nhật
+		public string? UpdatePerson { get; set; }//người cập nhật
 	}
 	public class RubberPalletRequest
 	{
-		public int? RowNo { get; set; } // identity
-		public long PalletId { get; set; } // identity
-		public long OrderId { get; set; }   // FK -> RubberOrderSummary.OrderId
-		public string PalletCode { get; set; } = default!; // VD: ORD001-P001
-		public int PalletNo { get; set; } // 1..n
-		public decimal WeightKg { get; set; }// Trọng lượng kg
-		public bool IsActive { get; set; } = true;// trạng thái pallet
-		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;//thời gian tạo
-		public string? CreatedBy { get; set; }//người tạo
+		public int? rowNo { get; set; } // identity
+		public long palletId { get; set; } // identity
+		public long orderId { get; set; }   // FK -> RubberOrderSummary.OrderId
+		public string palletCode { get; set; } = default!; // VD: ORD__12112025__001__PL_001
+		public string palletName { get; set; } = default!; // VD: tên Pallet
+		public int palletNo { get; set; } // 1..n
+		public decimal weightKg { get; set; }// Trọng lượng kg
+		public int isActive { get; set; }// trạng thái pallet
+		public DateTime registerDate { get; set; }//thời gian tạo
+		public string? registerPerson { get; set; }//người tạo 
+		public DateTime? updateDate { get; set; }//thời gian cập nhật
+		public string? updatePerson { get; set; }//người cập nhật
 	}
 }
