@@ -127,17 +127,11 @@ function CreateColModelTraceability() {
             field: 'orderCode', headerName: 'Mã đơn hàng', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
-            //, checkboxSelection: true
-            //, headerCheckbox: true
-            //, headerCheckboxSelection: true // checkbox ở header để chọn tất cả
-            //, rowDrag: true
             , filter: true
             , floatingFilterComponent: 'customFloatingFilterInput'
             , floatingFilterComponentParams: { suppressFilterButton: true }
             , headerComponent: "customHeader"
             , filter: "agTextColumnFilter"
-            //, cellRenderer: cellRender_StartDate
-            //, colSpan: 2
         },
         {
             field: 'orderName', headerName: 'Tên đơn hàng', width: 90, minWidth: 90
@@ -154,35 +148,34 @@ function CreateColModelTraceability() {
             , headerComponent: "customHeader"
             , cellRenderer: cellRender_ParentAndChild
             , filter: "agTextColumnFilter"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">params.value</div>`;
-            //}
         },
         {
             field: 'farmerName', headerName: 'Tên nhà vườn', width: 90, minWidth: 90
-            //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
             , filter: "agTextColumnFilter"
         },
         {
-            field: 'WeightKg', headerName: 'Số kg', width: 90, minWidth: 90
-            //, cellRenderer: cellRender_RequirementStatus
+            field: 'totalFinishedProductKg', headerName: 'Tổng thành phẩm', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
             , filter: "agTextColumnFilter"
         },
         {
-            field: 'TotalAmount', headerName: 'Tổng', width: 90, minWidth: 90
+            field: 'totalCentrifugeProductKg', headerName: 'Tổng thành phẩm ly tâm', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
             , headerComponent: "customHeader"
             , filter: "agTextColumnFilter"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
+        },
+        {
+            field: 'datePurchase', headerName: 'Ngày thu mua', width: 90, minWidth: 90
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: false
+            , headerComponent: "customHeader"
+            , filter: "agTextColumnFilter"
         }
     ]
     return columnDefs;

@@ -36,17 +36,17 @@ namespace TAS.Models
 
 		// Level 3 - Thông tin nhập cao su (RubberIntake)
 		public long IntakeId { get; set; }
-		public decimal TotalWeightKg { get; set; } // Tổng số kg thu mua
-		public decimal? PricePerKg { get; set; } // Giá theo kg
-		public decimal? TotalAmount { get; set; } // Thành tiền = kg * giá
+
+
+		public decimal TotalFinishedProductKg { get; set; } // Tổng số kg thu mua
+		public decimal? TotalCentrifugeProductKg { get; set; } // Giá theo kg
 
 		// Level xác định thứ bậc (1 = đơn hàng, 2 = đại lý, 3 = nhà vườn)
 		public int SortOrder { get; set; }
 
 		// Trạng thái và thời gian
 		public bool IsActive { get; set; } = true;
-		public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-		public string? CreatedBy { get; set; }
+		public string? DatePurchase { get; set; }
 		public string? SortIdList { get; set; }
 		public bool? IsOpenChild { get; set; }
 

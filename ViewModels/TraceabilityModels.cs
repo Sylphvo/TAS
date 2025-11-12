@@ -86,7 +86,7 @@ namespace TAS.ViewModels
 				WHERE Intake.Status = 1
 
 				-- Kết quả
-				SELECT OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild
+				SELECT OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, DatePurchase = CONVERT(varchar(10), DatePurchase, 120), TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild
 				FROM #TempOrder
 				ORDER BY OrderCode DESC, AgentCode, CASE WHEN FarmCode IS NULL THEN 0 ELSE 1 END
 				DROP TABLE #TempOrder;
