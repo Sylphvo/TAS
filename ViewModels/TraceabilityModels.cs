@@ -36,8 +36,8 @@ namespace TAS.ViewModels
 
 
 				-- Level 1: Đơn hàng
-				INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
-				VALUES (1, NULL, 1, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), N'đơn hàng 1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), 1);
+				--INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, --FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
+				--VALUES (1, NULL, 1, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), N'đơn hàng 1', NULL, NULL, NULL, NULL, NULL, --NULL, NULL, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), 1);
 
 				-- Level 2: Đại lý
 				INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
@@ -84,6 +84,29 @@ namespace TAS.ViewModels
 				LEFT JOIN RubberIntake Intake ON Farm.FarmCode = Intake.FarmCode
 				LEFT JOIN RubberAgent Agent ON Agent.AgentCode = Farm.AgentCode
 				WHERE Intake.Status = 2
+				
+				-- Level 1: Đơn hàng
+				INSERT INTO #TempOrder (OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode, AgentName, FarmCode, FarmerName, DatePurchase, TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild)
+				--VALUES (1, NULL, 1, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), N'đơn hàng 1', NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'ORD' + FORMAT(GETDATE(), 'ddMMyyyy'), 1);
+				SELECT
+					1 AS OrderId,
+					NULL AS ParentId,
+					1 AS SortOrder,
+					'ORD' + FORMAT(GETDATE(), 'ddMMyyyy') AS OrderCode,
+					N'đơn hàng 1' AS OrderName,
+					NULL AS AgentCode,
+					NULL AS AgentName,
+					NULL AS FarmCode,
+					NULL AS FarmerName,
+					NULL AS DatePurchase,
+					SUM(ISNULL(TotalFinishedProductKg, 0)) AS TotalFinishedProductKg,
+					SUM(ISNULL(TotalCentrifugeProductKg, 0)) AS TotalCentrifugeProductKg,
+					'ORD' + FORMAT(GETDATE(), 'ddMMyyyy') + '__ALL__ALL' AS SortIdList,
+					0 AS IsOpenChild
+				FROM #TempOrder
+				WHERE SortOrder = 2;
+
+
 
 				-- Kết quả
 				SELECT OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, DatePurchase = CONVERT(varchar(10), DatePurchase, 120), TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild
