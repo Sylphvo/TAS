@@ -59,7 +59,7 @@ namespace TAS.ViewModels
 				FROM RubberIntake Intake
 				LEFT JOIN RubberFarm Farm ON Farm.FarmCode = Intake.FarmCode
 				LEFT JOIN RubberAgent Agent ON Agent.AgentCode = Farm.AgentCode
-				WHERE Intake.Status = 1
+				WHERE Intake.Status = 2
 				GROUP BY Agent.AgentCode, Agent.AgentName
 				ORDER BY Agent.AgentCode;
 
@@ -83,7 +83,7 @@ namespace TAS.ViewModels
 				FROM RubberFarm Farm
 				LEFT JOIN RubberIntake Intake ON Farm.FarmCode = Intake.FarmCode
 				LEFT JOIN RubberAgent Agent ON Agent.AgentCode = Farm.AgentCode
-				WHERE Intake.Status = 1
+				WHERE Intake.Status = 2
 
 				-- Kết quả
 				SELECT OrderId, ParentId, SortOrder, OrderCode, OrderName, AgentCode,  AgentName, FarmCode, FarmerName, DatePurchase = CONVERT(varchar(10), DatePurchase, 120), TotalFinishedProductKg, TotalCentrifugeProductKg, SortIdList, IsOpenChild

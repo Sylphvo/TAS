@@ -8,6 +8,7 @@ var arrValueFilter = {
     contentInProgress:  'Đang xử lý',
     contentHandle: 'Đã Xử lý',
     contentConfirmOrder: 'Đã tạo đơn hàng',
+
 	typeExcel: 1,// Xuất Excel Data
 	typeSampleExcel: 2,// Xuất Excel Mẫu
 };
@@ -73,7 +74,7 @@ function CreateGridRubberGarden() {
                 },
                 {
                     // custom item
-                    name: arrValueFilter.contentInProgress,
+                    name: 'Chuyển ' + arrValueFilter.contentInProgress.toLowerCase(),
                     shortcut: "(Alt + 1)",
                     action: () => {
                         ApproveAllData(arrValueFilter.statusHandle);
@@ -83,7 +84,7 @@ function CreateGridRubberGarden() {
                 },
                 {
                     // custom item
-                    name: arrValueFilter.contentHandle,
+                    name: 'Chuyển ' + arrValueFilter.contentHandle.toLowerCase(),
                     shortcut: "(Alt + 2)",
                     action: () => {
                         ApproveAllData(arrValueFilter.statusHandle);
@@ -93,7 +94,7 @@ function CreateGridRubberGarden() {
                 },
                 {
                     // custom item
-                    name: 'Tạo đơn hàng',
+                    name: 'Chuyển ' + arrValueFilter.contentConfirmOrder.toLowerCase(),
                     shortcut: "(Alt + 3)",
                     action: () => {
                         ApproveAllData(arrValueFilter.statusConfirmOrder);
@@ -394,13 +395,13 @@ function CreateColModelRubberGarden() {
 function ActionRenderer(params) {
     const wrap = document.createElement('div');
     wrap.innerHTML =
-    `<button class="button_action_custom avtar avtar-xs btn-light-warning js-InProgress" title="Đang xử lý">
+    `<button class="button_action_custom avtar avtar-xs btn-light-warning js-InProgress" title="Chuyển đang xử lý">
         <i class="ti ti-arrow-back f-20"></i>
     </button>
-    <button class="button_action_custom avtar avtar-xs btn-light-success js-Handle" title="Đã xử lý">
+    <button class="button_action_custom avtar avtar-xs btn-light-success js-Handle" title="Chuyển đã xử lý">
         <i class="ti ti-check f-20"></i>
     </button>
-    <button class="button_action_custom avtar avtar-xs btn-light-primary js-Order" title="Tạo đơn hàng">
+    <button class="button_action_custom avtar avtar-xs btn-light-primary js-Order" title="Chuyển tạo đơn hàng">
       <i class="ti ti-arrow-up-right-circle f-20"></i>
     </button>
     <button class="button_action_custom avtar avtar-xs btn-light-danger js-cancel" title="Xóa">
