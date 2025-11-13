@@ -72,8 +72,10 @@ select {
     padding: 5px 12px !important;
 }
 
-.buttonSearch{
-    margin-left:5px; 
+.buttonSearch {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
 }
 
 /* css select 2 */
@@ -215,10 +217,11 @@ div.ag-cell-value {
     /*display: block;*/
 }
     .ag-menu-option:hover {
-        background-color: #404040d6;
+        background-color: #404040b5;
         border-radius: 6px !important;
         display: block;
         padding: 0;
+        color: #fff;
     }
 .ag-menu-option-icon span.ag-icon {
     /*color: white;*/

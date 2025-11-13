@@ -1,4 +1,8 @@
-﻿using Raven.Imports.Newtonsoft.Json.Linq;
+﻿using Dapper;
+using Microsoft.AspNetCore.Mvc;
+using Raven.Imports.Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using System.Data;
 using System.Globalization;
 using TAS.Helpers;
 using TAS.Models;
@@ -41,8 +45,6 @@ namespace TAS.ViewModels
 			";
 			return await dbHelper.QueryAsync<RubberIntakeRequest>(sql);
 		}
-
-
 		public int AddOrUpdateRubber(RubberIntakeRequest rubberIntakeRequest)
 		{
 			try 
@@ -114,7 +116,8 @@ namespace TAS.ViewModels
 				(@FarmCode, @FarmerName, @RubberKg, @TSCPercent, @DRCPercent,
 					@FinishedProductKg, @CentrifugeProductKg, @Status, GETDATE(), @RegisterPerson);";
 
-				dbHelper.Execute(sql, lstRubberIntakeRequest.Select(x => new {
+				dbHelper.Execute(sql, 
+				lstRubberIntakeRequest.Select(x => new {
 					FarmCode = x.farmCode,
 					FarmerName = x.farmerName,
 					RubberKg = x.rubberKg ?? 0m,
@@ -129,6 +132,46 @@ namespace TAS.ViewModels
 				return 1;
 			}
 			catch(Exception ex)
+			{
+				return 0;
+			}
+		}
+		public int AddOrUpdateRubberFull(List<RubberIntakeRequest> lstRubberIntakeRequest)
+		{
+			try
+			{
+
+				const string sql = @"
+				UPDATE RubberIntake SET
+					FarmCode = @FarmCode,
+					FarmerName = @FarmerName,
+					RubberKg = @RubberKg,
+					TSCPercent = @TSCPercent,
+					DRCPercent = @DRCPercent,
+					FinishedProductKg = @FinishedProductKg,
+					CentrifugeProductKg = @CentrifugeProductKg,
+					Status = @Status,
+					UpdateDate = GETDATE(),
+					UpdatePerson = @UpdatePerson
+				WHERE IntakeId = @IntakeId;
+				";
+
+				dbHelper.Execute(sql, 
+				lstRubberIntakeRequest.Select(x => new {
+					IntakeId = x.intakeId,                  // QUAN TRỌNG
+					FarmCode = x.farmCode,
+					FarmerName = x.farmerName,
+					RubberKg = x.rubberKg ?? 0m,
+					TSCPercent = x.tscPercent ?? 0m,
+					DRCPercent = x.drcPercent ?? 0m,
+					FinishedProductKg = x.finishedProductKg ?? 0m,
+					CentrifugeProductKg = x.centrifugeProductKg ?? 0m,
+					Status = x.status ?? 0,
+					UpdatePerson = _userManage.Name
+				}));
+				return 1;
+			}
+			catch (Exception ex)
 			{
 				return 0;
 			}
@@ -148,13 +191,13 @@ namespace TAS.ViewModels
 				return 0;
 			}
 		}
-		public int ApproveAllDataRubber()
+		public int ApproveAllDataRubber(int status)
 		{
 			try
 			{
 				string sql = @"
 					UPDATE RubberIntake 
-					SET Status = 1, UpdateDate = GETDATE(), UpdatePerson = '" + _userManage.Name + @"'
+					SET Status = " + status + @", UpdateDate = GETDATE(), UpdatePerson = '" + _userManage.Name + @"'
 				";
 				dbHelper.Execute(sql);
 				return 1;

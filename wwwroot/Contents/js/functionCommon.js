@@ -9,6 +9,24 @@ var colorSortOrder_3 = '#f2f2f2';//xám nhạt
 var colorSortOrder_4 = '#fbd4b4';//màu cam nhạt 
 var colorpickerSuite = '';
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+        toast.onmouseenter = Swal.stopTimer;
+        toast.onmouseleave = Swal.resumeTimer;
+    }
+});
+function NotificationToast(icon, title) {
+    Toast.fire({
+        icon: icon,
+        title: title
+    });
+}
+
 arrayCharacterJapanese.push("０", "１", "２", "３", "４", "５", "６", "７", "８", "９", "．",
     " ", ">", "_", "ｑ", "ｗ", "ｅ", "ｒ", "ｔ", "ｙ", "ｕ", "ｉ", "ｏ", "ｐ", "ａ", "ｓ", "ｄ", "ｆ", "ｇ", "ｈ", "ｊ", "ｋ", "ｌ", "ｚ",
     "ｘ", "ｃ", "ｖ", "ｂ", "ｎ", "ｍ", "‘", "～", "！", "＠", "＃", "＄", "％", "＾", "＆", "＊", "（", "）", "＿", "＋",

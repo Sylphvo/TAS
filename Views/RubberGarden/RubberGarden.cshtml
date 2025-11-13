@@ -56,8 +56,7 @@
                                 <button onclick="InputNameFile(1)" class="btn btn-primary buttonSearch"><i class="ti ti-download f-20"></i>&nbsp; Xuất Excel</button>
                                 <button onclick="onExportTemplateExcel()" class="btn btn-primary buttonSearch"><i class="ti ti-file-x f-20"></i>&nbsp; Mẫu Excel</button>
                                 <button class="btn btn-primary buttonSearch" data-bs-toggle="modal" data-bs-target="#AddNewRubber"><i class="ti ti-plus f-20"></i>&nbsp;  Thêm mới</button>
-                                <button onclick="ApproveAllData(2)" class="btn btn-primary buttonSearch"><i class="ti ti-checks f-20"></i>&nbsp;  Phê duyệt tất cả</button>
-                                <button onclick="ApproveAllData(2)" class="btn btn-primary buttonSearch"><i class="ti ti-checks f-20"></i>&nbsp;  Tạo đơn hàng</button>
+                                @* <button onclick="ApproveAllData(2)" class="btn btn-primary buttonSearch"><i class="ti ti-arrow-up-right-circle f-20"></i>&nbsp;  <span>Tạo đơn hàng</span></button> *@
                             </div>
                         </div>
                     </div>
@@ -104,7 +103,7 @@
         </div>
     </div>
 </div>
-<partial name="./_PopupAddNewRubber.cshtml" />
+<partial name="~/Views/Shared/Modal/_PopupAddNewRubber.cshtml" />
 @section Scripts {
     <script type="text/javascript" src="~/Contents/js/RubberGarden/RubberGarden.js"></script>
     <script>

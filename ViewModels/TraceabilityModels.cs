@@ -93,14 +93,24 @@ namespace TAS.ViewModels
 			";
 			return await dbHelper.QueryAsync<RubberOrderReuqest>(sql);
 		}
-		public async Task<List<RubberAgent>> GetPallets()
+		#region Pallet
+		public async Task<List<RubberPalletRequest>> GetPallets(int orderId)
 		{
 			var sql = @"
-				SELECT * 
-				FROM RubberPallets
+				SELECT 
+					ROW_NUMBER() OVER (ORDER BY Pallet.PalletId) + 100 AS rowNo
+					, OrderCode = rubOrder.orderCode
+					, OrderName = rubOrder.OrderName
+					, PalletCode = Pallet.PalletCode
+					, WeightKg = Pallet.WeightKg
+					, UpdateDate = Pallet.UpdateDate
+					, UpdatePerson = Pallet.UpdatePerson
+				FROM RubberPallets Pallet
+				LEFT JOIN RubberOrderSummary rubOrder ON Pallet.OrderId = rubOrder.OrderId
+				WHERE Pallet.OrderId = '"+ orderId + @"'
 			";
-
-			return await dbHelper.QueryAsync<RubberAgent>(sql);
+			return await dbHelper.QueryAsync<RubberPalletRequest>(sql);
 		}
+		#endregion
 	}
 }

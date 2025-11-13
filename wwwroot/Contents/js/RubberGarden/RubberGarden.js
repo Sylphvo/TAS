@@ -2,28 +2,18 @@
 var gridOptionsRubberGarden, ListDataFull;
 var page, pageSize, gridApi, pagerApi;
 var arrValueFilter = {
-    statusApprove: 1,// Đã phê duyệt
-    statusRestore: 0,// Chưa phê duyệt
+    statusInProgress: 0,// Đang xử lý
+    statusHandle: 1,// Đã Xử lý
+    statusConfirmOrder: 2,// Đã tạo đơn hàng
+    contentInProgress:  'Đang xử lý',
+    contentHandle: 'Đã Xử lý',
+    contentConfirmOrder: 'Đã tạo đơn hàng',
 	typeExcel: 1,// Xuất Excel Data
 	typeSampleExcel: 2,// Xuất Excel Mẫu
 };
-var farms = {
-    farmCode: 'NV_1',
-	farmerName: 'Nguyễn Văn'
-};
+
 var farmByCode = {};
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true,
-    didOpen: (toast) => {
-        toast.onmouseenter = Swal.stopTimer;
-        toast.onmouseleave = Swal.resumeTimer;
-    }
-});
 function CreateGridRubberGarden() {
     gridOptionsRubberGarden = {
         //pagination: true,
@@ -48,7 +38,6 @@ function CreateGridRubberGarden() {
         cellSelection: true,
         onGridReady: function (params) {          
             gridApi = params.api;
-            //params.api.sizeColumnsToFit();           
         },
         rowDragManaged: true,
         onRowDragEnd() {
@@ -59,7 +48,6 @@ function CreateGridRubberGarden() {
                 calcDRCPercent(e.data);
                 e.api.refreshCells({ rowNodes: [e.node], columns: ['drcPercent'], force: true });
             }
-
             if (['rubberKg', 'drcPercent'].includes(e.colDef.field)) {
                 calcFinish(e.data);
                 calcCentrifuge(e.data);
@@ -72,16 +60,70 @@ function CreateGridRubberGarden() {
         allowContextMenuWithControlKey: true, // giữ Ctrl + click phải vẫn hiện
         suppressContextMenu: false, // cho phép hiện menu ag-Grid
         getContextMenuItems: params => {
-            const result = [
-                'applyfullwidth'
+            return [
+                {
+                    // custom item
+                    name: 'Áp dụng cho tất cả các cột',
+                    shortcut: "(Alt + a)",
+                    action: () => {
+                        ApplyCustomColulmn(params);
+                    },
+                    cssClasses: ["red", "bold"],
+                    icon: '<i class="ti ti-copy f-20"></i>',
+                },
+                {
+                    // custom item
+                    name: arrValueFilter.contentInProgress,
+                    shortcut: "(Alt + 1)",
+                    action: () => {
+                        ApproveAllData(arrValueFilter.statusHandle);
+                    },
+                    cssClasses: ["red", "bold"],
+                    icon: '<i class="ti ti-arrow-back f-20"></i>',
+                },
+                {
+                    // custom item
+                    name: arrValueFilter.contentHandle,
+                    shortcut: "(Alt + 2)",
+                    action: () => {
+                        ApproveAllData(arrValueFilter.statusHandle);
+                    },
+                    cssClasses: ["red", "bold"],
+                    icon: '<i class="ti ti-check f-20"></i>',
+                },
+                {
+                    // custom item
+                    name: 'Tạo đơn hàng',
+                    shortcut: "(Alt + 3)",
+                    action: () => {
+                        ApproveAllData(arrValueFilter.statusConfirmOrder);
+                    },
+                    cssClasses: ["red", "bold"],
+                    icon: '<i class="ti ti-arrow-up-right-circle f-20"></i>',
+                }
             ];
-            return result;
         },
-        onCellContextMenu: (params) => {
-            params.event.preventDefault(); // chặn menu mặc định trình duyệt
-            // hiển thị menu custom của bạn
-            showCustomMenu(params);
-        },
+        onCellKeyDown: function (params) {
+            const keyboardEvent = params.event;
+            //Đang xử lý
+            if (keyboardEvent.altKey && keyboardEvent.key === "1") {
+                ApproveAllData(arrValueFilter.statusInProgress);
+            }
+            //Đã xử lý
+            if (keyboardEvent.altKey && keyboardEvent.key === "2") {
+                ApproveAllData(arrValueFilter.statusHandle);
+            }
+            //Đã tạo đơn hàng
+            if (keyboardEvent.altKey && keyboardEvent.key === "3") {
+                ApproveAllData(arrValueFilter.statusConfirmOrder);
+            }
+
+            if (keyboardEvent.altKey && keyboardEvent.key === "a") {
+                ApplyCustomColulmn(params);
+                NotificationToast("success", "Áp dụng cho tất cả thành công");
+            }
+           
+        }
     };
     const eGridDiv = document.querySelector(RubberGarden);
     gridApi = agGrid.createGrid(eGridDiv, gridOptionsRubberGarden);
@@ -89,10 +131,33 @@ function CreateGridRubberGarden() {
     CreateRowDataRubberGarden();
     resizeGridRubberGarden();
 }
-function showCustomMenu(params) {
-    var menuitem = document.querySelector('.ag-menu-option');
-    menuitem.addEventListener("click", () => {
-        gridApi.setGridOption("rowData", ListDataFull.filter(x => x[params.colDef.field] = params.data[params.colDef.field]));
+function ApplyCustomColulmn(params) {
+    gridApi.setGridOption("rowData", ListDataFull.filter(x => x[params.column.colId] = params.value));
+    var idList = ListDataFull.map(x => x.intakeId);// list data intakeId 
+    var colId = params.column.colId; //colId
+    var valueData = params.value;
+
+    idList.forEach(function (item, index) {
+        var objData = ListDataFull.filter(x => x.intakeId == item);
+        if (colId == 'tscPercent') {
+            calcDRCPercent(objData[0]);
+        }
+        if (['rubberKg', 'drcPercent'].includes(colId)) {
+            calcFinish(objData[0]);
+            calcCentrifuge(objData[0]);
+        }
+    });
+    $.ajax({
+        async: true,
+        method: 'POST',
+        url: "/RubberGarden/AddOrUpdateFull",
+        contentType: 'application/json',
+        data: JSON.stringify(ListDataFull),
+        success: function (res) {
+            RefreshAllGridWhenChangeData();
+        },
+        error: function () {
+        }
     });
 }
 // Cập nhật dữ liệu sau khi chỉnh sửa
@@ -231,7 +296,8 @@ function CreateColModelRubberGarden() {
             field: 'farmCode',
             headerName: 'Mã Nhà Vườn',
             width: width_Col, minWidth: width_Col,
-            editable: true, filter: true,
+            editable: EditRubberGarden,
+            filter: true,
             cellEditor: 'agSelectCellEditor',
             cellEditorPopup: true,
             popupPosition: 'under',
@@ -250,34 +316,28 @@ function CreateColModelRubberGarden() {
         {
             field: 'farmerName', headerName: 'Tên Nhà Vườn', width: 150, minWidth: 150
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: EditRubberGarden
             , filter: "agTextColumnFilter"
-            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
             field: 'rubberKg', headerName: 'Khối lượng', width: width_Col, minWidth: width_Col
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: EditRubberGarden
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">params.value</div>`;
-            //}
         },
         {
             field: 'tscPercent', headerName: 'TSC', width: width_Col, minWidth: width_Col
-            //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: EditRubberGarden
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
         },
         {
             field: 'drcPercent', headerName: 'DRC', width: width_Col, minWidth: width_Col
-            //, cellRenderer: cellRender_RequirementStatus
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: EditRubberGarden
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
         },
@@ -287,9 +347,6 @@ function CreateColModelRubberGarden() {
             , editable: false
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
         },
         {
             field: 'centrifugeProductKg', headerName: 'Thành Phẩm Ly Tâm', width: width_Col, minWidth: width_Col
@@ -297,9 +354,6 @@ function CreateColModelRubberGarden() {
             , editable: false
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
         },
         {
             field: 'timeDate_Person', headerName: 'Người cập nhật', width: width_Col, minWidth: width_Col
@@ -307,9 +361,6 @@ function CreateColModelRubberGarden() {
             , editable: false
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
         },
         {
             field: 'timeDate', headerName: 'Thời gian cập nhật', width: 120, minWidth: 120
@@ -317,9 +368,6 @@ function CreateColModelRubberGarden() {
             , editable: false
             , filter: "agTextColumnFilter"
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
         },
         {
             field: 'status', headerName: 'Trạng thái', width: 140, minWidth: 140
@@ -328,16 +376,11 @@ function CreateColModelRubberGarden() {
             , filter: false
             , headerComponent: "customHeader"
             , cellRenderer: function (params) {
-                if (params.value == 0) {
-                    return '<span class="badge text-bg-primary">Chưa phê duyệt</span>';
-                }
-                if (params.value == 1) {                  
-                    return '<span class="badge text-bg-success">Đã phê duyệt</span>';
-                }
+                return GetStatusRubberGarden(params);
             }
         },
         {
-            field: 'action', headerName: 'Chức năng', width: width_Col, minWidth: width_Col
+            field: 'action', headerName: 'Chức năng', width: 140, minWidth: 140
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , filter: false
@@ -351,34 +394,33 @@ function CreateColModelRubberGarden() {
 function ActionRenderer(params) {
     const wrap = document.createElement('div');
     wrap.innerHTML =
-    (params.data.status == 0 ?
-    ` <button class="button_action_custom avtar avtar-xs btn-light-success js-Approve" title="Phê duyệt">
-            <i class="ti ti-check f-20"></i>
-        </button>` 
-    :
-    `<button class="button_action_custom avtar avtar-xs btn-light-warning js-Restore" title="Phê duyệt">
-            <i class="ti ti-arrow-back f-20"></i>
-        </button>`)
-    +
-    `<button class="button_action_custom avtar avtar-xs btn-light-danger js-cancel" title="Xóa">
+    `<button class="button_action_custom avtar avtar-xs btn-light-warning js-InProgress" title="Đang xử lý">
+        <i class="ti ti-arrow-back f-20"></i>
+    </button>
+    <button class="button_action_custom avtar avtar-xs btn-light-success js-Handle" title="Đã xử lý">
+        <i class="ti ti-check f-20"></i>
+    </button>
+    <button class="button_action_custom avtar avtar-xs btn-light-primary js-Order" title="Tạo đơn hàng">
+      <i class="ti ti-arrow-up-right-circle f-20"></i>
+    </button>
+    <button class="button_action_custom avtar avtar-xs btn-light-danger js-cancel" title="Xóa">
       <i class="ti ti-trash f-20"></i>
     </button>
   `;
-    if (params.data.status == 0) {
-        const btnApprove = wrap.querySelector('.js-Approve');
-        btnApprove.addEventListener('click', (e) => {
-            ApproveData(params.data.intakeId, arrValueFilter.statusApprove);            
-        });
-    }
-    else {
-        const btnRestore = wrap.querySelector('.js-Restore');
-        btnRestore.addEventListener('click', (e) => {
-            ApproveData(params.data.intakeId, arrValueFilter.statusRestore);
-        });
-    }
-   
-
+    const btnInProgress = wrap.querySelector('.js-InProgress');
+    const btnHandle = wrap.querySelector('.js-Handle');
+    const btnOrder = wrap.querySelector('.js-Order');
     const btnCancel = wrap.querySelector('.js-cancel');
+
+    btnInProgress.addEventListener('click', (e) => {
+        ApproveData(params.data.intakeId, arrValueFilter.statusInProgress);
+    });
+    btnHandle.addEventListener('click', (e) => {
+        ApproveData(params.data.intakeId, arrValueFilter.statusHandle);
+    });
+    btnOrder.addEventListener('click', (e) => {
+        ApproveData(params.data.intakeId, arrValueFilter.statusConfirmOrder);
+    });
     btnCancel.addEventListener('click', (e) => {
        // e.stopPropagation();
         Swal.fire({
@@ -421,9 +463,6 @@ function ActionRenderer(params) {
             }
         });
     });
-
-  
-
     return wrap;
 }
 
@@ -684,26 +723,37 @@ function ApproveData(intakeId, status) {
         }
     });
 }
-function ApproveAllData() {
+function ApproveAllData(status) {
     $.ajax({
         async: true,
         method: 'POST',
         url: "/RubberGarden/ApproveAllDataRubber",
         dataType: 'json',
+        data: { status: status },
         success: function (res) {
             if (res == 1) {
-                Toast.fire({
-                    icon: "success",
-                    title: "Phê duyệt thành công"
-                });
+                NotificationToast("success", "Phê duyệt thành công");
             }
             RefreshAllGridWhenChangeData();
         },
         error: function () {
-            Toast.fire({
-                icon: "danger",
-                title: "Phê duyệt thất bại"
-            });
+            NotificationToast("danger", "Phê duyệt thất bại");
         }
     });
+}
+//lấy trạng thái Rubber
+function GetStatusRubberGarden(params) {
+    var statusValue = params.value;
+    if (statusValue == arrValueFilter.statusInProgress) {
+        return '<span class="badge text-bg-info">' + arrValueFilter.contentInProgress +'</span>';
+    }
+    else if (statusValue == arrValueFilter.statusHandle) {
+        return '<span class="badge text-bg-success">' + arrValueFilter.contentHandle +'</span>';
+    }
+    else if (statusValue == arrValueFilter.statusConfirmOrder) {
+        return '<span class="badge text-bg-primary">' + arrValueFilter.contentConfirmOrder +'</span>';
+    }
+}
+function EditRubberGarden(params) {
+    return params.data.status != arrValueFilter.statusConfirmOrder;
 }

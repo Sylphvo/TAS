@@ -104,6 +104,9 @@
     <script type="text/javascript" src="~/Contents/js/Traceability/Traceability.js"></script>
     <script>        
         var Traceability = '#TraceabilityGrid';
+        $('.selector-paging').select2({
+            minimumResultsForSearch: Infinity
+        });
         CreateGridTraceability(true);
         RegEventTraceability();
     </script>

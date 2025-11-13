@@ -83,7 +83,7 @@ function CreateRowDataPallet() {
     $.ajax({
         async: !false,
         type: 'POST',
-        url: "/Traceability/Pallets",
+        url: "/Traceability/GetPallets",
         data: listSearchPallet,
         dataType: "json",
         success: function (data) {
@@ -102,6 +102,19 @@ function CreateRowDataPallet() {
 }
 function CreateColModelPallet() {
     var columnDefs = [
+        {
+            field: 'rowNo'
+            , headerName: 'Số thứ tự'
+            , width: 90
+            , minWidth: 90
+            , cellStyle: cellStyle_Col_Model_EventActual
+            , editable: false
+            , filter: false
+            , floatingFilterComponent: 'customFloatingFilterInput'
+            , floatingFilterComponentParams: { suppressFilterButton: true }
+            , headerComponent: "customHeader"
+            //, cellRenderer: cellRender_StartDate			
+        },
         {
             field: 'orderCode', headerName: 'Mã đơn hàng', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
@@ -125,7 +138,7 @@ function CreateColModelPallet() {
             , headerComponent: "customHeader"
         },
         {
-            field: 'agentName', headerName: 'Tên đại lý', width: 90, minWidth: 90
+            field: 'palletCode', headerName: 'Tên Pallet', width: 90, minWidth: 90
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: false
             , headerComponent: "customHeader"
@@ -135,27 +148,33 @@ function CreateColModelPallet() {
             //}
         },
         {
-            field: 'farmerName', headerName: 'Tên nhà vườn', width: 90, minWidth: 90
+            field: 'weightKg', headerName: 'Số Kg của Pallet', width: 90, minWidth: 90
             //, cellRenderer: cellRender_WorkStatus
             , cellStyle: cellStyle_Col_Model_EventActual
             , editable: true
             , headerComponent: "customHeader"
         },
         {
-            field: 'WeightKg', headerName: 'Số kg', width: 90, minWidth: 90
-            //, cellRenderer: cellRender_RequirementStatus
+            field: 'updateDate'
+            , headerName: 'Thời gian tạo'
+            , width: 130
+            , minWidth: 130
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
+            , filter: "agTextColumnFilter"
+            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
         },
         {
-            field: 'TotalAmount', headerName: 'Tổng', width: 90, minWidth: 90
+            field: 'updatePerson'
+            , headerName: 'Người tạo'
+            , width: 100
+            , minWidth: 100
             , cellStyle: cellStyle_Col_Model_EventActual
-            , editable: true
+            , editable: false
+            , filter: "agTextColumnFilter"
+            //, cellRenderer: cellRender_StartDate
             , headerComponent: "customHeader"
-            //, cellRenderer: function (params) {
-            //    return `<div class="text-cell-eclip">${params.value}</div>`;
-            //}
         }
     ]
     return columnDefs;

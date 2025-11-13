@@ -45,9 +45,11 @@ namespace TAS.Controllers
 		[HttpPost]
 		public async Task<JsonResult> GetPallets(int orderId)
 		{
-			var lstData = await models.GetPallets();
+			var lstData = await models.GetPallets(orderId);
 			return new JsonResult(lstData);
 		}
+
+
 		[HttpPost("AddOrUpdatePallet")]
 		public IActionResult AddOrUpdatePallets()
 		{

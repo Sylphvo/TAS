@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Text.Json;
 using TAS.Models;
 using TAS.ViewModels;
 
@@ -36,6 +37,12 @@ namespace TAS.Controllers
 			int result = _models.AddOrUpdateRubber(rubberIntakeRequest);
 			return Json(result);
 		}
+		[HttpPost]
+		public JsonResult AddOrUpdateFull([FromBody] List<RubberIntakeRequest> lstRubberIntake)
+		{		
+			int result = _models.AddOrUpdateRubberFull(lstRubberIntake);
+			return Json(1);
+		}
 
 		[HttpPost]
 		public JsonResult ImportDataLstData([FromBody] List<RubberIntakeRequest> rowsData)
@@ -52,9 +59,9 @@ namespace TAS.Controllers
 		}
 
 		[HttpPost]
-		public JsonResult ApproveAllDataRubber()
+		public JsonResult ApproveAllDataRubber(int status)
 		{
-			int result = _models.ApproveAllDataRubber();
+			int result = _models.ApproveAllDataRubber(status);
 			return Json(result);
 		}
 
@@ -68,6 +75,6 @@ namespace TAS.Controllers
 		{
 			return Json(null);
 		}
-		#endregion
+		#endregion		
 	}
 }
