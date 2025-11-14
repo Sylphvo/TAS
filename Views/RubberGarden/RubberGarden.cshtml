@@ -56,7 +56,7 @@
                                 <button onclick="InputNameFile(1)" class="btn btn-primary buttonSearch"><i class="ti ti-download f-20"></i>&nbsp; Xuất Excel</button>
                                 <button onclick="onExportTemplateExcel()" class="btn btn-primary buttonSearch"><i class="ti ti-file-x f-20"></i>&nbsp; Mẫu Excel</button>
                                 <button class="btn btn-primary buttonSearch" data-bs-toggle="modal" data-bs-target="#AddNewRubber"><i class="ti ti-plus f-20"></i>&nbsp;  Thêm mới</button>
-                                <button onclick="ApproveAllData(2)" class="btn btn-primary buttonSearch"><i class="ti ti-arrow-up-right-circle f-20"></i>&nbsp;  <span>Tạo đơn hàng</span></button>
+                                
                             </div>
                         </div>
                     </div>
@@ -76,26 +76,25 @@
                                     </label>
                                 </div>
                                 <div class="button_filter">
-                                    @* <button class="btn btn-primary buttonSearch">Phê duyệt</button> *@
+                                    <label class="form-label" for="inputState">Đơn hàng</label>
+                                    <select id="ListCboAgent" class="form-select">
+                                        @{
+                                            if (ViewBag.ComboAgent != null)
+                                            {
+                                                <option value="*" selected>All</option>
+                                                foreach (var item in ViewBag.ComboAgent)
+                                                {
+                                                    <option value="@item.AgentCode">@item.AgentName</option>
+                                                }
+                                            }
+                                        }
+                                    </select>
+                                    <button onclick="ApproveAllData(2)" class="btn btn-primary buttonSearch"><i class="ti ti-arrow-up-right-circle f-20"></i>&nbsp;  <span>Tạo đơn hàng</span></button>
                                 </div>
                             </div>
                             <!-- [ Main Content ] end -->
                             <div id="RubberGardenGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
-                            <div id="topPager" class="ag-paging-button-wrapper">
-                                <div class="grid-info">
-                                    <label>
-                                        <span id="start-entries">1</span>
-                                        <span>-</span>
-                                        <span id="last-entries"></span>
-                                        <span>@localizer["key_of"]</span>
-                                        <span id="total-entries"></span>
-                                    </label>
-                                </div>
-                                <nav class="grid-paging" id="list-paging">
-                                    <ul id="pager" class="pagination pagination-sm mb-0"></ul>
-                                    <span id="rowCount" style="margin-left:12px"></span>
-                                </nav>
-                            </div>
+                            <div id="ag-paging-footer" class="ag-paging-button-wrapper"></div>
                         </div>
                     </div>
                 </div>
@@ -109,21 +108,21 @@
     <script>
         ImportExcelRubberGarden('importExcel');// Import Excel
         var listdataEventsActual;
+        var agPaging = 'ag-paging-footer';
         var RubberGarden = '#RubberGardenGrid';
         var IsOptionAll = false;
         var listComboFarmCode = @Json.Serialize(ViewBag.ComboFarmCode)
         CreateGridRubberGarden();
+        SetMsgPage();
+
         $('#ListCboAgent').change(function (e) {
             let dataAgent = $(this).val();
             if(dataAgent == '*'){
                 gridApi.setGridOption("rowData", ListDataFull);
-                //gridApi.setRowData(ListDataFull);
             }
             else{
                 gridApi.setGridOption("rowData", ListDataFull.filter(x => x.agentCode == dataAgent));
-                //gridApi.setRowData(ListDataFull.filter(x => x.agentCode == dataAgent));
             }
-            //RefreshAllGridWhenChangeData();
         });
         $('.selector-paging').change(function (e) {
             let selectPage = $(this).val();
@@ -136,5 +135,8 @@
         $('.selector-paging').select2({
             minimumResultsForSearch: Infinity
         });
+         function SetMsgPage(){
+            arrMsg.keyOf = '@localizer["key_of"]';
+        }
     </script>
 }

@@ -60,9 +60,7 @@ select {
 .card-header {
     padding: 15px !important;
 }
-#topPager {
-    padding: 5px 15px !important;
-}
+
 .form-label {   
     margin: 0 !important;
 }
@@ -152,6 +150,7 @@ select {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 5px 15px !important;
 }
 .grid-paging {
     display: flex;

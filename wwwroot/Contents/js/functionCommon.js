@@ -1,5 +1,4 @@
 var arrValUtility = { IsCompleteLoadData: true };
-
 var boolIsCheckJapanseNumber = false; // Bien dung de kiem tra khi user nhap so tieng nhat.
 var boolIsCheckVietnameseText = false; // Bien dung de kiem tra khi user nhap chu tieng viet.
 var arrayCharacterJapanese = []; // Mang chua cac ki tu Japanese can convert sang English
@@ -8,7 +7,9 @@ var colorSortOrder_2 = '#FFF';//trắng
 var colorSortOrder_3 = '#f2f2f2';//xám nhạt
 var colorSortOrder_4 = '#fbd4b4';//màu cam nhạt 
 var colorpickerSuite = '';
-
+var gridOptionsTraceability, ListDataFull, ListRowChild, gridApi, pagerApi;//khai báo các biến quan trọng trong lưới aggrid
+var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
+//set thông báo 
 const Toast = Swal.mixin({
     toast: true,
     position: "top-end",
@@ -21,11 +22,23 @@ const Toast = Swal.mixin({
     }
 });
 function NotificationToast(icon, title) {
-    Toast.fire({
-        icon: icon,
-        title: title
-    });
+    Toast.fire({ icon: icon, title: title });
 }
+var arrMsg = {
+
+}
+// Các hằng số cho Traceability
+var arrConstant = {
+    SortOrder_Lot: 1, // Order
+    SortOrder_Agent: 2,// Agent
+    SortOrder_Farm: 3,// Farmer
+    isCheckAll: false,// Farmer
+    isLoadFirst: true,// Farmer
+    page: 1,// Farmer
+    pageSize: 20,// Farmer
+}
+var arrParentIds = [];
+
 
 arrayCharacterJapanese.push("０", "１", "２", "３", "４", "５", "６", "７", "８", "９", "．",
     " ", ">", "_", "ｑ", "ｗ", "ｅ", "ｒ", "ｔ", "ｙ", "ｕ", "ｉ", "ｏ", "ｐ", "ａ", "ｓ", "ｄ", "ｆ", "ｇ", "ｈ", "ｊ", "ｋ", "ｌ", "ｚ",
@@ -3826,6 +3839,10 @@ function makePaginator(opts) {
 
    
     function state() {
+        if (pageSize == '*') {
+            pageSize = data.length;
+        }
+         
         const total = data.length;
         const pages = Math.max(1, Math.ceil(total / pageSize));
         page = Math.min(Math.max(1, page), pages);
@@ -3966,16 +3983,16 @@ function LogoutAuth() {
 function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sortOrder) {
     var selectorCell = $(selector).parent().parent().parent();
     var selectorRow = $(selectorCell).parent();
-    var itemParent = listDataFull.find(x => x.sortIdList == id_list);
+    var itemParent = ListDataFull.find(x => x.sortIdList == id_list);
     var row_index = parseInt($(selectorRow).attr('row-index')) + 1;
     var listChild;
     if (sortOrder == 1) {
-        listChild = listRowChild.filter(function (item) {
+        listChild = ListRowChild.filter(function (item) {
             return id_list == id_list.substring(0, item.sortIdList.lastIndexOf('__'));
         });
     }
     else if (sortOrder == 2) {
-        listChild = listRowChild.filter(function (item) {
+        listChild = ListRowChild.filter(function (item) {
             return item.sortIdList.includes(id_list) && item.sortOrder == sortOrder + 1;
         });
     }
@@ -3996,9 +4013,10 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sort
     } else {
         if (sortOrder == 1) {
             if (arrConstantTraceability.isCheckAll) {
-                listChild = listDataFull.filter(function (item) {
+                listChild = ListDataFull.filter(function (item) {
                     return item.sortOrder > sortOrder;
                 });
+                ListDataFull.filter(x => x.isOpenChild = arrConstantTraceability.isCheckAll);
             }
             else {
                 listChild = listChild.filter(function (item) {
@@ -4019,4 +4037,56 @@ function ShowOrHideRowChildren(id_list, selector, funcSetValueArrParentIds, sort
             funcSetValueArrParentIds(arrParentIds, true);
         }
     }
+}
+function renderPagination(agPaging, msgPaging, IsOptionAll = false) {
+    let idListPaging = 'ListPaging',idPaging = 'Paging',startCell = 'start-entries',lastCell = 'last-entries',totalCell = 'total-entries';
+    let element =
+    `<div class="grid-info">
+        <label>
+            <span id="${startCell}">1</span>
+            <span>-</span>
+            <span id="${lastCell}"></span>
+            <span>${msgPaging}</span>
+            <span id="${totalCell}"></span>
+        </label>
+    </div>
+    <nav class="grid-paging" id="${idListPaging}">
+        <ul id="${idPaging}" class="pagination pagination-sm mb-0"></ul>
+        <span id="rowCount" style="margin-left:12px"></span>
+    </nav>`;
+    if (arrConstant.isLoadFirst) {
+        arrConstant.isLoadFirst = false;
+        $('#' + agPaging).append(element);
+    }
+
+    pagerApi = makePaginator({
+        data: ListDataFull,
+        listEl: '#' + idPaging,
+        pagerEl: '#' + idListPaging,
+        page: 1,
+        pageSize: $('.selector-paging').val(),
+        renderItem: x => ``,
+        onChange: s => {
+            gridApi.setGridOption("rowData", (IsOptionAll ? ListDataFull.slice(1, s.total) : ListDataFull.slice(s.start, s.last)));
+            OnChangePaging(s);
+        }
+    });
+    function OnChangePaging(s) {
+        let total = s.total;
+        let start = (s.start == 0 ? 1 : s.start);
+        let last = (s.start + parseInt(s.pageSize)) > total ? total : s.start + parseInt(s.pageSize);
+        $('#' + totalCell).text(total);
+        $('#' + startCell).text(start);
+        $('#' + lastCell).text(last);
+    }
+}
+function OnDragMoveSetRow() {
+    const start = (arrConstant.page - 1) * arrConstant.pageSize;
+    const n = gridApi.getDisplayedRowCount();
+    const ordered = [];
+    for (let i = 0; i < n; i++) {
+        ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
+    }
+    // ghi đè đoạn trang hiện tại vào mảng gốc
+    ListDataFull.splice(start, n, ...ordered);
 }

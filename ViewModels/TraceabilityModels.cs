@@ -101,8 +101,8 @@ namespace TAS.ViewModels
 					NULL AS DatePurchase,
 					SUM(ISNULL(TotalFinishedProductKg, 0)) AS TotalFinishedProductKg,
 					SUM(ISNULL(TotalCentrifugeProductKg, 0)) AS TotalCentrifugeProductKg,
-					'ORD' + FORMAT(GETDATE(), 'ddMMyyyy') + '__ALL__ALL' AS SortIdList,
-					0 AS IsOpenChild
+					'ORD' + FORMAT(GETDATE(), 'ddMMyyyy')  AS SortIdList,
+					1 AS IsOpenChild
 				FROM #TempOrder
 				WHERE SortOrder = 2;
 

@@ -75,21 +75,7 @@
                             </div>
                             <!-- [ Main Content ] end -->
                             <div id="TraceabilityGrid" style="height: 500px;width:100%" class="ag-theme-alpine"></div>
-                            <div id="topPager" class="ag-paging-button-wrapper">
-                                <div class="grid-info">
-                                    <label>
-                                        <span id="start-entries">1</span>
-                                        <span>-</span>
-                                        <span id="last-entries"></span>
-                                        <span>@localizer["key_of"]</span>
-                                        <span id="total-entries"></span>
-                                    </label>
-                                </div>
-                                <nav class="grid-paging" id="list-paging">
-                                    <ul id="pager" class="pagination pagination-sm mb-0"></ul>
-                                    <span id="rowCount" style="margin-left:12px"></span>
-                                </nav>
-                            </div>
+                            <div id="ag-paging-footer" class="ag-paging-button-wrapper"></div>                                                           
                         </div>
                     </div>
                 </div>
@@ -102,12 +88,23 @@
 <partial name="~/Views/Shared/Modal/_Pallet.cshtml" />
 @section Scripts {
     <script type="text/javascript" src="~/Contents/js/Traceability/Traceability.js"></script>
-    <script>        
+    <script>
+        var agPaging = 'ag-paging-footer';
         var Traceability = '#TraceabilityGrid';
-        $('.selector-paging').select2({
-            minimumResultsForSearch: Infinity
-        });
+        var IsOptionAll = false;
+
         CreateGridTraceability(true);
         RegEventTraceability();
+        SetMsgPage();
+
+        $('.selector-paging').select2({
+            minimumResultsForSearch: Infinity
+        }).change(function (e) {
+            IsOptionAll = $(this).val() == '*';
+            RefreshAllGridWhenChangeData();
+        });
+        function SetMsgPage(){
+            arrMsg.keyOf = '@localizer["key_of"]';
+        }
     </script>
 }

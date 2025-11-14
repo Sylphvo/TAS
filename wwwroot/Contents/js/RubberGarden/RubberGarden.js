@@ -42,7 +42,7 @@ function CreateGridRubberGarden() {
         },
         rowDragManaged: true,
         onRowDragEnd() {
-            persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
+            OnDragMoveSetRow();          // rows đã đúng thứ tự bạn vừa kéo
         },
         onCellValueChanged: e => {
             if (e.colDef.field == 'tscPercent') {
@@ -257,7 +257,7 @@ function CreateRowDataRubberGarden() {
             ListDataFull = data;
             gridApi.setGridOption("rowData", data);
             //gridOptionsRubberGarden.api.setRowData(data);
-            renderPage();
+            renderPagination(agPaging, msgPaging, IsOptionAll);
             $('.ag-header-select-all:not(.ag-hidden)').on('click', function (e) {
                 let IsChecked = $(this).find('.ag-input-field-input');
                 if (IsChecked.prop('checked')) {
@@ -629,36 +629,7 @@ function persistCurrentPageOrder() {
     ListDataFull.splice(start, n, ...ordered);
 }
 
-// --- helpers ---
-function renderPage() {
-    pagerApi = makePaginator({
-        data: ListDataFull,
-        listEl: '#pager',
-        pagerEl: '#list-paging',
-        page: 1,
-        pageSize: $('.selector-paging').val(),
-        renderItem: x => ``,
-        onChange: s => {
-            let total = s.total;
-            let start = (s.start == 0 ? 1 : s.start);
-            let last = s.start + parseInt(s.pageSize);
-            if (last > total) {
-				last = total;
-            }
-            $('#total-entries').text(total);
-            $('#start-entries').text(start);
-            $('#last-entries').text(last);
-            if (IsOptionAll) {
-                gridApi.setGridOption("rowData", ListDataFull.slice(1, total));
-                //gridApi.setRowData(ListDataFull.slice(1, total));
-            }
-            else {
-                gridApi.setGridOption("rowData", ListDataFull.slice(s.start, last));
-                //gridApi.setRowData(ListDataFull.slice(s.start, last));
-            }
-        }
-    });
-}
+
 
 // Import Excel Data
 function ImportExcelData(rows) {

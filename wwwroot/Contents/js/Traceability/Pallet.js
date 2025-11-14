@@ -61,7 +61,7 @@ function resizeGridPallet() {
     }, 100);
 }
 function setWidthHeightGrid(heithlayout) {
-    gridOptionsPallet.api.sizeColumnsToFit();
+    //gridOptionsPallet.api.sizeColumnsToFit();
     //var heigh = $(window).height() - $('.top_header').outerHeight() - $('.dm_group.dmg-shortcut').outerHeight() - ($('.col-xl-12').outerHeight() + heithlayout);
     //$(myGrid).css('height', heigh);
     //gridOptions.api.sizeColumnsToFit({

@@ -11,11 +11,14 @@ namespace TAS.Models
 
 		// Mã nhà vườn
 		[Required, StringLength(200)]
-		public string FarmCode { get; set; } = string.Empty;
+		public string? FarmCode { get; set; }
+
+		// Mã đơn hàng
+		public string? OrderCode { get; set; }
 
 		// Tên nhà vườn
 		[Required, StringLength(200)]
-		public string FarmerName { get; set; } = string.Empty;
+		public string? FarmerName { get; set; }
 
 		// KG
 		[Column(TypeName = "decimal(12,3)")]

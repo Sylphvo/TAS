@@ -1,24 +1,12 @@
-﻿var sortData = { sortColumnEventActual: '', sortOrderEventActual: '' }
-var gridOptionsTraceability, listDataFull, listRowChild;
-var page = 1;
-var pageSize = 20;
-var gridApi;
-var pagerApi;
+﻿
 var arrParentIds = [];
 
-// Các hằng số cho Traceability
-var arrConstantTraceability = {
-	SortOrder_Lot: 1, // Order
-	SortOrder_Agent: 2,// Agent
-	SortOrder_Farm: 3,// Farmer
-    isCheckAll: false,// Farmer
-}
 
 // Đăng ký sự kiện cho Traceability
 function RegEventTraceability() {
-    arrConstantTraceability.isCheckAll = $('#ChkAll').prop('checked');
+    arrConstant.isCheckAll = $('#ChkAll').prop('checked');
     $('#ChkAll').on('change', function (e) {
-        arrConstantTraceability.isCheckAll = e.target.checked;
+        arrConstant.isCheckAll = e.target.checked;
         ShowOrHideAllRowChildren();
     });
     $('.Col-orderName').on('click', function (e) {
@@ -55,12 +43,10 @@ function CreateGridTraceability() {
         onGridReady: function (params) {
             gridApi = params.api;
             params.api.sizeColumnsToFit();
-            //renderPage();          // nạp trang đầu
-            //setupPager();          // tạo pager ngoài
         },
         rowDragManaged: true,
         onRowDragEnd() {
-            persistCurrentPageOrder();          // rows đã đúng thứ tự bạn vừa kéo
+            OnDragMoveSetRow();
         },
         onCellValueChanged: e => {
             UpdateDataAfterEdit(0, e.data);
@@ -109,9 +95,13 @@ function CreateRowDataTraceability() {
         data: listSearchTraceability,
         dataType: "json",
         success: function (data) {
-            listDataFull = data;
-			listRowChild = data.filter(x => x.sortOrder != 1);
+            ListDataFull = data;
+			ListRowChild = data.filter(x => x.sortOrder != 1);
             gridApi.setGridOption("rowData", data);
+            setTimeout(function () {
+                renderPagination(agPaging, arrMsg.keyOf, IsOptionAll);
+            }, 100);
+            
             //setTimeout(function () {
             //    ShowHideLoading(false, divTraceability);
             //    $('#TraceabilityModal .ag-overlay-no-rows-center').show();
@@ -240,41 +230,6 @@ function cellStyle_Col_Model_EventActual(params) {
     //let rowObject = params.data;
     let cellAttr = {};
 
-    //if (rowObject.row_type == arrConstantTraceability.RowTypeStaff) {
-    //    cellAttr['background-color'] = '#f1f182';
-    //    cellAttr['color'] = 'black';
-    //    cellAttr['padding-left'] = '25px !important';
-    //    if (colName == 'start_date' || colName == 'end_date') {
-    //        cellAttr['text-align'] = 'left';
-    //        cellAttr['font-weight'] = '700';
-    //    }
-    //}
-    //else if (rowObject.row_type == arrConstantTraceability.RowTypeDate) {
-    //    if (colName == 'start_date') {
-    //        cellAttr['font-weight'] = 'bold';
-    //    }
-
-    //    cellAttr['background-color'] = colorSortOrder_1;
-    //}
-    //else if (rowObject.row_type == arrConstantTraceability.RowTypeGroup) {
-    //    if (colName == 'start_date') {
-    //        cellAttr['font-weight'] = '600';
-    //    }
-    //    cellAttr['padding-left'] = '45px !important';
-    //    cellAttr['background-color'] = colorSortOrder_4;
-    //}
-    //else if (rowObject.row_type == arrConstantTraceability.RowTypeItem && rowObject.row_status == arrConstantTraceability.RowStatusPast) {
-    //    cellAttr['background-color'] = colorSortOrder_3;
-    //    if (colName == 'start_date' || colName == 'end_date') {
-    //        cellAttr['text-align'] = 'center';
-    //    }
-    //}
-    //else {
-    //    if (colName == 'start_date' || colName == 'end_date' || colName == 'check_start_actual' || colName == 'start_date_actual' || colName == 'check_end_actual'
-    //        || colName == 'end_date_actual') {
-    //        cellAttr['text-align'] = 'center';
-    //    }
-    //}
     cellAttr['text-align'] = 'center';
     return cellAttr;
 }
@@ -319,28 +274,6 @@ function updateRowIndex() {
 }
 
 
-//// Import từ URL demo
-//document.getElementById('importExcel').addEventListener('change', async e => {
-//    const file = e.target.files[0];
-//    if (!file) return;
-//    try {
-//        const buf = await file.arrayBuffer();
-//        const wb = XLSX.read(buf, { type: 'array', cellDates: true });
-//        const ws = wb.Sheets[wb.SheetNames[0]];
-//        const rows = XLSX.utils.sheet_to_json(ws, { defval: null, raw: true });
-//        gridApi.setRowData(rows);
-//        notifier.show('Thành công', 'Import file Excel thành công', 'success', '', 4000);
-//    } catch (err) {
-//        notifier.show('Thất bại', 'Lỗi khi import file Excel!', 'danger', '', 4000);
-//    }
-//});
-//// Export Excel
-//function onExportExcelData() {
-//    const ws = XLSX.utils.json_to_sheet(listDataFull);
-//    const wb = XLSX.utils.book_new();
-//    XLSX.utils.book_append_sheet(wb, ws, 'Data');
-//    XLSX.writeFile(wb, 'datanhaplieu.xlsx');
-//}
 // Export Example Excel
 function onExportExcel() {
     const rowData_temp = [
@@ -352,40 +285,8 @@ function onExportExcel() {
     XLSX.writeFile(wb, 'mau.xlsx');
 }
 
-function persistCurrentPageOrder() {
-    const start = (page - 1) * pageSize;
-    const n = gridApi.getDisplayedRowCount();
-    const ordered = [];
-    for (let i = 0; i < n; i++) {
-        ordered.push(gridApi.getDisplayedRowAtIndex(i).data);
-    }
-    // ghi đè đoạn trang hiện tại vào mảng gốc
-    listDataFull.splice(start, n, ...ordered);
-}
 
-// --- helpers ---
-function renderPage() {
-    const start = (page - 1) * pageSize;
-    const slice = listDataFull.slice(start, start + pageSize);
-    gridApi.setRowData(slice);
-}
-function setupPager() {
-    pagerApi = makePaginator({
-        listEl: '#dummy',
-        pagerEl: '#pager',
-        page,
-        pageSize,
-        total: listDataFull.length,
-        render: () => '', // không render list
-        onChange: ({ page: p, pageSize: sz }) => {
-            // trước khi sang trang khác, lưu lại thứ tự trang hiện tại
-            persistCurrentPageOrder();
-            page = p;
-            pageSize = sz;
-            renderPage();
-        }
-    });
-}
+
 
 // Cell Render Parent And Child
 function cellRender_ParentAndChild(params) {
@@ -426,8 +327,8 @@ function ResetValueArrParentIds() {
 
 // Hiển thị hoặc ẩn các hàng con dựa trên việc chọn hoặc bỏ chọn checkbox "Chọn tất cả"
 function ShowOrHideAllRowChildren() {
-    let listDataChildToAdd = listDataFull.filter(x => x.sortOrder != arrConstantTraceability.SortOrder_Lot);
-    if (arrConstantTraceability.isCheckAll)
+    let listDataChildToAdd = ListDataFull.filter(x => x.sortOrder != arrConstant.SortOrder_Lot);
+    if (arrConstant.isCheckAll)
     {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-closed').addClass('ag-icon-tree-open');
         gridApi.applyTransaction({ add: listDataChildToAdd });
@@ -436,5 +337,78 @@ function ShowOrHideAllRowChildren() {
         $('div[col-id="orderName"] span.ag-icon').removeClass('ag-icon-tree-open').addClass('ag-icon-tree-closed');
         gridApi.applyTransaction({ remove: listDataChildToAdd });
     }
-    listDataFull.filter(x => x.isOpenChild = arrConstantTraceability.isCheckAll);
+    ListDataFull.filter(x => x.isOpenChild = arrConstant.isCheckAll);
+}
+function IsEditColumnDataTable(params) {
+    var valueData = params.data[params.colDef.field];
+    var isEditData = false;
+    if (IsNullOrEmpty(valueData)) { return isEditData; }
+    if (params.data.sortOrder == '1') {
+        isEditData = false;
+    }
+    else if (params.data.sortOrder == '2') {
+        isEditData = false;
+    }
+    else if (params.data.sortOrder == '3') {
+        isEditData = true;
+    }
+    return isEditData;
+}
+// read the raw data and convert it to a XLSX workbook
+function convertDataToWorkbook(dataRows) {
+    /* convert data to binary string */
+    const data = new Uint8Array(dataRows);
+    const arr = [];
+
+    for (let i = 0; i !== data.length; ++i) {
+        arr[i] = String.fromCharCode(data[i]);
+    }
+
+    const bstr = arr.join("");
+
+    return XLSX.read(bstr, { type: "binary" });
+}
+
+// pull out the values we're after, converting it into an array of rowData
+
+function populateGrid(api, workbook) {
+    // our data is in the first sheet
+    const firstSheetName = workbook.SheetNames[0];
+    const worksheet = workbook.Sheets[firstSheetName];
+
+    // we expect the following columns to be present
+    const columns = {
+        A: "orderCode",
+        B: "orderName",
+        C: "agentName",
+        D: "farmerName",
+        E: "totalFinishedProductKg",
+        F: "totalCentrifugeProductKg",
+        G: "datePurchase",
+    };
+
+    const rowData = [];
+
+    // start at the 2nd row - the first row are the headers
+    let rowIndex = 2;
+
+    // iterate over the worksheet pulling out the columns we're expecting
+    while (worksheet["A" + rowIndex]) {
+        var row = {};
+        Object.keys(columns).forEach((column) => {
+            row[columns[column]] = worksheet[column + rowIndex].w;
+        });
+
+        rowData.push(row);
+
+        rowIndex++;
+    }
+
+    // finally, set the imported rowData into the grid
+    api.setGridOption("rowData", rowData);
+}
+
+function importExcel() {
+    const workbook = convertDataToWorkbook(ListDataFull);
+    populateGrid(gridApi, workbook);
 }
